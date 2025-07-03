@@ -280,6 +280,7 @@ input[readonly]:focus {
     opacity: 0.7;
 }
 
+
 .user-dropdown {
     position: absolute;
     top: 100%;

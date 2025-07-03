@@ -7,7 +7,7 @@
     position: fixed;
     top: 10px;
     width: 100%;
-    z-index: 99
+    z-index: 1000
 }
 
 @media(min-width:600px) {
@@ -280,13 +280,11 @@
     position: relative
 }
 
-.header__mob-toggle span {
-    background-color: #010101;
-    height: 2px;
-    left: 5px;
-    position: absolute;
-    top: 15px;
-    width: 29px
+.header__mob-toggle img {
+    max-width: 100%; 
+    height: auto;    
+    display: block; 
+    padding: 1px;
 }
 
 .header__mob-toggle span:nth-of-type(2) {
@@ -298,6 +296,73 @@
         display: none
     }
 }
+
+
+.mobile-nav {
+    display: none;
+    position: fixed;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: white;
+    z-index: 999;
+    height: calc(100vh - 75px);
+    top: 80px;
+}
+
+.header__nav--mobile {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.header__nav--mobile ul {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 0px 20px;
+}
+
+.header__nav--mobile li {
+    list-style: none;
+    border: 2px solid black;
+}
+
+.header__nav--mobile li:hover {
+   text-decoration: underline;
+}
+
+.header__nav--mobile a, 
+.header__nav--mobile span {
+    color: black;
+    text-decoration: none;
+    font-size: 1.2rem;
+    display: block;
+    padding: 10px;
+}
+
+
+.header__nav li a:hover,
+.header__nav li span:hover,
+.header__nav--mobile li a:hover,
+.header__nav--mobile li span:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 899px) {
+    .header__nav {
+        display: none; /* 隐藏桌面导航 */
+    }
+    
+    .header__mob-toggle {
+        display: block; /* 显示移动菜单按钮 */
+    }
+}
+
+
+
+
+
 
 .radio__lower {
     cursor: pointer;
@@ -316,10 +381,7 @@
     text-transform: uppercase
 }
 
-.radio__lower span.active {
-    background: #010101;
-    color: #fff
-}
+
 
 .radio__lower span:first-of-type {
     border-right: 2px solid #010101
@@ -357,6 +419,7 @@
         height: 12.5%;
         justify-content: center
     }
+ 
 
     .header__nav li:last-of-type {
         border-bottom: 0
@@ -378,10 +441,7 @@
         width: 100%
     }
 
-    .header__nav a[aria-current=page].active--exact {
-        background: #fff;
-        color: #010101
-    }
+
 }
 
 @media(min-width:600px)and (max-width:899px) {
@@ -435,10 +495,7 @@
         width: 100%
     }
 
-    .header__nav a.active,
-    .header__nav span.active {
-        color: #fff
-    }
+
 }
 
 .header__cart,
@@ -555,14 +612,13 @@ main {
     border: 2px solid #010101
 }
 
-.panels__content {
-    padding: 10px
-}
 
 .panels--half>div:first-of-type {
     border-bottom: 2px solid #010101;
     line-height: 0
 }
+
+
 
 @media(min-width:600px) {
     main {

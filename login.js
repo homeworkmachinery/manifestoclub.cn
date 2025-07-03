@@ -448,6 +448,7 @@ function resetAuthForms() {
 
 
   function openAuthModal() {
+    
     const authModal = document.getElementById('auth-modal');
     if (!authModal) return;
     
@@ -1014,11 +1015,23 @@ async function updateAuthUI() {
               </div>
           </div>
       `;
+//       const userMenu = loginItem.querySelector('.user-menu');
+// const dropdown = loginItem.querySelector('#user-dropdown');
+
+// userMenu.addEventListener('mouseenter', () => {
+//     dropdown.style.display = 'block';
+// });
+
+// userMenu.addEventListener('mouseleave', () => {
+//     dropdown.style.display = 'none';
+// });
   } else {
       // 保持原有的Login结构
       loginItem.innerHTML = `<span onclick="openAuthModal()">Login</span>`;
   }
 }
+
+
 
 // 切换用户下拉菜单显示状态
 function toggleUserMenu() {

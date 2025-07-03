@@ -56,18 +56,9 @@
             color: #010101
         }
 
-        nav a.active {
-            background-color: #010101;
-            color: #fff
-        }
-
 
 
         @media(min-width:900px) {
-            .mobile {
-                display: none
-            }
-
             .desktop {
                 display: block
             }
@@ -110,21 +101,34 @@
                             <label for="playpause"></label>
                         </div>
                         <div class="radio__live"></div>
-                        <div class="header__mob-toggle"><span></span> <span></span></div>
+                        <div class="header__mob-toggle"><img src="000.jpg"></div>
                     </div>
                     <div class="radio__lower"><span>PLAYLIST</span> <span>CHAT</span></div>
                 </div>
             </aside>
             <nav class="header__nav">
                 <ul>
-                    <li class="mobile"><a href="/" class="active">Home</a></li>
-                    <li><a href="/record" class="">RECORD</a></li>
-                    <li><a href="/merch" class="">(MERCH)</a></li>
-                    <li><a href="/print" class="">(Print)</a></li>
-                    <li><a href="/event" class="">(Event)</a></li>
-                    <li class="mobile"><a href="/gallery" class="">Manifestos</a></li>
-                    <li><a href="/about" class="">About</a></li>
-                    <li><span onclick="openAuthModal()">Login</span></li>
+                    <li><a href="#" class="">RECORD</a></li>
+                    <li><a href="#" class="">(MERCH)</a></li>
+                    <li><a href="#" class="">(Print)</a></li>
+                    <li><a href="#" class="">(Event)</a></li>
+                    <li><a href="#" data-page="about">About</a></li>
+                    <li><span onclick="openAuthModal()" >Login</span></li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="mobile-nav" id="mobileNav">
+            <nav class="header__nav--mobile">
+                <ul>
+                    <li><a href="/" data-page="home">HOME</a></li>
+                    <li><a href="#" class="">RECORD</a></li>
+                    <li><a href="#" class="">(MERCH)</a></li>
+                    <li><a href="#" class="">(PRINT)</a></li>
+                    <li><a href="#" class="">(EVENT)</a></li>
+                    <li><a href="/gallery" class="">MANIFESTOS</a></li>
+                    <li><a href="#" data-page="about">ABOUT</a></li>
+                    <li><span onclick="openAuthModal()">LOGIN</span></li>
                 </ul>
             </nav>
         </div>
@@ -132,7 +136,7 @@
 
 
     <main class="main--banner">
-        <section class="page">
+        <section class="page" id="dynamic-content">
             <div class="panels panels--half">
                 <div class="panel">
                     <div class="panels__content"></div>
@@ -145,6 +149,7 @@
             </div>
         </section>
     </main>
+
 
 
     <!-- 登录/注册模态框 -->
@@ -243,12 +248,68 @@
             </div>
         </div>
     </div>
-    
-    <!-- 个人界面 -->
 
-    <!-- T恤系统 -->
+
+
+
+    <script>
+
+
+
+
+
+        function closeMobileMenu() {
+            document.getElementById('mobileNav').style.display = 'none';
+        }
+
+        async function loadPage(page) {
+            const content = document.getElementById("dynamic-content");
+            content.classList.add("fade-out");
+
+            setTimeout(async () => {
+                try {
+                    const response = await fetch(`${page}.html`);
+                    content.innerHTML = await response.text();
+                } catch (error) {
+                    content.innerHTML = `<p>Error loading ${page}.</p>`;
+                }
+                content.classList.remove("fade-out");
+                closeMobileMenu();
+            }, 300);
+            setActiveLink();
+        }
+
+
+
+        document.addEventListener('click', function (e) {
+            // 处理所有[data-page]链接（包括桌面和移动端）
+            const pageLink = e.target.closest('[data-page]');
+            if (pageLink) {
+                e.preventDefault();
+                loadPage(pageLink.dataset.page);
+            }
+
+            const loginBtn = e.target.closest('[onclick*="openAuthModal"]');
+            if (loginBtn) {
+                e.preventDefault();
+                closeMobileMenu(); // 关闭菜单
+                openAuthModal(); // 打开登录弹窗
+            }
+
+            // 处理移动菜单开关
+            if (e.target.closest('.header__mob-toggle')) {
+                e.preventDefault();
+                const mobileNav = document.getElementById('mobileNav');
+                mobileNav.style.display = mobileNav.style.display === 'block' ? 'none' : 'block';
+            }
+        });
+
+
+    </script>
+
     <script src="./login.js"></script>
     <script src="./profile.js"></script>
+
 </body>
 
 </html>
