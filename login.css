@@ -276,9 +276,6 @@ input[readonly]:focus {
 }
 
 
-.user-menu-trigger:hover {
-    opacity: 0.7;
-}
 
 
 .user-dropdown {
@@ -321,8 +318,5 @@ input[readonly]:focus {
 
 }
 
-.logout-btn:hover, .profile:hover {
-    opacity: 0.7;
-}
 
 

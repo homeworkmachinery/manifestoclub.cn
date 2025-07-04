@@ -306,8 +306,8 @@
     height: 100vh;
     background-color: white;
     z-index: 999;
-    height: calc(100vh - 75px);
-    top: 80px;
+    height: calc(100vh - 79px);
+    top: 79px;
 }
 
 .header__nav--mobile {
@@ -328,9 +328,7 @@
     border: 2px solid black;
 }
 
-.header__nav--mobile li:hover {
-   text-decoration: underline;
-}
+
 
 .header__nav--mobile a, 
 .header__nav--mobile span {
