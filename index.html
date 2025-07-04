@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
     <title>宣言俱乐部</title>
     <link rel="icon" href="/000.ico" type="image/x-icon">
 <link rel="shortcut icon" href="/000.ico" type="image/x-icon">
@@ -105,7 +105,7 @@
                         <div class="radio__live"></div>
                         <div class="header__mob-toggle"><img src="000.jpg"></div>
                     </div>
-                    <div class="radio__lower"><span>PLAYLIST</span> <span>CHAT</span></div>
+                    <div class="radio__lower"><span>PLAYLIST</span> <span>RESERVE</span></div>
                 </div>
             </aside>
             <nav class="header__nav">
@@ -247,8 +247,9 @@
     <script>
 
 
-
-
+document.addEventListener('gesturestart', function(e) {
+    e.preventDefault();
+});
 
         function closeMobileMenu() {
             document.getElementById('mobileNav').style.display = 'none';
@@ -268,7 +269,7 @@
                 content.classList.remove("fade-out");
                 closeMobileMenu();
             }, 300);
-            setActiveLink();
+          
         }
 
 
@@ -295,8 +296,6 @@
                 mobileNav.style.display = mobileNav.style.display === 'block' ? 'none' : 'block';
             }
         });
-
-
     </script>
 
     <script src="./login.js"></script>
