@@ -61,6 +61,13 @@ window.addEventListener("load", () => {
      
       barcodeElement.innerHTML = ""; // 清除现有条形码
       
+ // 检查 JsBarcode 是否可用
+ if (typeof JsBarcode === 'undefined') {
+  console.error('JsBarcode 库未加载');
+  barcodeElement.innerHTML = `<div style="text-align: center; padding: 20px; border: 1px solid #ccc;">条形码库未加载</div>`;
+  return;
+}
+
       JsBarcode(barcodeElement, barcodeValue, {
         format: "CODE128",
         displayValue: true,
@@ -79,15 +86,49 @@ window.addEventListener("load", () => {
   }
 
   
-  // Hash生成函数（保持不变）
-  async function generateHash(text) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(text);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
-    return hashHex.slice(0, 15);
+// 修复后的Hash生成函数 - 支持HTTP和HTTPS环境
+async function generateHash(text) {
+  // 检查是否支持 crypto.subtle
+  if (typeof crypto !== 'undefined' && crypto.subtle) {
+    try {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+      return hashHex.slice(0, 15);
+    } catch (error) {
+      console.warn('crypto.subtle 不可用，使用备用哈希方法');
+      return generateFallbackHash(text);
+    }
+  } else {
+    // 备用哈希方法（适用于HTTP环境）
+    return generateFallbackHash(text);
   }
+}
+
+// 备用哈希函数 - 简单但有效的哈希算法
+function generateFallbackHash(text) {
+  let hash = 0;
+  const str = text + "MANIFESTOCLUB_SALT"; // 添加盐值增加唯一性
+  
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // 转换为32位整数
+  }
+  
+  // 转换为正数并生成15位十六进制字符串
+  const positiveHash = Math.abs(hash);
+  let hexHash = positiveHash.toString(16).padStart(8, '0');
+  
+  // 如果不足15位，重复并截取
+  while (hexHash.length < 15) {
+    hexHash += positiveHash.toString(16);
+  }
+  
+  return hexHash.slice(0, 15).toUpperCase();
+}
 
 
 // -------------
