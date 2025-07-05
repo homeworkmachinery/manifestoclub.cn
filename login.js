@@ -80,10 +80,11 @@ window.addEventListener("load", () => {
     } catch (e) {
       console.error("生成条形码失败:", e);
     }
+    return barcodeValue;
   }
 
   
-// 修复后的Hash生成函数 - 支持HTTP和HTTPS环境
+// 修复后的Hash生成函数 
 async function generateHash(text) {
   // 检查是否支持 crypto.subtle
   if (typeof crypto !== 'undefined' && crypto.subtle) {
@@ -99,7 +100,6 @@ async function generateHash(text) {
       return generateFallbackHash(text);
     }
   } else {
-    // 备用哈希方法（适用于HTTP环境）
     return generateFallbackHash(text);
   }
 }
