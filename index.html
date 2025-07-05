@@ -272,7 +272,9 @@ document.addEventListener('gesturestart', function(e) {
           
         }
 
-
+        document.addEventListener('DOMContentLoaded', function() {
+    loadPage('home');
+});
 
         document.addEventListener('click', function (e) {
             // 处理所有[data-page]链接（包括桌面和移动端）
