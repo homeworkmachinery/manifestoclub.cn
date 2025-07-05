@@ -58,14 +58,11 @@ window.addEventListener("load", () => {
   
     try {
       const barcodeElement = document.getElementById(targetElementId);
-     
       barcodeElement.innerHTML = ""; // 清除现有条形码
       
  // 检查 JsBarcode 是否可用
  if (typeof JsBarcode === 'undefined') {
   console.error('JsBarcode 库未加载');
-  barcodeElement.innerHTML = `<div style="text-align: center; padding: 20px; border: 1px solid #ccc;">条形码库未加载</div>`;
-  return;
 }
 
       JsBarcode(barcodeElement, barcodeValue, {
@@ -127,7 +124,7 @@ function generateFallbackHash(text) {
     hexHash += positiveHash.toString(16);
   }
   
-  return hexHash.slice(0, 15).toUpperCase();
+  return hexHash.slice(0, 15);
 }
 
 
