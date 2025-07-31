@@ -1,43 +1,495 @@
-<style>
+<head><link href="/css/styles.32f7ce7181a41c5d792b.css" rel="stylesheet"></head><style data-page="home">.panels {
+        height: 60vh;
+        min-height: 500px;
+
+    }
+
     .panels--half .panel {
-    overflow: hidden; /* 防止内容溢出 */
-}
+        flex: 1;
+    }
 
-.panels--half img {
-    max-width: 100%; 
-    height: auto;    /* 保持宽高比 */
-    display: block;  /* 避免图片下方出现间隙 */
-}
+    .panel {
+        background: white;
+        overflow: hidden;
+    }
 
-    .panels-right{
+
+    .panels-right {
+        min-height: 100%;
+        position: relative;
+    }
+
+    .panels-left {
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    #mySVG {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: calc(100% - 40px);
+        /* 减去controls高度 */
+        background: white;
+        display: block;
+        touch-action: none;
+    }
+
+    .controls {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
         padding: 10px;
+        background: white;
+        z-index: 1000;
     }
-    .panels-right{
-        font-size: 21px;
+
+
+    button {
+        border: 2px solid black;
+        cursor: pointer;
+        font-size: 15px;
+        background-color: white;
     }
-    .panels-right a{
-        text-decoration: underline;
-  
+
+
+
+    select {
+        font-size: 14px;
     }
-    .panels-right a:hover{
+
+    label {
+        font-size: 14px;
+
+    }
+
+    .tools {
+        top: 0;
+        position: absolute;
+        display: flex;
+        gap: 10px;
+        flex-direction: column;
+        margin-left: 5px;
+        margin-top: 5px;
+
+
+    }
+
+    #pencil,
+    #eraser,
+    #zoom-in,
+    #zoom-out,
+    #drag {
+        border: black solid 2px;
+        cursor: pointer;
+    }
+
+    .t-shirt-control {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        margin-right: 10px;
+        margin-bottom: 10px;
+
+    }
+
+
+    #pencil {
+        position: relative;
+
+    }
+
+    .pencil-menu {
+        position: absolute;
+        display: none;
+        flex-direction: row;
+        left: 25px;
+        top: 2px;
+        gap: 3px;
+        border: none;
+        z-index: 1000;
+    }
+
+    .pencil-menu img {
+        width: auto;
+        height: 20px;
+        cursor: pointer;
+        padding: 2px;
+        transition: background-color 0.2s;
+    }
+
+    .pencil-menu img:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .pencil-menu img.active {
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+
+
+    .pencil-menu.show {
+        display: flex;
+    }
+
+    .t-shirt-column {
+        top: 0;
+        position: absolute;
+        display: flex;
+        gap: 10px;
+        flex-direction: column;
+        margin-right: 5px;
+        margin-top: 5px;
+        right: 0;
+        z-index: 10;
+
+
+    }
+
+    .t-shirt-background {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-top: 25px;
+        /* position: relative; */
+
+    }
+
+    #fileInput {
+        display: none;
+    }
+
+    .uploaded-image {
+        position: absolute;
+        z-index: 2;
+        cursor: move;
+        border: 2px solid transparent;
+
+
+    }
+
+    .uploaded-image.selected {
+        border-color: black;
+
+    }
+
+    .uploaded-image.dragging {
+        cursor: grabbing;
+    }
+
+    .resize-handles {
+        position: absolute;
+        z-index: 3;
+        pointer-events: none;
+    }
+
+    .resize-handle {
+        position: absolute;
+        width: 11px;
+        height: 11px;
+        background: white;
+        border: 2px solid black;
+        pointer-events: auto;
+
+    }
+
+    .resize-handle.nw {
+        top: -6px;
+        left: -6px;
+        cursor: nw-resize;
+    }
+
+    .resize-handle.n {
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        cursor: n-resize;
+    }
+
+    .resize-handle.ne {
+        top: -6px;
+        right: -6px;
+        cursor: ne-resize;
+    }
+
+    .resize-handle.e {
+        top: 50%;
+        right: -6px;
+        transform: translateY(-50%);
+        cursor: e-resize;
+    }
+
+    .resize-handle.se {
+        bottom: -6px;
+        right: -6px;
+        cursor: se-resize;
+    }
+
+    .resize-handle.s {
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        cursor: s-resize;
+    }
+
+    .resize-handle.sw {
+        bottom: -6px;
+        left: -6px;
+        cursor: sw-resize;
+    }
+
+    .resize-handle.w {
+        top: 50%;
+        left: -6px;
+        transform: translateY(-50%);
+        cursor: w-resize;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    #mySVG.pencil-cursor {
+        cursor: url('/images/northwest.png'), auto !important;
+    }
+
+    .color-menu {
+        display: none;
+        /* 默认隐藏 */
+        align-items: right;
+    }
+
+    .color-menu.show {
+        display: block;
+        display: flex;
+        /* 改用 flex 布局 */
+        flex-direction: column;
+        /* 垂直排列 */
+        align-items: flex-end;
+        /* 子元素右对齐 */
+
+    }
+
+    .color-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+        cursor: pointer;
+        margin-bottom: 5px;
+        height: 20px;
+        width: 20px;
+        border: 2px solid black;
+
+    }
+
+    .color-option#white {
+        background-color: white;
+    }
+
+    .color-option#black {
         background-color: black;
+
+    }
+
+
+
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+    }
+
+    .modal.hidden {
+        display: none;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 25px;
+        max-width: 70vh;
+        max-height: 80vh;
+        overflow-y: auto;
+        border: 2px black solid;
+    }
+
+
+    .preview-container {
+        display: flex;
+        gap: 30px;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .preview-item {
+        text-align: center;
+    }
+
+    .preview-item h3 {
+        margin-bottom: 10px;
+        font-size: 18px;
+    }
+
+    .preview-tshirt {
+        width: 200px;
+        height: 250px;
+        position: relative;
+        border: 2px solid black;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        margin: 0 auto;
+    }
+
+    .preview-image {
+        position: absolute;
+        max-width: 80%;
+        max-height: 60%;
+        object-fit: contain;
+    }
+
+    .color-info {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 16px;
+    }
+
+    .modal-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: space-between;
+        margin-top:20px;
+    }
+    
+
+    .modal-buttons button {
+        width: 200px;
+        font-size: 16px;
+        border: 2px solid black;
+        background: white;
+        cursor: pointer;
+        min-width: 150px;
+    }
+
+
+    .modal-buttons button:hover {
+        background: black;
         color: white;
     }
-</style>
+
+    .size-selection-horizontal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.size-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.size-option label {
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.quantity-input {
+    width: 45px;
+    height: 30px;
+    text-align: center;
+    border: 2px solid black;
+}
+
+button:focus, 
+input:focus {
+    outline: none;
+}
 
 
-<div class="panels panels--half">
-    <div class="panel">
-        <div class="panels-left">
-            <img src="./manifestoclub-about.png">
-        </div>
-    </div>
+#saveSvgModal .modal-content-svg {
+    background: white;
+    padding: 25px;
+    max-width: 70vh;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 2px black solid;
+}
 
-    <div class="panel">
-        <div class="panels-right"> 
-            宣言俱乐部是复合空间也是我的<a href="https://homeworkmachinery.host" target="_blank">(家)</a>。这里通过网页集成，不仅是玩乐、想象和交换的场地，更是由<a>(门)</a>服务器自托管的数据库。
-            <br><br>ManifestoClub is a composite space and also my <a href="https://homeworkmachinery.host" target="_blank">(home)</a>. Through web integration, it serves not only as a place for fun, imagination and exchange, but more essentially as a self-hosted database powered by <a>(men)</a> server.
-<br><br><a href="https://www.instagram.com/manifesto.club/" target="_blank">Instagram</a>
-        </div>
-    </div>
-</div>
+#saveSvgModal .preview-container-svg {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+#saveSvgModal .preview-item-svg {
+    text-align: center;
+}
+
+#saveSvgModal .preview-svg {
+    width: 200px;
+    height: 200px;
+    border: 2px solid black;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin: 0 auto;
+}
+
+#saveSvgModal .modal-buttons button {
+    width: 200px;
+    font-size: 16px;
+    border: 2px solid black;
+    background: white;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+#saveSvgModal .modal-buttons button:hover {
+    background: black;
+    color: white;
+}
+
+    @media(max-width:899px) {
+
+        .panels-left {
+            display: none;
+            /* 隐藏左侧SVG面板 */
+        }
+
+        .panels-right {
+            position: relative;
+            height: 65vh;
+            isolation: isolate;
+        }
+
+        .t-shirt-container,
+        .t-shirt-background,
+        .uploaded-images-container {
+            position: static;
+        }
+
+        .t-shirt-control {
+            position: absolute ;
+           
+        }
+
+    }</style><div class="panels panels--half"><div class="panel"><div class="panels-left"><svg id="mySVG" xmlns="http://www.w3.org/2000/svg"></svg><div class="tools"><div><img src="/images/pencil.png" style="width:24px;" class="pencil-menu-trigger" id="pencil"><div class="pencil-menu"><div data-width="2" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"><img src="/images/weight-1.png" style="height: 20px"></div><div data-width="3" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"><img src="/images/weight-2.png" style="height: 20px"></div><div data-width="5" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"><img src="/images/weight-3.png" style="height: 20px"></div><div data-width="7" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"><img src="/images/weight-4.png" style="height: 20px"></div><div data-width="9" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"><img src="/images/weight-5.png" style="height: 20px"></div></div></div><div id="eraser"><img src="/images/eraser.png" style="width: 20px;"></div><div id="zoom-in"><img src="/images/zoom-in.png" style="width: 20px;"></div><div id="zoom-out"><img src="/images/zoom-out.png" style="width: 20px;"></div><div id="drag"><img src="/images/drag.svg" style="width: 20px;"></div></div><div class="controls"><button id="undoBtn">UNDO</button> <button id="saveBtn">SAVE</button> <button id="galleryBtn">GALLERY</button> <button id="clearBtn">CLEAR</button> <button id="nextBtn">--></button></div><div id="saveSvgModal" class="modal hidden"><div class="modal-content-svg"><div class="preview-container-svg"><div class="preview-item-svg"><span>PREVIEW</span><div class="preview-svg" id="frontSvgPreview"></div></div></div><div class="modal-buttons"><button id="saveBtn">SAVE TO DRAFT</button> <button id="galleryBtn">ADD IN GALLERY</button></div></div></div></div></div><div class="panel"><div class="panels-right"><div class="t-shirt-column"><button id="frontBtn" class="active">FRONT</button> <button id="backBtn">BACK</button> <button id="colorBtn">COLOR</button><div class="color-menu hidden" id="colorMenu"><div class="color-option" id="white" data-color="white"></div><div class="color-option" id="black" data-color="black"></div></div></div><div class="t-shirt-container" id="tshirtContainer"><div class="t-shirt-background" id="tshirtBackground"><img src="/images/white-front.png" width="400px"></div><div class="uploaded-images-container" id="uploadedImagesContainer"></div><div class="resize-handles hidden" id="resizeHandles"><div class="resize-handle nw" data-direction="nw"></div><div class="resize-handle n" data-direction="n"></div><div class="resize-handle ne" data-direction="ne"></div><div class="resize-handle e" data-direction="e"></div><div class="resize-handle se" data-direction="se"></div><div class="resize-handle s" data-direction="s"></div><div class="resize-handle sw" data-direction="sw"></div><div class="resize-handle w" data-direction="w"></div></div></div><div style="display: none;"><img id="member-barcode-complete" alt="Member Code and Barcode"></div><input type="file" id="fileInput" accept="image/*" multiple="multiple"><div class="t-shirt-control"><button id="memberCodeBtn">INSERT MEMBER CODE</button> <button id="fileBtn">FILE</button> <button id="deleteBtn">DELETE</button> <button id="saveDesignBtn">SAVE</button></div><div id="saveModal" class="modal hidden"><div class="modal-content"><div class="preview-container"><div class="preview-item"><span>FRONT</span><div class="preview-tshirt" id="frontPreview"></div></div><div class="preview-item"><span>BACK</span><div class="preview-tshirt" id="backPreview"></div></div></div><div class="size-selection-horizontal"><div class="size-option"><label>XS</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>S</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>M</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>L</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>XL</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>2XL</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>3XL</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div></div><div class="modal-buttons"><button id="saveToDraftBtn">SAVE TO DRAFT</button> <button id="backToEditBtn">ADD IN CART</button></div></div></div></div></div></div><script defer="defer" src="/js/vendors.fda70625bb53e8e32f0a.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.b336c9b18929bdd43135.js"></script><script defer="defer" src="/js/global.4565c858c8cef3d5c5cf.js"></script><script defer="defer" src="/js/page-home.bf150cedc8bab70c07ba.js"></script>
