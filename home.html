@@ -1,4 +1,9 @@
-<head><link href="/css/styles.32f7ce7181a41c5d792b.css" rel="stylesheet"></head><style data-page="home">.panels {
+<head><link href="/css/styles.8d9e0d4240f2ef45001f.css" rel="stylesheet"></head><style data-page="home">* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    .panels {
         height: 60vh;
         min-height: 500px;
 
@@ -56,7 +61,10 @@
         background-color: white;
     }
 
-
+    button:hover {
+            background: black;
+            color: white;
+        }
 
     select {
         font-size: 14px;
@@ -328,10 +336,12 @@
         gap: 30px;
         justify-content: center;
         margin-bottom: 20px;
+       
     }
 
     .preview-item {
         text-align: center;
+       
     }
 
     .preview-item h3 {
@@ -343,7 +353,7 @@
         width: 200px;
         height: 250px;
         position: relative;
-        border: 2px solid black;
+       
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
@@ -467,29 +477,262 @@ input:focus {
     background: black;
     color: white;
 }
+.gallery-header{
+    border: black 2px solid;
+    margin-bottom: 20px;
+    cursor: pointer;
+    padding: 5px;
+    box-sizing: border-box;
+}
 
+@media(max-width:899px) {
+    /* 调试：给每个容器添加明显的边框和背景色 */
+    .panels {
+        height: auto !important; /* 覆盖60vh设置 */
+        min-height: auto !important; /* 覆盖500px设置 */
+    }
+    
+    .panels-right {
+        position: relative;
+        height: 59.5vh;
+        isolation: isolate;
+    
+  
+
+   
+        height: auto !important; /* 改为auto，让它适应内容 */
+     
+     
+        overflow: hidden; /* 防止内容溢出 */
+    }
+    
+  
+    
+    .t-shirt-container {
+  
+      
+        top: 60px;
+        bottom: 0px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+     margin-bottom: 30px;
+        /* 显示容器的实际高度 */
+        min-height: 200px !important;
+    }
+
+    .t-shirt-background {
+
+
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .t-shirt-background img {
+
+        max-width: 110%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+    }
+
+    .t-shirt-container,
+    .t-shirt-background,
+    .uploaded-images-container {
+        position: static;
+    }
+
+    .t-shirt-control {
+        position: absolute;
+    
+    }
+    
     @media(max-width:899px) {
+    /* 现有的移动端样式 */
+    .panels {
+        height: auto !important;
+        min-height: auto !important;
+    }
+    
+    .panels-right {
+        position: relative;
+        height: auto !important;
+        overflow: hidden;
+    }
+    
+    button {
+        border: 2px solid black;
+        cursor: pointer;
+        font-size: 13.8px;
+        background-color: white;
+    }
+    
+    .t-shirt-container {
+        top: 60px;
+        bottom: 0px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 30px;
+        min-height: 200px !important;
+    }
 
-        .panels-left {
-            display: none;
-            /* 隐藏左侧SVG面板 */
-        }
+    .t-shirt-background {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .t-shirt-background img {
+        max-width: 110%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+    }
 
-        .panels-right {
-            position: relative;
-            height: 65vh;
-            isolation: isolate;
-        }
+    .t-shirt-container,
+    .t-shirt-background,
+    .uploaded-images-container {
+        position: static;
+    }
 
-        .t-shirt-container,
-        .t-shirt-background,
-        .uploaded-images-container {
-            position: static;
-        }
+    .t-shirt-control {
+        position: absolute;
+    }
 
-        .t-shirt-control {
-            position: absolute ;
-           
-        }
+    /* Modal移动端优化 */
+    .modal-content {
+        background: white;
+        padding: 15px !important; /* 减少padding */
+        max-width: 95vw !important; /* 使用视口宽度 */
+        max-height: 90vh !important; /* 使用视口高度 */
+        width: 95vw; /* 固定宽度 */
+        overflow-y: auto;
+        border: 2px black solid;
+        margin: 10px; /* 添加边距 */
+    }
 
-    }</style><div class="panels panels--half"><div class="panel"><div class="panels-left"><svg id="mySVG" xmlns="http://www.w3.org/2000/svg"></svg><div class="tools"><div><img src="./images/pencil.png" style="width:24px;" class="pencil-menu-trigger" id="pencil"><div class="pencil-menu"><div data-width="2" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"><img src="./images/weight-1.png" style="height: 20px"></div><div data-width="3" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"><img src="./images/weight-2.png" style="height: 20px"></div><div data-width="5" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"><img src="./images/weight-3.png" style="height: 20px"></div><div data-width="7" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"><img src="./images/weight-4.png" style="height: 20px"></div><div data-width="9" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"><img src="./images/weight-5.png" style="height: 20px"></div></div></div><div id="eraser"><img src="../images/eraser.png" style="width: 20px;"></div><div id="zoom-in"><img src="../images/zoom-in.png" style="width: 20px;"></div><div id="zoom-out"><img src="./images/zoom-out.png" style="width: 20px;"></div><div id="drag"><img src="./images/drag.svg" style="width: 20px;"></div></div><div class="controls"><button id="undoBtn">UNDO</button> <button id="saveBtn">SAVE</button> <button id="galleryBtn">GALLERY</button> <button id="clearBtn">CLEAR</button> <button id="nextBtn">--></button></div><div id="saveSvgModal" class="modal hidden"><div class="modal-content-svg"><div class="preview-container-svg"><div class="preview-item-svg"><span>PREVIEW</span><div class="preview-svg" id="frontSvgPreview"></div></div></div><div class="modal-buttons"><button id="saveBtn">SAVE TO DRAFT</button> <button id="galleryBtn">ADD IN GALLERY</button></div></div></div></div></div><div class="panel"><div class="panels-right"><div class="t-shirt-column"><button id="frontBtn" class="active">FRONT</button> <button id="backBtn">BACK</button> <button id="colorBtn">COLOR</button><div class="color-menu hidden" id="colorMenu"><div class="color-option" id="white" data-color="white"></div><div class="color-option" id="black" data-color="black"></div></div></div><div class="t-shirt-container" id="tshirtContainer"><div class="t-shirt-background" id="tshirtBackground"><img src="../images/white-front.png" width="400px"></div><div class="uploaded-images-container" id="uploadedImagesContainer"></div><div class="resize-handles hidden" id="resizeHandles"><div class="resize-handle nw" data-direction="nw"></div><div class="resize-handle n" data-direction="n"></div><div class="resize-handle ne" data-direction="ne"></div><div class="resize-handle e" data-direction="e"></div><div class="resize-handle se" data-direction="se"></div><div class="resize-handle s" data-direction="s"></div><div class="resize-handle sw" data-direction="sw"></div><div class="resize-handle w" data-direction="w"></div></div></div><div style="display: none;"><img id="member-barcode-complete" alt="Member Code and Barcode"></div><input type="file" id="fileInput" accept="image/*" multiple="multiple"><div class="t-shirt-control"><button id="memberCodeBtn">INSERT MEMBER CODE</button> <button id="fileBtn">FILE</button> <button id="deleteBtn">DELETE</button> <button id="saveDesignBtn">SAVE</button></div><div id="saveModal" class="modal hidden"><div class="modal-content"><div class="preview-container"><div class="preview-item"><span>FRONT</span><div class="preview-tshirt" id="frontPreview"></div></div><div class="preview-item"><span>BACK</span><div class="preview-tshirt" id="backPreview"></div></div></div><div class="size-selection-horizontal"><div class="size-option"><label>XS</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>S</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>M</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>L</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>XL</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>2XL</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>3XL</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div></div><div class="modal-buttons"><button id="saveToDraftBtn">SAVE TO DRAFT</button> <button id="backToEditBtn">ADD IN CART</button></div></div></div></div></div></div><script defer="defer" src="/js/vendors.fda70625bb53e8e32f0a.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.a312b9b390df710db783.js"></script><script defer="defer" src="/js/global.7846019df593dafde3bb.js"></script><script defer="defer" src="/js/page-home.bf150cedc8bab70c07ba.js"></script>
+    /* T恤预览容器移动端优化 */
+    .preview-container {
+           display: flex;
+    flex-direction: row; /* 保持水平排列 */
+    gap: 10px; /* 减少间距以适应小屏幕 */
+    justify-content: center;
+    margin-bottom: 15px;
+    }
+
+    .preview-item {
+        text-align: center;
+        flex: 1;
+    }
+
+.preview-item span {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px; /* 缩小字体 */
+}
+
+    .preview-tshirt {
+        width: 120px !important; 
+        height: 150px !important;
+        position: relative;
+        border: 2px solid black;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        margin: 0 auto;
+    }
+
+    /* 尺寸选择移动端优化 */
+    .size-selection-horizontal {
+        display: grid; /* 使用网格布局 */
+        grid-template-columns: repeat(4, 1fr); /* 4列 */
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+
+    .size-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .size-option label {
+        margin-bottom: 3px;
+        font-size: 14px; /* 缩小字体 */
+    }
+
+    .quantity-input {
+        width: 35px !important; /* 缩小输入框 */
+        height: 25px !important;
+        text-align: center;
+        border: 2px solid black;
+        font-size: 12px; /* 缩小字体 */
+    }
+
+    /* Modal按钮移动端优化 */
+    .modal-buttons {
+        display: flex;
+        flex-direction: column; /* 改为垂直排列 */
+        gap: 10px;
+        justify-content: center;
+        margin-top: 15px;
+    }
+
+    .modal-buttons button {
+        width: 100% !important; /* 按钮全宽 */
+        font-size: 14px !important; /* 缩小字体 */
+        border: 2px solid black;
+        background: white;
+        cursor: pointer;
+        min-width: unset;
+        padding: 10px;
+    }
+
+    /* SVG Modal移动端优化 */
+    #saveSvgModal .modal-content-svg {
+        background: white;
+        padding: 15px !important;
+        max-width: 95vw !important;
+        max-height: 90vh !important;
+        width: 95vw;
+        overflow-y: auto;
+        border: 2px black solid;
+        margin: 10px;
+    }
+
+    #saveSvgModal .preview-svg {
+        width: 100px !important; /* 缩小SVG预览 */
+        height: 100px !important;
+        border: 2px solid black;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        margin: 0 auto;
+    }
+
+    #saveSvgModal .modal-buttons button {
+        width: 100% !important;
+        font-size: 14px !important;
+        border: 2px solid black;
+        background: white;
+        cursor: pointer;
+        min-width: unset;
+        padding: 10px;
+    }
+ 
+    
+}}
+@media(max-width:600px) {
+.gallery-header{
+    margin-bottom: 10px;
+}}</style><div class="gallery-header" data-page="gallery"><h1>DOODLE GALLERY</h1><p>Open-source and remix-friendly community artwork</p></div><div class="panels panels--half"><div class="panel"><div class="panels-left"><svg id="mySVG" xmlns="http://www.w3.org/2000/svg"></svg><div class="tools"><div><img src="./images/pencil.png" style="width:24px;" class="pencil-menu-trigger" id="pencil"><div class="pencil-menu"><div data-width="2" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"><img src="./images/weight-1.png" style="height: 20px"></div><div data-width="3" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"><img src="./images/weight-2.png" style="height: 20px"></div><div data-width="5" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"><img src="./images/weight-3.png" style="height: 20px"></div><div data-width="7" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"><img src="./images/weight-4.png" style="height: 20px"></div><div data-width="9" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"><img src="./images/weight-5.png" style="height: 20px"></div></div></div><div id="eraser"><img src="../images/eraser.png" style="width: 20px;"></div><div id="zoom-in"><img src="../images/zoom-in.png" style="width: 20px;"></div><div id="zoom-out"><img src="./images/zoom-out.png" style="width: 20px;"></div><div id="drag"><img src="./images/drag.svg" style="width: 20px;"></div></div><div class="controls"><button id="undoBtn">UNDO</button> <button id="saveBtn">SAVE</button> <button id="clearBtn">CLEAR</button> <button id="nextBtn">--></button></div><div id="saveSvgModal" class="modal hidden"><div class="modal-content-svg"><div class="preview-container-svg"><div class="preview-item-svg"><span>PREVIEW</span><div class="preview-svg" id="frontSvgPreview"></div></div></div><div class="modal-buttons"><button id="saveBtn">SAVE TO DRAFT</button> <button id="galleryBtn">ADD IN GALLERY</button></div></div></div></div></div><div class="panel"><div class="panels-right"><div class="t-shirt-column"><button id="frontBtn" class="active">FRONT</button> <button id="backBtn">BACK</button> <button id="colorBtn">COLOR</button><div class="color-menu hidden" id="colorMenu"><div class="color-option" id="white" data-color="white"></div><div class="color-option" id="black" data-color="black"></div></div></div><div class="t-shirt-container" id="tshirtContainer"><div class="t-shirt-background" id="tshirtBackground"><img src="../images/white-front.png" width="400px"></div><div class="uploaded-images-container" id="uploadedImagesContainer"></div><div class="resize-handles hidden" id="resizeHandles"><div class="resize-handle nw" data-direction="nw"></div><div class="resize-handle n" data-direction="n"></div><div class="resize-handle ne" data-direction="ne"></div><div class="resize-handle e" data-direction="e"></div><div class="resize-handle se" data-direction="se"></div><div class="resize-handle s" data-direction="s"></div><div class="resize-handle sw" data-direction="sw"></div><div class="resize-handle w" data-direction="w"></div></div></div><div style="display: none;"><img id="member-barcode-complete" alt="Member Code and Barcode"></div><input type="file" id="fileInput" accept="image/*" multiple="multiple"><div class="t-shirt-control"><button id="memberCodeBtn">INSERT MEMBER CODE</button> <button id="fileBtn">FILE</button> <button id="deleteBtn">DELETE</button> <button id="saveDesignBtn">SAVE</button></div><div id="saveModal" class="modal hidden"><div class="modal-content"><div class="preview-container"><div class="preview-item"><span>FRONT</span><div style="border: 2px black solid;"><div class="preview-tshirt" id="frontPreview"></div></div></div><div class="preview-item"><span>BACK</span><div style="border: 2px black solid;"><div class="preview-tshirt" id="backPreview"></div></div></div></div><div class="size-selection-horizontal"><div class="size-option"><label>XS</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>S</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>M</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>L</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>XL</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>2XL</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div><div class="size-option"><label>3XL</label><div class="quantity-control"><input type="number" class="quantity-input" value="0" min="0" max="99"></div></div></div><div class="modal-buttons"><button id="saveToDraftBtn">SAVE TO DRAFT</button> <button id="addToCartBtn">ADD TO CART</button></div></div></div></div></div></div><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.625919729981245f81e5.js"></script><script defer="defer" src="/js/33.1e57ee5942af32c54b66.js"></script><script defer="defer" src="/js/798.699918b740d48951ef34.js"></script><script defer="defer" src="/js/global.f18fe5de2cbb527bf4db.js"></script><script defer="defer" src="/js/page-home.bf150cedc8bab70c07ba.js"></script>
