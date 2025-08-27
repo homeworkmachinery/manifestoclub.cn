@@ -8,14 +8,14 @@
 
   
 
-        .machines {
+        .machines, .blanks-items {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
             list-style-type: none;
         }
 
-        .machines li {
+        .machines li, .blanks-items li{
             position: relative;
             border: 2px solid black;
             overflow: hidden;
@@ -65,9 +65,16 @@
         
             font-size: 24px;
         }
-        .retro-console{
+        .retro-console {
             border: 2px black solid;
             padding: 5px;
+            margin-bottom: 20px;
+        }
+        .blanks{
+            border: 2px black solid;
+            padding: 5px;
+            margin-top: 20px;
+            margin-bottom: 20px;
         }
         .taobao{
             margin-top: 20px;
@@ -90,7 +97,7 @@
 
         
 
-        }</style><link href="/css/styles.8d9e0d4240f2ef45001f.css" rel="stylesheet"><body><div class="retro-console"><h1>RETRO CONSOLES</h1><p>The legends are back. (And they’re sealed in-box.)</p></div><br><div class="section"><ul class="machines"><li data-id="1" data-page="content"><div class="overlay"><span class="title">The Spectrum Console</span></div></li><li data-id="2"><div class="overlay"><span class="title">Atari 2600+ Console & Joystick</span></div></li><li data-id="3"><div class="overlay"><span class="title">Atari 7800+ Console</span></div></li></ul></div><div class="taobao"><p>You can also visit <a href="" style="text-decoration: underline;">Taobao</a> for your convenient purchase services</p></div><script>// 获取所有的商品项
+        }</style><link href="/css/styles.8d9e0d4240f2ef45001f.css" rel="stylesheet"><body><div class="retro-console"><h1>RETRO CONSOLES</h1><p>The legends are back. (And they’re sealed in-box.)</p></div><div class="section"><ul class="machines"><li data-id="1" data-page="content"><div class="overlay"><span class="title">The Spectrum Console</span></div></li><li data-id="2"><div class="overlay"><span class="title">Atari 2600+ Console & Joystick</span></div></li><li data-id="3"><div class="overlay"><span class="title">Atari 7800+ Console</span></div></li></ul></div><div class="taobao"><p>You can also visit <a href="" style="text-decoration: underline;">Taobao</a> for your convenient purchase services</p></div><script>// 获取所有的商品项
         const machineItems = document.querySelectorAll('.machines li');
         
         // 为每个商品项添加点击事件
@@ -125,4 +132,4 @@
         });
         
         // 调试信息（开发时使用）
-        console.log('商品列表已加载，共有', machineItems.length, '个商品');</script><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.625919729981245f81e5.js"></script><script defer="defer" src="/js/33.1e57ee5942af32c54b66.js"></script><script defer="defer" src="/js/798.699918b740d48951ef34.js"></script><script defer="defer" src="/js/global.f18fe5de2cbb527bf4db.js"></script></body>
+        console.log('商品列表已加载，共有', machineItems.length, '个商品');</script><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.00873fc9845f6d03363b.js"></script><script defer="defer" src="/js/33.5f3ccdd08b021056086e.js"></script><script defer="defer" src="/js/798.11e95bfa4496bc6064d8.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script></body>
