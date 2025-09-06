@@ -1,135 +1,157 @@
 <style data-page="merch">* {
-            padding: 0;
-            margin: 0;
-            box-sizing: border-box;
-        }
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    .machines,
+    .blanks-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        list-style-type: none;
+    }
+
+    .machines li,
+    .blanks-items li {
+        position: relative;
+        border: 2px solid black;
+        overflow: hidden;
+        cursor: pointer;
+        background: white;
+        aspect-ratio: 1 / 1;
+    }
 
 
 
-  
+    .machines img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
 
-        .machines, .blanks-items {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            list-style-type: none;
-        }
+    .overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        background-color: black;
+        color: white;
+        opacity: 0;
 
-        .machines li, .blanks-items li{
-            position: relative;
-            border: 2px solid black;
-            overflow: hidden;
-            cursor: pointer;
-            background: white;
-            height: 300px;
-        }
+    }
 
-   
+    .machines li:hover .overlay {
+        opacity: 1;
+        transform: translateY(0);
+    }
 
-        .machines img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            display: block;
-        }
+    .title {
+        font-size: 18px;
 
-        .overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            border-top: 2px black solid;
-        }
+    }
 
-        .title {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
+    .price {
+        font-size: 15px;
+        color: black;
+    }
 
-        .price {
-            font-size: 15px;
-            color: black;
-        }
+    /* 添加更多商品项的演示样式 */
+    .placeholder-img {
+        width: 100%;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-        /* 添加更多商品项的演示样式 */
-        .placeholder-img {
-            width: 100%;
-            height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        
-            font-size: 24px;
-        }
+        font-size: 24px;
+    }
+
+    .retro-console {
+        border: 2px black solid;
+        padding: 5px;
+        margin-bottom: 20px;
+    }
+
+    .blanks {
+        border: 2px black solid;
+        padding: 5px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .taobao {
+        margin-top: 20px;
+        border: 2px black solid;
+        padding: 5px;
+    }
+
+
+
+    @media(max-width:899px) {
+
         .retro-console {
-            border: 2px black solid;
-            padding: 5px;
-            margin-bottom: 20px;
-        }
-        .blanks{
-            border: 2px black solid;
-            padding: 5px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-        .taobao{
-            margin-top: 20px;
-            border: 2px black solid;
-            padding: 5px;
-        }
-      
 
+            margin-bottom: 10px;
+        }
 
-        @media(max-width:899px) {
-            .taobao{
-            margin-top: 10px;}
-           
-            .machines {
+        .taobao {
+            margin-top: 10px;
+        }
+
+        .machines {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 10px;
             list-style-type: none;
         }
 
-        
 
-        }</style><link href="/css/styles.8d9e0d4240f2ef45001f.css" rel="stylesheet"><body><div class="retro-console"><h1>RETRO CONSOLES</h1><p>The legends are back. (And they’re sealed in-box.)</p></div><div class="section"><ul class="machines"><li data-id="1" data-page="content"><div class="overlay"><span class="title">The Spectrum Console</span></div></li><li data-id="2"><div class="overlay"><span class="title">Atari 2600+ Console & Joystick</span></div></li><li data-id="3"><div class="overlay"><span class="title">Atari 7800+ Console</span></div></li></ul></div><div class="taobao"><p>You can also visit <a href="" style="text-decoration: underline;">Taobao</a> for your convenient purchase services</p></div><script>// 获取所有的商品项
-        const machineItems = document.querySelectorAll('.machines li');
-        
-        // 为每个商品项添加点击事件
-        machineItems.forEach(item => {
-            item.addEventListener('click', function() {
-                // 获取data-id属性的值
-                const id = this.getAttribute('data-id');
-                
-                // 跳转到content.html并带上锚点
-                // 方式1: 使用锚点跳转到页面内的特定ID
-            
-                
-                // 方式2: 如果需要传递参数到URL
-                // window.location.href = `content.html?id=${id}`;
-                
-                // 方式3: 如果在同一页面内跳转到特定元素
-                // document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-            });
-        });
-        
-        // 可选：添加键盘导航支持
-        machineItems.forEach((item, index) => {
-            // 使项目可以通过Tab键获得焦点
-            item.setAttribute('tabindex', '0');
-            
-            // 添加回车键支持
-            item.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    this.click();
-                }
-            });
-        });
-        
-        // 调试信息（开发时使用）
-        console.log('商品列表已加载，共有', machineItems.length, '个商品');</script><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.00873fc9845f6d03363b.js"></script><script defer="defer" src="/js/33.5f3ccdd08b021056086e.js"></script><script defer="defer" src="/js/798.11e95bfa4496bc6064d8.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script></body>
+
+    }</style><link href="/css/styles.8d9e0d4240f2ef45001f.css" rel="stylesheet"><body><div class="retro-console"><h1>RETRO CONSOLES</h1><p>The legends are back (And they’re sealed in-box)</p></div><div class="section"><ul class="machines"><li data-id="1" data-name="The Spectrum Console" data-year="1982-2014" data-price="¥1450"><img src="images/merch/1.jpg"><div class="overlay"><span class="title">The Spectrum Console<br>1982-2014</span> <span style="right: 0; position: absolute;">¥1450</span></div></li><li data-id="2" data-name="Atari 2600+ Console & Joystick" data-year="1977-2013" data-price="¥1580"><img src="images/merch/2.jpg"><div class="overlay"><span class="title">Atari 2600+ Console & Joystick<br>1977-2013</span> <span style="right: 0; position: absolute;">¥1580</span></div></li><li data-id="3" data-name="Atari 7800+ Console" data-year="1986-2014" data-price="¥1450"><img src="images/merch/3.jpg"><div class="overlay"><span class="title">Atari 7800+ Console<br>1986-2014</span> <span style="right: 0; position: absolute;">¥1450</span></div></li></ul></div><div class="taobao"><p>You can also visit <a href="https://shop334779825.taobao.com/" target="_blank" style="text-decoration: underline;">Taobao</a> for your convenient purchase services</p></div><script>document.addEventListener('DOMContentLoaded', function () {
+            console.log('Merch page initialized');
+
+            const machineItems = document.querySelectorAll('.machines li');
+            console.log('Found product items:', machineItems.length);
+
+            // 在捕获阶段拦截点击事件
+            document.querySelector('.machines').addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+
+                // 找到被点击的 li 元素
+                const item = e.target.closest('li');
+                if (!item) return;
+
+                const productData = {
+                    id: item.getAttribute('data-id'),
+                    name: item.getAttribute('data-name'),
+                    year: item.getAttribute('data-year'),
+                    price: item.getAttribute('data-price')
+                };
+
+                console.log('Clicked product:', productData);
+                console.log('Storing to sessionStorage...');
+
+                // 存储到 sessionStorage
+                sessionStorage.setItem('pendingProduct', JSON.stringify(productData));
+
+                // 验证存储
+                console.log('Stored data:', sessionStorage.getItem('pendingProduct'));
+
+                // 延迟调用 loadPage 确保存储完成
+                setTimeout(() => {
+                    if (typeof loadPage === 'function') {
+                        console.log('Calling loadPage...');
+                        loadPage('content');
+                    }
+                }, 10);
+
+                return false;
+            }, true); // true = 使用捕获阶段
+        });</script><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.8b54376f466bff1ed26f.js"></script><script defer="defer" src="/js/33.35a9cbc4d6d44da6a2b5.js"></script><script defer="defer" src="/js/798.b0cf1e47f6c8f7e444c1.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script></body>
