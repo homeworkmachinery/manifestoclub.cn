@@ -100,7 +100,7 @@
 
             try {
                 // 尝试获取 HTML 文件
-                const response = await fetch(`pages/${page}.html`);
+                const response = await fetch(`${page}.html`);
 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
