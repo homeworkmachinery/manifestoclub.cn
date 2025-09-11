@@ -243,42 +243,92 @@
         .detail-images {
             grid-template-columns: 1fr;
         }
-    }</style><link href="/css/styles.8d9e0d4240f2ef45001f.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>PRODUCT DETAILS</h1><a data-page="merch" class="back-btn">← BACK TO SHOP</a></div><div class="panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-year" id="productYear">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info">✓ In Stock - Ready to Ship</div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button><div class="product-category"><div class="category-label">CATEGORY</div><span class="category-value" id="productCategory">Console</span></div></div><div class="product-details"><div class="details-content" id="productDetails"></div></div></div><script>(function() {
+    }
+
+
+
+
+
+.game-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.game-option {
+    padding: 5px;
+    border: 2px solid black;
+    background-color: white;
+    cursor: pointer;
+    text-align: center;
+}
+
+.game-option:hover {
+    background-color: black;
+    color: white;
+}
+
+.game-option.selected {
+    border-color: black;
+    background-color: black;
+    color: white;
+}
+
+.game-name {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.game-desc {
+    font-size: 11px;
+    opacity: 0.8;
+}
+
+
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .game-options {
+        grid-template-columns: 1fr;
+    }
+}</style><link href="/css/styles.8d9e0d4240f2ef45001f.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>PRODUCT DETAILS</h1><a data-page="merch" class="back-btn">← BACK TO SHOP</a></div><div class="panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-year" id="productYear">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info">✓ In Stock - Ready to Ship</div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button><div class="product-category"><div class="category-label">CATEGORY</div><span class="category-value" id="productCategory">Console</span></div></div><div class="product-details"><div class="details-content" id="productDetails"></div></div></div><script>(function () {
 
             function cleanupContentPage() {
-        console.log('Cleaning up content page...');
-        // 清理全局变量
-        delete window.currentProduct;
-        delete window.cleanupContentPage;
-        
-        // 移除事件监听器
-        const backBtn = document.querySelector('.back-btn');
-        if (backBtn && window.contentBackHandler) {
-            backBtn.removeEventListener('click', window.contentBackHandler);
-        }
-        
-        const addBtn = document.getElementById('addToCartBtn');
-        if (addBtn && window.contentAddToCartHandler) {
-            addBtn.removeEventListener('click', window.contentAddToCartHandler);
-        }
-        
-        delete window.contentBackHandler;
-        delete window.contentAddToCartHandler;
-    }
-    
-    // 先清理可能存在的旧内容
-    if (typeof window.cleanupContentPage === 'function') {
-        window.cleanupContentPage();
-    }
+                console.log('Cleaning up content page...');
+                // 清理全局变量
+                delete window.currentProduct;
+                delete window.cleanupContentPage;
+
+                // 移除事件监听器
+                const backBtn = document.querySelector('.back-btn');
+                if (backBtn && window.contentBackHandler) {
+                    backBtn.removeEventListener('click', window.contentBackHandler);
+                }
+
+                const addBtn = document.getElementById('addToCartBtn');
+                if (addBtn && window.contentAddToCartHandler) {
+                    addBtn.removeEventListener('click', window.contentAddToCartHandler);
+                }
+
+                delete window.contentBackHandler;
+                delete window.contentAddToCartHandler;
+            }
+
+            // 先清理可能存在的旧内容
+            if (typeof window.cleanupContentPage === 'function') {
+                window.cleanupContentPage();
+            }
 
 
             // 产品数据库
             const productDatabase = {
                 '1': {
                     name: 'The Spectrum Console',
-                    year: '1982-2014',
+                    year: '1982-2024',
                     price: '¥1450',
-                    category: 'Retro Gaming Console',
+                    category: 'Game Console',
                     mainImage: 'images/merch/1.jpg',
                     description: `
                         <img src="images/merch/details/default-header.png">
@@ -292,9 +342,9 @@
                 },
                 '2': {
                     name: 'Atari 2600+ Console & Joystick',
-                    year: '1977-2013',
+                    year: '1977-2023',
                     price: '¥1580',
-                    category: 'Retro Gaming Console',
+                    category: 'Game Console',
                     mainImage: 'images/merch/2.jpg',
                     description: `
                     <img src="images/merch/details/default-header.png">
@@ -310,26 +360,25 @@
                 },
                 '3': {
                     name: 'Atari 7800+ Console',
-                    year: '1986-2014',
+                    year: '1986-2024',
                     price: '¥1450',
-                    category: 'Retro Gaming Console',
+                    category: 'Game Console',
                     mainImage: 'images/merch/3.jpg',
                     description: `
                     <img src="images/merch/details/default-header.png">
                         <img src="images/merch/details/3-1.avif" alt="Detail">
                         <img src="images/merch/details/3-2.avif" alt="Detail">
-                        <img src="images/merch/details/3-3.avif" alt="Detail">
-                        <img src="images/merch/details/3-4.webp" alt="Detail">
+                        <img src="images/merch/details/3-3.webp" alt="Detail">
+                        <img src="images/merch/details/3-4.avif" alt="Detail">
                         <img src="images/merch/details/3-5.webp" alt="Detail">
-                        <img src="images/merch/details/3-6.webp" alt="Detail">
-                        <img src="images/merch/details/3-7.jpg" alt="Detail">
+                        <img src="images/merch/details/3-6.jpg" alt="Detail">
                     `
                 },
-                '4':{
+                '4': {
                     name: 'Atari THE400 MINI Console & CXStick',
-                    year: '1979-2014',
+                    year: '1979-2024',
                     price: '¥889',
-                    category: 'Retro Gaming Console',
+                    category: 'Game Console',
                     mainImage: 'images/merch/4.avif',
                     description: `
                     <img src="images/merch/details/default-header.png">
@@ -341,54 +390,211 @@
                         <img src="images/merch/details/4-6.webp" alt="Detail">
                         <img src="images/merch/details/4-7.avif" alt="Detail">
                     `
+                },
+                '5': {
+                    name: 'Atari 7800 Game Cartridges',
+                    year: '1980-2025',
+                    price: '¥480',
+                    category: 'Game Cartridge',
+                    mainImage: 'images/merch/5.avif',
+                    variants: {
+            'a': {
+                name: 'Asteroids Deluxe',
+                image: 'images/merch/details/5-a.png',
+                description: '行星游戏'
+            },
+            'b': {
+                name: 'SPACE DUEL', 
+                image: 'images/merch/details/5-b.png',
+                description: '太空大战'
+            },
+            'c': {
+                name: 'BERSERK',
+                image: 'images/merch/details/5-c.png',
+                description: '狂暴'
+            },
+            'd': {
+                name: 'FRENZY',
+                image: 'images/merch/details/5-d.png',
+                description: '狂乱'
+            },
+            'e': {
+                name: 'CRYSTAL QUEST',
+                image: 'images/merch/details/5-e.png',
+                description: '水晶之旅'
+            },
+            'f': {
+                name: 'DARK CHAMBERS',
+                image: 'images/merch/details/5-f.png',
+                description: '暗室'
+            },
+            'g': {
+                name: 'Tiger Heli',
+                image: 'images/merch/details/5-g.png',
+                description: '猛虎直升机'
+            },
+            'h': {
+                name: 'COUNTERMEASURE 2',
+                image: 'images/merch/details/5-h.png',
+                description: '对策2'
+            },
+            'i': {
+                name: 'SUPER CIRCUS',
+                image: 'images/merch/details/5-i.png',
+                description: '超级马戏团'
+            },
+        },
+
+                    description: `
+                    <img src="images/merch/details/default-header.png">
+                    <img src="images/merch/details/5-1.avif" alt="Detail">
+<img src="images/merch/details/5-2.avif" alt="Detail">
+<img src="images/merch/details/5-3.avif" alt="Detail">
+<img src="images/merch/details/5-4.avif" alt="Detail">
+<img src="images/merch/details/5-5.avif" alt="Detail">
+<img src="images/merch/details/5-6.avif" alt="Detail">
+<img src="images/merch/details/5-7.avif" alt="Detail">
+<img src="images/merch/details/5-8.avif" alt="Detail">
+<img src="images/merch/details/5-9.avif" alt="Detail">
+<img src="images/merch/details/5-10.avif" alt="Detail">
+<img src="images/merch/details/5-11.avif" alt="Detail">
+<img src="images/merch/details/5-12.avif" alt="Detail">
+<img src="images/merch/details/5-13.avif" alt="Detail">
+<img src="images/merch/details/5-14.avif" alt="Detail">
+<img src="images/merch/details/5-15.avif" alt="Detail">
+<img src="images/merch/details/5-16.avif" alt="Detail">
+<img src="images/merch/details/5-17.avif" alt="Detail">
+<img src="images/merch/details/5-18.avif" alt="Detail">
+<img src="images/merch/details/5-19.avif" alt="Detail">
+<img src="images/merch/details/5-20.avif" alt="Detail">
+                    `
                 }
             };
+
+            
+            function renderGameSelector(product, productId) {
+    // 只为产品5添加游戏选择器
+    if (productId !== '5' || !product.variants) {
+        return;
+    }
+    
+    // 在价格和库存信息之间插入游戏选择器
+    const priceElement = document.querySelector('.product-price');
+    const stockInfo = document.querySelector('.stock-info');
+    
+    if (priceElement && stockInfo) {
+        const selectorHTML = `
+       
+                <div class="game-options">
+                    ${Object.entries(product.variants).map(([key, variant]) => `
+                        <div class="game-option" data-variant="${key}">
+                            <div class="game-name">${variant.name}</div>
+                            <div class="game-desc">${variant.description}</div>
+                        </div>
+                    `).join('')}
+                </div>
+          
+        `;
         
+        // 插入选择器
+        stockInfo.insertAdjacentHTML('beforebegin', selectorHTML);
+        
+        // 绑定选择事件
+        bindGameSelectionEvents(product);
+    }
+}
+
+// 3. 添加游戏选择事件处理
+function bindGameSelectionEvents(product) {
+    const gameOptions = document.querySelectorAll('.game-option');
+    const mainImage = document.getElementById('mainImage');
+    const selectedInfo = document.querySelector('.selected-game-info');
+    const selectedNameEl = document.getElementById('selectedGameName');
+    
+    gameOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // 移除其他选中状态
+            gameOptions.forEach(opt => opt.classList.remove('selected'));
+            
+            // 添加选中状态
+            this.classList.add('selected');
+            
+            // 获取变体信息
+            const variantKey = this.dataset.variant;
+            const variant = product.variants[variantKey];
+            
+            // 更新主图
+            if (mainImage && variant.image) {
+                mainImage.src = variant.image;
+                mainImage.alt = variant.name;
+            }
+            
+            // 显示选中信息
+            if (selectedInfo && selectedNameEl) {
+                selectedInfo.style.display = 'block';
+                selectedNameEl.textContent = variant.name;
+            }
+            
+            // 存储选中的游戏到当前产品信息
+            window.currentProduct.selectedVariant = {
+                key: variantKey,
+                ...variant
+            };
+        });
+    });
+    
+    // 默认选中第一个
+    if (gameOptions.length > 0) {
+        gameOptions[0].click();
+    }
+}
+
+
             // 加载产品信息
             function loadProduct() {
                 console.log('Content page: Loading product information...');
-                
+
                 let productId = null;
                 let productData = null;
-                
+
                 // 尝试从 sessionStorage 获取产品数据
                 try {
                     const pendingData = sessionStorage.getItem('pendingProduct');
                     console.log('SessionStorage pendingProduct:', pendingData);
-                    
+
                     if (pendingData) {
                         productData = JSON.parse(pendingData);
                         productId = productData.id;
                         console.log('Got product from sessionStorage:', productId, productData);
-                        
+
                         // 清除已使用的数据
                         sessionStorage.removeItem('pendingProduct');
                     }
                 } catch (e) {
                     console.error('Failed to parse pending product:', e);
                 }
-                
+
                 // 如果没有找到产品ID，使用默认值
                 if (!productId) {
                     console.warn('No product ID found, defaulting to product 1');
                     productId = '1';
                 }
-                
+
                 // 从数据库获取完整产品信息
                 const product = productDatabase[productId];
-                
+
                 if (!product) {
                     console.error('Product not found in database:', productId);
                     showError();
                     return;
                 }
-                
+
                 console.log('Loading product from database:', product.name);
-                
+
                 // 更新页面内容
                 updatePageContent(product, productId);
             }
-            
+
             // 更新页面内容
             function updatePageContent(product, productId) {
                 // 更新主图
@@ -397,7 +603,7 @@
                     mainImage.src = product.mainImage || `images/merch/${productId}.jpg`;
                     mainImage.alt = product.name;
                 }
-                
+
                 // 更新产品信息
                 const elements = {
                     'productName': product.name,
@@ -406,7 +612,7 @@
                     'productCategory': product.category,
                     'productDetails': product.description
                 };
-                
+
                 for (const [id, content] of Object.entries(elements)) {
                     const element = document.getElementById(id);
                     if (element) {
@@ -417,236 +623,247 @@
                         }
                     }
                 }
-                
+
                 // 更新页面标题
                 document.title = `${product.name} - Product Details`;
-                
+
                 // 存储当前产品信息供其他功能使用
                 window.currentProduct = {
                     ...product,
                     id: productId
                 };
-                
+             
+                renderGameSelector(product, productId);
+
                 console.log('Product loaded successfully:', product.name);
             }
-            
+
             // 显示错误信息
             function showError() {
                 const nameEl = document.getElementById('productName');
                 const detailsEl = document.getElementById('productDetails');
-                
+
                 if (nameEl) nameEl.textContent = 'Product Not Found';
                 if (detailsEl) detailsEl.innerHTML = '<p>Sorry, this product could not be found.</p>';
             }
-            
+
             // 初始化
             function initContentPage() {
                 console.log('Initializing content page...');
                 loadProduct();
-                
+
                 // 绑定返回按钮
                 const backBtn = document.querySelector('.back-btn');
                 if (backBtn) {
-                    backBtn.addEventListener('click', function(e) {
+                    backBtn.addEventListener('click', function (e) {
                         e.preventDefault();
                         if (typeof window.loadPage === 'function') {
                             window.loadPage('merch');
                         }
                     });
                 }
-                
+
                 // 绑定添加到购物车按钮
                 const addBtn = document.getElementById('addToCartBtn');
                 if (addBtn) {
                     addBtn.addEventListener('click', handleAddToCart);
                 }
             }
-            
+
             // 添加到购物车处理函数
             async function handleAddToCart() {
-    try {
-        if (!window.currentProduct) {
-            alert('产品信息未加载');
-            return;
-        }
-
-        const product = window.currentProduct;
-        console.log('Adding console product to cart:', product);
-
-        // 检查用户登录状态
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-            alert('请先登录');
-            if (typeof window.loadPage === 'function') {
-                window.loadPage('login');
-            }
-            return;
-        }
-
-        // 准备商品数据
-        const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
-        
-        try {
-            // 先检查购物车中是否已有此产品
-            const { data: existingItems, error: fetchError } = await supabase
-                .from('cart_items')
-                .select('*')
-                .eq('user_id', user.id)
-                .eq('type', `console-${product.id}`);
-
-            if (fetchError) {
-                console.error('Error checking existing items:', fetchError);
-            }
-
-            if (existingItems && existingItems.length > 0) {
-                // 产品已存在，更新数量
-                const existingItem = existingItems[0];
-                const currentQty = existingItem.quantity || 1;
-                const newQty = currentQty + 1;
-                
-                const { data, error } = await supabase
-                    .from('cart_items')
-                    .update({
-                        quantity: newQty,
-                        total_price: priceNumber * newQty,
-                        sizes: { 'default': newQty }, // 更新 sizes 字段
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('id', existingItem.id)
-                    .select()
-                    .single();
-
-                if (error) {
-                    console.error('Update error:', error);
-                    throw error;
-                }
-                
-                console.log('Updated existing item:', data);
-                showSuccessMessage('数量已更新');
-                
-            } else {
-                // 添加新产品到购物车
-                const cartItemData = {
-                    user_id: user.id,
-                    draft_id: null, // 明确设置为 null
-                    type: `console-${product.id}`, // 用于识别产品类型
-                    quantity: 1,
-                    sizes: { 'default': 1 }, // CartManager 需要这个字段
-                    price: priceNumber,
-                    total_price: priceNumber,
-                    // 在 item_data 或 metadata 字段存储产品信息（如果表中有这个字段）
-                    item_data: {
-                        productId: product.id,
-                        productName: product.name,
-                        productYear: product.year,
-                        productCategory: product.category,
-                        productImage: product.mainImage || `images/merch/${product.id}.jpg`,
-                        productType: 'retro-console'
-                    },
-                    added_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString()
-                };
-
-                // 尝试插入
-                const { data, error } = await supabase
-                    .from('cart_items')
-                    .insert(cartItemData)
-                    .select()
-                    .single();
-
-                if (error) {
-                    console.error('Insert error:', error);
-                    
-                    // 如果 item_data 字段不存在，尝试不包含它
-                    if (error.message && error.message.includes('item_data')) {
-                        console.log('Retrying without item_data field...');
-                        
-                        delete cartItemData.item_data;
-                        
-                        const { data: retryData, error: retryError } = await supabase
-                            .from('cart_items')
-                            .insert(cartItemData)
-                            .select()
-                            .single();
-                        
-                        if (retryError) {
-                            throw retryError;
-                        }
-                        
-                        console.log('Added to cart (without item_data):', retryData);
-                        
-                        // 将产品信息存储到 localStorage 作为补充
-                        storeProductInfoLocally(product.id, product);
-                    } else {
-                        throw error;
+                try {
+                    if (!window.currentProduct) {
+                        alert('产品信息未加载');
+                        return;
                     }
-                } else {
-                    console.log('Added to cart:', data);
-                }
-                
-                showSuccessMessage('已添加到购物车');
-            }
 
-            // 更新购物车徽章
-            if (window.CartManager && window.CartManager.updateCartBadge) {
-                await window.CartManager.updateCartBadge();
-            }
+                    const product = window.currentProduct;
+                    console.log('Adding console product to cart:', product);
 
-        } catch (error) {
-            console.error('Database operation failed:', error);
-            
-            // 备用方案：本地存储
-            if (confirm('添加到购物车失败。是否使用临时购物车？')) {
-                useLocalStorageCart(product);
-            }
-        }
+                    // 检查用户登录状态
+                    const { data: { user } } = await supabase.auth.getUser();
+                    if (!user) {
+                        alert('请先登录');
+                        if (typeof window.loadPage === 'function') {
+                            window.loadPage('login');
+                        }
+                        return;
+                    }
 
-    } catch (error) {
-        console.error('Add to cart failed:', error);
-        alert('操作失败，请重试');
-    }
-}
+                    // 准备商品数据
+                    const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
 
+                    try {
+                        // 先检查购物车中是否已有此产品
+                        const { data: existingItems, error: fetchError } = await supabase
+                            .from('cart_items')
+                            .select('*')
+                            .eq('user_id', user.id)
+                            .eq('type', `console-${product.id}`);
 
-// 显示成功消息
-function showSuccessMessage() {
-    const btn = document.getElementById('addToCartBtn');
-    if (btn) {
-        const originalText = btn.textContent;
-        const originalBg = btn.style.backgroundColor || 'black';
-        
-        btn.textContent = '✓ 已添加到购物车';
-        btn.disabled = true;
+                        if (fetchError) {
+                            console.error('Error checking existing items:', fetchError);
+                        }
 
-        setTimeout(() => {
-            btn.textContent = originalText;
-            btn.style.backgroundColor = originalBg;
-            btn.disabled = false;
-        }, 2000);
-    }
+                        if (existingItems && existingItems.length > 0) {
+                            // 产品已存在，更新数量
+                            const existingItem = existingItems[0];
+                            const currentQty = existingItem.quantity || 1;
+                            const newQty = currentQty + 1;
 
-    // 显示购物车添加效果
-    if (window.CartManager && window.CartManager.showCartAddedEffect) {
-        window.CartManager.showCartAddedEffect();
-    }
+                            const { data, error } = await supabase
+                                .from('cart_items')
+                                .update({
+                                    quantity: newQty,
+                                    total_price: priceNumber * newQty,
+                                    sizes: { 'default': newQty }, // 更新 sizes 字段
+                                    updated_at: new Date().toISOString()
+                                })
+                                .eq('id', existingItem.id)
+                                .select()
+                                .single();
+
+                            if (error) {
+                                console.error('Update error:', error);
+                                throw error;
+                            }
+
+                            console.log('Updated existing item:', data);
+                            showSuccessMessage('数量已更新');
+
+                        } else {
+                            // 添加新产品到购物车
+
+                            const selectedVariant = window.currentProduct.selectedVariant;
+    const variantSuffix = selectedVariant ? `-${selectedVariant.key}` : '';
+    const variantName = selectedVariant ? ` - ${selectedVariant.name}` : '';
     
-    // 更新购物车计数
-    if (window.CartManager && window.CartManager.updateCartCount) {
-        window.CartManager.updateCartCount();
-    }
-}
+
+    const cartItemData = {
+        user_id: user.id,
+        draft_id: null,
+        type: `console-${product.id}${variantSuffix}`, // 包含变体信息的类型
+        quantity: 1,
+        sizes: { 'default': 1 },
+        price: priceNumber,
+        total_price: priceNumber,
+        item_data: {
+            productId: product.id,
+            productName: product.name + variantName, // 包含游戏名称
+            productYear: product.year,
+            productCategory: product.category,
+            productImage: selectedVariant?.image || product.mainImage || `images/merch/${product.id}.jpg`,
+            productType: 'retro-console',
+            // 新增变体信息
+            variantKey: selectedVariant?.key,
+            variantName: selectedVariant?.name,
+            variantDescription: selectedVariant?.description
+        },
+        added_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+    };
+
+                            // 尝试插入
+                            const { data, error } = await supabase
+                                .from('cart_items')
+                                .insert(cartItemData)
+                                .select()
+                                .single();
+
+                            if (error) {
+                                console.error('Insert error:', error);
+
+                                // 如果 item_data 字段不存在，尝试不包含它
+                                if (error.message && error.message.includes('item_data')) {
+                                    console.log('Retrying without item_data field...');
+
+                                    delete cartItemData.item_data;
+
+                                    const { data: retryData, error: retryError } = await supabase
+                                        .from('cart_items')
+                                        .insert(cartItemData)
+                                        .select()
+                                        .single();
+
+                                    if (retryError) {
+                                        throw retryError;
+                                    }
+
+                                    console.log('Added to cart (without item_data):', retryData);
+
+                                    // 将产品信息存储到 localStorage 作为补充
+                                    storeProductInfoLocally(product.id, product);
+                                } else {
+                                    throw error;
+                                }
+                            } else {
+                                console.log('Added to cart:', data);
+                            }
+
+                            showSuccessMessage('Added to cart');
+                        }
+
+                        // 更新购物车徽章
+                        if (window.CartManager && window.CartManager.updateCartBadge) {
+                            await window.CartManager.updateCartBadge();
+                        }
+
+                    } catch (error) {
+                        console.error('Database operation failed:', error);
+
+                        // 备用方案：本地存储
+                        if (confirm('添加到购物车失败。是否使用临时购物车？')) {
+                            useLocalStorageCart(product);
+                        }
+                    }
+
+                } catch (error) {
+                    console.error('Add to cart failed:', error);
+                    alert('操作失败，请重试');
+                }
+            }
+
+
+            // 显示成功消息
+            function showSuccessMessage() {
+                const btn = document.getElementById('addToCartBtn');
+                if (btn) {
+                    const originalText = btn.textContent;
+                    const originalBg = btn.style.backgroundColor || 'black';
+
+                    btn.textContent = '✓ Added to cart';
+                    btn.disabled = true;
+
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.style.backgroundColor = originalBg;
+                        btn.disabled = false;
+                    }, 2000);
+                }
+
+                // 显示购物车添加效果
+                if (window.CartManager && window.CartManager.showCartAddedEffect) {
+                    window.CartManager.showCartAddedEffect();
+                }
+
+                // 更新购物车计数
+                if (window.CartManager && window.CartManager.updateCartCount) {
+                    window.CartManager.updateCartCount();
+                }
+            }
 
 
 
 
-            
+
             // 页面加载时初始化
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', initContentPage);
             } else {
                 initContentPage();
             }
-            
+
             // SPA导航后重新初始化
             window.addEventListener('contentPageLoaded', initContentPage);
-        })();</script><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.8b54376f466bff1ed26f.js"></script><script defer="defer" src="/js/33.adf6a4d8e3c407490e15.js"></script><script defer="defer" src="/js/798.b0cf1e47f6c8f7e444c1.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script></body>
+        })();</script><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.8b54376f466bff1ed26f.js"></script><script defer="defer" src="/js/33.24c50900233ef28128f0.js"></script><script defer="defer" src="/js/798.b0cf1e47f6c8f7e444c1.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script></body>

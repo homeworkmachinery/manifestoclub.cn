@@ -202,7 +202,23 @@
     .action-btn:disabled {
         opacity: 0.5;
         cursor: not-allowed;
-    }</style><div class="gallery-container"><div class="gallery-header"><h1>DOODLE GALLERY</h1><p>Community SVG and remix-friendly artwork</p></div><div class="gallery-filter"><button class="filter-btn active" data-filter="all">ALL</button> <button class="filter-btn" data-filter="curated">CURATED</button> <button class="filter-btn" data-filter="popular">POPULAR</button> <button class="filter-btn" data-filter="mine">MY WORKS</button></div><div id="galleryGrid" class="gallery-grid"><div class="loading">Loading gallery...</div></div></div><div id="galleryModal" class="gallery-modal"><div class="modal-content"><span class="modal-close" onclick="closeGalleryModal()">&times;</span> <img id="modalImage" class="modal-image" src="" alt=""><div id="modalInfo" style="margin-top: 20px; text-align: center;"></div></div></div><script>// Gallery页面初始化
+    }
+
+
+    @media(max-width:899px) {
+
+
+.gallery-grid {
+   
+    grid-template-columns: repeat(2,  1fr);
+    
+    gap: 10px;
+
+}
+
+
+
+}</style><div class="gallery-container"><div class="gallery-header"><h1>DOODLE GALLERY</h1><p>Community SVG and remix-friendly artwork</p></div><div class="gallery-filter"><button class="filter-btn active" data-filter="all">ALL</button> <button class="filter-btn" data-filter="curated">CURATED</button> <button class="filter-btn" data-filter="popular">POPULAR</button> <button class="filter-btn" data-filter="mine">MY WORKS</button></div><div id="galleryGrid" class="gallery-grid"><div class="loading">Loading gallery...</div></div></div><div id="galleryModal" class="gallery-modal"><div class="modal-content"><span class="modal-close" onclick="closeGalleryModal()">&times;</span> <img id="modalImage" class="modal-image" src="" alt=""><div id="modalInfo" style="margin-top: 20px; text-align: center;"></div></div></div><script>// Gallery页面初始化
     (function () {
         console.log('Gallery页面脚本执行');
 
@@ -814,4 +830,4 @@ window.deleteGalleryItem = deleteGalleryItem;
         console.error('删除过程出错:', error);
         alert('删除失败');
     }
-}</script><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.8b54376f466bff1ed26f.js"></script><script defer="defer" src="/js/33.adf6a4d8e3c407490e15.js"></script><script defer="defer" src="/js/798.b0cf1e47f6c8f7e444c1.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script>
+}</script><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.8b54376f466bff1ed26f.js"></script><script defer="defer" src="/js/33.24c50900233ef28128f0.js"></script><script defer="defer" src="/js/798.b0cf1e47f6c8f7e444c1.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script>

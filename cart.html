@@ -277,4 +277,21 @@
         .cart-actions {
             flex-direction: column;
         }
-    }</style><div class="cart-container"><div class="cart-header"><h1>SHOPPING CART</h1></div><div id="cartContent"></div></div><div class="cart-summary" id="cartSummary"></div><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.8b54376f466bff1ed26f.js"></script><script defer="defer" src="/js/33.adf6a4d8e3c407490e15.js"></script><script defer="defer" src="/js/798.b0cf1e47f6c8f7e444c1.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script><script defer="defer" src="/js/page-cart.404e1fec5e9fa0d937ce.js"></script>
+    }
+
+
+/* 数量控制器测试样式 */
+.cart-item[data-product-type="single"] .cart-item-quantity {
+    display: flex;
+    justify-content: flex-end; /* 整个容器内容靠右 */
+    align-items: center;
+}
+
+.cart-item[data-product-type="single"] .quantity-controls {
+    display: inline-flex !important; /* 使用 inline-flex 让它只占用需要的宽度 */
+    align-items: center;
+    border: 2px solid black;
+    background: white;
+    width: auto; /* 不要拉伸 */
+    flex-shrink: 0; /* 防止被压缩 */
+}</style><div class="cart-container"><div class="cart-header"><h1>SHOPPING CART</h1></div><div id="cartContent"></div></div><div class="cart-summary" id="cartSummary"></div><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.8b54376f466bff1ed26f.js"></script><script defer="defer" src="/js/33.24c50900233ef28128f0.js"></script><script defer="defer" src="/js/798.b0cf1e47f6c8f7e444c1.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script><script defer="defer" src="/js/page-cart.404e1fec5e9fa0d937ce.js"></script>

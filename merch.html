@@ -5,7 +5,8 @@
     }
 
     .machines,
-    .blanks-items {
+    .blanks-items,
+    .software-items {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 20px;
@@ -17,7 +18,8 @@
     }
 
     .machines li,
-    .blanks-items li {
+    .blanks-items li,
+    .software-items li {
         position: relative;
         border: 2px solid black;
         overflow: hidden;
@@ -28,7 +30,7 @@
 
 
 
-    .machines img {
+    .machines img, .software-items img {
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -54,6 +56,10 @@
         transform: translateY(0);
     }
 
+    .software-items li:hover .overlay {
+        opacity: 1;
+        transform: translateY(0);
+    }
     .title {
         font-size: 18px;
 
@@ -75,13 +81,16 @@
         font-size: 24px;
     }
 
-    .retro-console {
+    .retro-console, .software {
         border: 2px black solid;
         padding: 5px;
         margin-bottom: 20px;
         position: relative;
     }
 
+    .software {
+        margin-top: 20px;
+    }
     .blanks {
         border: 2px black solid;
         padding: 5px;
@@ -113,16 +122,23 @@
             margin-top: 10px;
         }
 
-        .machines {
+        .machines, .software-items {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(2,  1fr);
+            
             gap: 10px;
             list-style-type: none;
         }
 
+.software{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.blanks{
+    margin-bottom: 10px;
+}
 
-
-    }</style><link href="/css/styles.8d9e0d4240f2ef45001f.css" rel="stylesheet"><body><div class="blanks"><h1>BLANKS</h1><p>Start with our blanks and craft unique merch with our customizing system</p></div><div class="retro-console"><h1>RETRO CONSOLES</h1><p>The legends are back (And they’re sealed in-box)</p></div><div class="section"><ul class="machines"><li class="product-item" data-id="1" data-name="The Spectrum Console" data-year="1982-2014" data-price="¥1450"><img src="images/merch/1.jpg" alt="The Spectrum Console"><div class="overlay"><span class="title">The Spectrum Console<br>1982-2014</span> <span style="right: 0; position: absolute;">¥1450</span></div></li><li class="product-item" data-id="2" data-name="Atari 2600+ Console & Joystick" data-year="1977-2013" data-price="¥1580"><img src="images/merch/2.jpg" alt="Atari 2600+ Console & Joystick"><div class="overlay"><span class="title">Atari 2600+ Console & Joystick<br>1977-2013</span> <span style="right: 0; position: absolute;">¥1580</span></div></li><li class="product-item" data-id="3" data-name="Atari 7800+ Console" data-year="1986-2014" data-price="¥1450"><img src="images/merch/3.jpg" alt="Atari 7800+ Console"><div class="overlay"><span class="title">Atari 7800+ Console<br>1986-2014</span> <span style="right: 0; position: absolute;">¥1450</span></div></li><li class="product-item" data-id="4"><img src="images/merch/4.avif"><div class="overlay"><span class="title">Atari THE400 MINI Console & CXStick<br>1979-2014</span> <span style="right: 0; position: absolute;">¥899</span></div></li></ul></div><div class="taobao"><p>You can also visit <a href="https://shop334779825.taobao.com/" target="_blank" style="text-decoration: underline;">Taobao</a> for your convenient purchase services</p></div><script>(function() {
+    }</style><link href="/css/styles.8d9e0d4240f2ef45001f.css" rel="stylesheet"><body><div class="blanks"><h1>BLANKS</h1><p>Start with our blanks and craft unique merch with our customizing system</p></div><div class="retro-console"><h1>RETRO CONSOLES</h1><p>The legends are back (And they’re sealed in-box)</p></div><div class="section"><ul class="machines"><li class="product-item" data-id="1" data-name="The Spectrum Console" data-year="1982-2014" data-price="¥1450"><img src="images/merch/1.jpg" alt="The Spectrum Console"><div class="overlay"><span class="title">The Spectrum Console<br>1982-2024</span> <span style="right: 0; position: absolute;">¥1450</span></div></li><li class="product-item" data-id="2" data-name="Atari 2600+ Console & Joystick" data-year="1977-2013" data-price="¥1580"><img src="images/merch/2.jpg" alt="Atari 2600+ Console & Joystick"><div class="overlay"><span class="title">Atari 2600+ Console & Joystick<br>1977-2023</span> <span style="right: 0; position: absolute;">¥1580</span></div></li><li class="product-item" data-id="3" data-name="Atari 7800+ Console" data-year="1986-2014" data-price="¥1450"><img src="images/merch/3.jpg" alt="Atari 7800+ Console"><div class="overlay"><span class="title">Atari 7800+ Console<br>1986-2024</span> <span style="right: 0; position: absolute;">¥1450</span></div></li><li class="product-item" data-id="4"><img src="images/merch/4.avif"><div class="overlay"><span class="title">Atari THE400 MINI Console & CXStick<br>1979-2024</span> <span style="right: 0; position: absolute;">¥899</span></div></li></ul></div><div class="software"><h1>SOFTWARES</h1><p>Game cartridges, discs and more</p></div><div class="section"><ul class="software-items"><li class="product-item" data-id="5" data-name="Atari 7800 Game Cartridges" data-year="1980-2025" data-price="¥480"><img src="images/merch/5.avif" alt="Atari Game Cartridges"><div class="overlay"><span class="title">Atari 2600+/7800+ Game Cartridges<br>1980-2025</span> <span style="right: 0; position: absolute;">¥480</span></div></li></ul></div><div class="taobao"><p>You can also visit <a href="https://shop334779825.taobao.com/" target="_blank" style="text-decoration: underline;">Taobao</a> for your convenient purchase services</p></div><script>(function() {
         console.log('[Merch] Page script starting at:', new Date().toISOString());
         
         // 使用唯一的命名空间避免冲突
@@ -133,7 +149,7 @@
             console.log('[Merch] Cleaning up...');
             
             // 移除所有可能的事件监听器
-            const containers = document.querySelectorAll('.machines, #machinesContainer');
+            const containers = document.querySelectorAll('.machines, .software-items, #machinesContainer');
             containers.forEach(container => {
                 // 克隆节点以移除所有事件监听器
                 const newContainer = container.cloneNode(true);
@@ -242,25 +258,36 @@
             
             // 使用 setTimeout 确保 DOM 完全就绪
             setTimeout(() => {
-                const container = document.querySelector('.machines') || 
-                               document.getElementById('machinesContainer');
-                
-                if (!container) {
-                    console.error('[Merch] Container not found');
-                    return;
-                }
-                
-                // 存储处理器引用
-                window[NAMESPACE] = { handleProductClick };
-                
-                // 使用捕获阶段，优先级最高
-                container.addEventListener('click', handleProductClick, true);
-                console.log('[Merch] Event listener attached');
-                
-                // 重置处理标志
-                isProcessing = false;
-            }, 100);
+        // 获取所有产品容器
+        const machinesContainer = document.querySelector('.machines');
+        const softwareContainer = document.querySelector('.software-items');
+        
+        if (!machinesContainer) {
+            console.error('[Merch] Machines container not found');
         }
+        
+        if (!softwareContainer) {
+            console.error('[Merch] Software container not found');
+        }
+        
+        // 存储处理器引用
+        window[NAMESPACE] = { handleProductClick };
+        
+        // 为两个容器都添加事件监听
+        if (machinesContainer) {
+            machinesContainer.addEventListener('click', handleProductClick, true);
+            console.log('[Merch] Event listener attached to machines');
+        }
+        
+        if (softwareContainer) {
+            softwareContainer.addEventListener('click', handleProductClick, true);
+            console.log('[Merch] Event listener attached to software');
+        }
+        
+        // 重置处理标志
+        isProcessing = false;
+    }, 100);
+}
         
         // 确保 DOM 加载完成后初始化
         if (document.readyState === 'loading') {
@@ -271,4 +298,4 @@
         
         // 调试信息
         console.log('[Merch] Script complete');
-    })();</script><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.8b54376f466bff1ed26f.js"></script><script defer="defer" src="/js/33.adf6a4d8e3c407490e15.js"></script><script defer="defer" src="/js/798.b0cf1e47f6c8f7e444c1.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script></body>
+    })();</script><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.8b54376f466bff1ed26f.js"></script><script defer="defer" src="/js/33.24c50900233ef28128f0.js"></script><script defer="defer" src="/js/798.b0cf1e47f6c8f7e444c1.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script></body>
