@@ -32,7 +32,6 @@
         justify-content: space-between;
         align-items: center;
         width: calc(100% - 40px);
-
         position: fixed;
         z-index: 1000;
         top: 100px;
@@ -289,10 +288,32 @@
 
 
 /* 响应式设计 */
-@media (max-width: 768px) {
+@media(max-width:899px) {
     .game-options {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr);
     }
+    .nav-header{
+        margin-top: -20px;
+        width: calc(100% - 20px);
+    }
+    .panel-left{
+        width: 100%;
+        margin-top: 55px;
+    }
+    .panel-right{
+        position: relative;
+        width: 100%;
+        right: 0px;
+        top: -10px;
+        padding:15px;
+    }
+.product-details{
+    width: 100%;
+        right: 0px;
+        top: 0px;
+        margin-top: 5px;
+        padding: 5px;
+}
 }</style><link href="/css/styles.8d9e0d4240f2ef45001f.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>PRODUCT DETAILS</h1><a data-page="merch" class="back-btn">← BACK TO SHOP</a></div><div class="panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-year" id="productYear">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info">✓ In Stock - Ready to Ship</div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button><div class="product-category"><div class="category-label">CATEGORY</div><span class="category-value" id="productCategory">Console</span></div></div><div class="product-details"><div class="details-content" id="productDetails"></div></div></div><script>(function () {
 
             function cleanupContentPage() {
