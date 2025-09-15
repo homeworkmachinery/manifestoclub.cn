@@ -101,20 +101,14 @@ margin-left: 10px;
         }
 
         async function loadPage(page) {
-            const content = document.getElementById("dynamic-content");
-            if (!content) return;
+    const content = document.getElementById("dynamic-content");
+    if (!content) return;
 
-            // 清理当前页面（如果有清理函数）
-            if (typeof window.cleanupCurrentPage === 'function') {
-                window.cleanupCurrentPage();
-            }
-
-            // 清理特定页面的清理函数
-              // 清理当前页面
+    // 清理当前页面（如果有清理函数）
     if (typeof window.cleanupCurrentPage === 'function') {
         window.cleanupCurrentPage();
     }
-    
+
     // 清理特定页面的清理函数
     if (window.currentPage === 'merch' && typeof window.cleanupMerchPage === 'function') {
         console.log('Cleaning up merch page before navigation');
@@ -130,112 +124,315 @@ margin-left: 10px;
         window.cleanupProfilePage();
     }
 
-            content.classList.add("fade-out");
+    // 关键修复：清理页面特定的脚本和状态
+    if (window.currentPage && window.currentPage !== page) {
+        cleanupPageScripts(window.currentPage);
+    }
 
-            try {
-                // 尝试获取 HTML 文件
-                const response = await fetch(`${page}.html`);
+    content.classList.add("fade-out");
 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                const html = await response.text();
-
-                // 解析 HTML
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-
-                // 处理样式 - 改进的样式管理
-                const styles = doc.querySelectorAll('style');
-                styles.forEach(styleEl => {
-                    // 移除之前页面的样式（避免冲突）
-                    const existingStyles = document.querySelectorAll(`style[data-page]`);
-                    existingStyles.forEach(existing => {
-                        // 只移除不同页面的样式，保留当前页面的
-                        if (existing.getAttribute('data-page') !== page) {
-                            existing.remove();
-                        }
-                    });
-
-                    // 检查是否已经存在当前页面的样式
-                    const existingStyle = document.querySelector(`style[data-page="${page}"]`);
-                    if (existingStyle) {
-                        existingStyle.remove();
-                    }
-
-                    // 创建新的样式元素
-                    const newStyle = document.createElement('style');
-                    newStyle.textContent = styleEl.textContent;
-                    newStyle.setAttribute('data-page', page);
-                    document.head.appendChild(newStyle);
-                });
-
-                // 更新页面内容
-                const pageContent = doc.body.innerHTML || html;
-                content.innerHTML = pageContent;
-
-                // 记录当前页面
-                window.currentPage = page;
-                await loadPageScript(`page-${page}.js`);
-                // 处理脚本
-                const scripts = content.querySelectorAll('script');
-                const scriptPromises = Array.from(scripts).map(script => {
-                    return new Promise((resolve, reject) => {
-                        if (script.src) {
-                            // 外部脚本
-                            const newScript = document.createElement('script');
-                            newScript.src = script.src;
-                            newScript.onload = resolve;
-                            newScript.onerror = () => {
-                                console.warn(`Failed to load script: ${script.src}`);
-                                resolve();
-                            };
-                            document.body.appendChild(newScript);
-                        } else {
-                            // 内联脚本
-                            try {
-                                eval(script.textContent);
-                                resolve();
-                            } catch (error) {
-                                console.error('Script execution error:', error);
-                                resolve();
-                            }
-                        }
-                    });
-                });
-
-                await Promise.all(scriptPromises);
-
-
-            } catch (error) {
-                console.error('页面加载失败:', error);
-                content.innerHTML = `<p>页面加载失败: ${error.message}</p>`;
-            } finally {
-                content.classList.remove("fade-out");
-                closeMobileMenu();
-            }
-
-            if (page === 'profile') {
-                setTimeout(() => {
-                    window.dispatchEvent(new CustomEvent('profilePageLoaded'));
-                }, 100);
-            }
-            if (page === 'gallery') {
-    setTimeout(() => {
-        if (typeof initGallery === 'function') {
-            initGallery();
+    try {
+        // 动态路径处理 - 兼容开发和生产环境
+        let htmlPath;
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            htmlPath = `/pages/${page}.html`; // 开发环境
         } else {
-            console.log('等待Gallery初始化函数...');
-            setTimeout(() => {
-                if (typeof initGallery === 'function') {
-                    initGallery();
-                }
-            }, 500);
+            htmlPath = `${page}.html`; // 生产环境
         }
-    }, 200);
+        
+        const response = await fetch(htmlPath);
+
+        if (!response.ok) {
+            // 如果第一种路径失败，尝试另一种
+            const fallbackPath = htmlPath.includes('/pages/') ? `${page}.html` : `/pages/${page}.html`;
+            const fallbackResponse = await fetch(fallbackPath);
+            
+            if (!fallbackResponse.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const html = await fallbackResponse.text();
+            await processPageContent(html, page, content);
+        } else {
+            const html = await response.text();
+            await processPageContent(html, page, content);
+        }
+
+    } catch (error) {
+        console.error('页面加载失败:', error);
+        content.innerHTML = `<p>页面加载失败: ${error.message}</p>`;
+    } finally {
+        content.classList.remove("fade-out");
+        closeMobileMenu();
+    }
+
+    // 特定页面的初始化
+    await handlePageSpecificInitialization(page);
 }
+
+
+async function processPageContent(html, page, content) {
+    // 解析 HTML
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    // 处理样式
+    handlePageStyles(doc, page);
+
+    // 更新页面内容
+    const pageContent = doc.body.innerHTML || html;
+    content.innerHTML = pageContent;
+
+    // 记录当前页面
+    window.currentPage = page;
+
+    // 关键修复：防止重复加载脚本
+    await loadPageScriptSafely(page);
+
+    // 处理内联脚本（防重复）
+    await handleInlineScripts(content, page);
+}
+
+async function loadPageScriptSafely(page) {
+    const scriptId = `page-script-${page}`;
+    
+    // 检查脚本是否已加载
+    if (window.loadedPageScripts && window.loadedPageScripts.includes(page)) {
+        console.log(`Script for page ${page} already loaded, skipping`);
+        return;
+    }
+
+    // 移除旧的脚本（如果存在）
+    const existingScript = document.getElementById(scriptId);
+    if (existingScript) {
+        existingScript.remove();
+    }
+
+    // 初始化已加载脚本跟踪
+    if (!window.loadedPageScripts) {
+        window.loadedPageScripts = [];
+    }
+
+    try {
+        // 动态路径处理
+        let scriptPath;
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            scriptPath = `/js/page-${page}.js`; // 开发环境
+        } else {
+            scriptPath = `page-${page}.js`; // 生产环境
         }
+
+        const response = await fetch(scriptPath);
+        
+        if (!response.ok) {
+            // 尝试备用路径
+            const fallbackPath = scriptPath.includes('/js/') ? `page-${page}.js` : `/js/page-${page}.js`;
+            const fallbackResponse = await fetch(fallbackPath);
+            
+            if (fallbackResponse.ok) {
+                const scriptContent = await fallbackResponse.text();
+                executePageScript(scriptContent, page, scriptId);
+            } else {
+                console.warn(`Page script not found: ${scriptPath}`);
+            }
+        } else {
+            const scriptContent = await response.text();
+            executePageScript(scriptContent, page, scriptId);
+        }
+        
+        // 标记为已加载
+        window.loadedPageScripts.push(page);
+        
+    } catch (error) {
+        console.warn(`Failed to load page script for ${page}:`, error);
+    }
+}
+
+function executePageScript(scriptContent, page, scriptId) {
+    try {
+        // 包装脚本以避免全局污染和重复执行
+        const wrappedScript = `
+(function() {
+    'use strict';
+    
+    // 防止重复执行
+    if (window.pageScriptExecuted_${page}) {
+        console.log('Page script ${page} already executed, skipping');
+        return;
+    }
+    
+    // 标记为已执行
+    window.pageScriptExecuted_${page} = true;
+    
+    // 原始脚本内容
+    ${scriptContent}
+})();
+        `;
+        
+        // 创建脚本元素
+        const script = document.createElement('script');
+        script.id = scriptId;
+        script.textContent = wrappedScript;
+        document.head.appendChild(script);
+        
+        console.log(`Page script loaded for: ${page}`);
+        
+    } catch (error) {
+        console.error(`Error executing script for page ${page}:`, error);
+    }
+}
+
+// 5. 处理内联脚本
+async function handleInlineScripts(content, page) {
+    const scripts = content.querySelectorAll('script');
+    
+    for (const script of scripts) {
+        try {
+            if (script.src) {
+                // 外部脚本 - 检查是否已加载
+                const scriptUrl = script.src;
+                const existingScript = document.querySelector(`script[src="${scriptUrl}"]`);
+                
+                if (!existingScript) {
+                    await loadExternalScript(scriptUrl);
+                }
+            } else if (script.textContent.trim()) {
+                // 内联脚本 - 防重复执行
+                const scriptHash = btoa(script.textContent).slice(0, 16);
+                const executedKey = `inline_script_${page}_${scriptHash}`;
+                
+                if (!window.executedInlineScripts) {
+                    window.executedInlineScripts = new Set();
+                }
+                
+                if (!window.executedInlineScripts.has(executedKey)) {
+                    eval(script.textContent);
+                    window.executedInlineScripts.add(executedKey);
+                }
+            }
+        } catch (error) {
+            console.error('Script execution error:', error);
+        }
+    }
+}
+
+// 6. 加载外部脚本的辅助函数
+function loadExternalScript(src) {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = () => {
+            console.warn(`Failed to load script: ${src}`);
+            resolve(); // 不阻塞其他脚本
+        };
+        document.head.appendChild(script);
+    });
+}
+
+// 7. 清理页面脚本的函数
+function cleanupPageScripts(page) {
+    // 移除页面特定的脚本
+    const pageScript = document.getElementById(`page-script-${page}`);
+    if (pageScript) {
+        pageScript.remove();
+    }
+    
+    // 重置执行状态
+    if (window.pageScriptExecuted) {
+        delete window[`pageScriptExecuted_${page}`];
+    }
+    
+    // 从已加载列表中移除
+    if (window.loadedPageScripts) {
+        const index = window.loadedPageScripts.indexOf(page);
+        if (index > -1) {
+            window.loadedPageScripts.splice(index, 1);
+        }
+    }
+    
+    // 清理transfer相关状态
+    if (page === 'content') {
+        // 重置Canvas页面的transfer状态
+        if (typeof window.isTransferring !== 'undefined') {
+            window.isTransferring = false;
+        }
+        if (typeof window.transferLock !== 'undefined') {
+            window.transferLock = false;
+        }
+    }
+}
+
+// 8. 处理样式的函数
+function handlePageStyles(doc, page) {
+    const styles = doc.querySelectorAll('style');
+    styles.forEach(styleEl => {
+        // 移除之前页面的样式（避免冲突）
+        const existingStyles = document.querySelectorAll(`style[data-page]`);
+        existingStyles.forEach(existing => {
+            if (existing.getAttribute('data-page') !== page) {
+                existing.remove();
+            }
+        });
+
+        // 检查是否已经存在当前页面的样式
+        const existingStyle = document.querySelector(`style[data-page="${page}"]`);
+        if (existingStyle) {
+            existingStyle.remove();
+        }
+
+        // 创建新的样式元素
+        const newStyle = document.createElement('style');
+        newStyle.textContent = styleEl.textContent;
+        newStyle.setAttribute('data-page', page);
+        document.head.appendChild(newStyle);
+    });
+}
+
+// 9. 特定页面初始化
+async function handlePageSpecificInitialization(page) {
+    if (page === 'profile') {
+        setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('profilePageLoaded'));
+        }, 100);
+    }
+    
+    if (page === 'gallery') {
+        setTimeout(() => {
+            if (typeof initGallery === 'function') {
+                initGallery();
+            } else {
+                console.log('等待Gallery初始化函数...');
+                setTimeout(() => {
+                    if (typeof initGallery === 'function') {
+                        initGallery();
+                    }
+                }, 500);
+            }
+        }, 200);
+    }
+    
+    // Content页面的特殊处理
+    if (page === 'content') {
+        // 确保Canvas相关的全局状态被重置
+        setTimeout(() => {
+            if (typeof window.isTransferring !== 'undefined') {
+                window.isTransferring = false;
+            }
+            if (typeof window.transferLock !== 'undefined') {
+                window.transferLock = false;
+            }
+        }, 100);
+    }
+}
+
+// 10. 页面卸载时的清理
+window.addEventListener('beforeunload', function() {
+    if (window.currentPage) {
+        cleanupPageScripts(window.currentPage);
+    }
+});
+
 
         function loadPageScript(jsFileName) {
     return new Promise((resolve, reject) => {
