@@ -317,14 +317,11 @@ function cleanupPageScripts(page) {
     }
     
     // 清理transfer相关状态
-    if (page === 'content') {
-        // 重置Canvas页面的transfer状态
-        if (typeof window.isTransferring !== 'undefined') {
-            window.isTransferring = false;
-        }
-        if (typeof window.transferLock !== 'undefined') {
-            window.transferLock = false;
-        }
+    if (page === 'home') {
+        window.contentPageLoaded = false;
+        window.canvasSectionInitialized = false;
+        window.isTransferring = false;
+        window.transferLock = false;
     }
 }
 
@@ -337,11 +334,7 @@ function cleanupPageScripts(page) {
                 }
 
                 const script = document.createElement('script');
-                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            script.src = `/js/${jsFileName}`;  // 开发环境
-        } else {
-            script.src = jsFileName;  // 生产环境
-        }
+                script.src = `/js/${jsFileName}`;  // 保持与 webpack 输出一致
 
 
                 script.setAttribute('data-page-script', jsFileName);
@@ -352,4 +345,4 @@ function cleanupPageScripts(page) {
                 };
                 document.body.appendChild(script);
             });
-        }</script><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.f4fc89ede5a6efcab4d1.js"></script><script defer="defer" src="/js/33.545769f2acdaaebe9ae3.js"></script><script defer="defer" src="/js/798.b0cf1e47f6c8f7e444c1.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script></body></html>
+        }</script><script defer="defer" src="/js/vendors.314e4d5535f69dab0237.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.bb0bc8eeb42d4f70fac9.js"></script><script defer="defer" src="/js/33.545769f2acdaaebe9ae3.js"></script><script defer="defer" src="/js/798.b0cf1e47f6c8f7e444c1.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script></body></html>
