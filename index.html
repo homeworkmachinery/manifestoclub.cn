@@ -100,7 +100,8 @@
             document.getElementById('mobileNav').style.display = 'none';
         }
 
-        window.pageLoadManager = {
+// 全局状态管理
+window.pageLoadManager = {
     loadingPages: new Set(),
     loadedPages: new Set(),
     pageStates: {},
@@ -213,19 +214,37 @@ async function loadPage(page) {
 
 // 获取页面HTML
 async function fetchPageHTML(page) {
+    // 构建正确的路径
     let htmlPath;
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        htmlPath = `/pages/${page}.html`;
-    } else {
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    if (isLocal) {
         htmlPath = `${page}.html`;
+    } else {
+        // 生产环境使用绝对路径或相对路径
+        const basePath = window.location.pathname.replace('/index.html', '').replace(/\/$/, '');
+        htmlPath = `${basePath}/${page}.html`;
     }
     
-    const response = await fetch(htmlPath);
-    if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
+    console.log(`Fetching HTML from: ${htmlPath}`);
     
-    return await response.text();
+    try {
+        const response = await fetch(htmlPath);
+        if (!response.ok) {
+            // 如果主路径失败，尝试备选路径
+            console.warn(`Primary path failed (${response.status}), trying alternative...`);
+            const altPath = `./${page}.html`;
+            const altResponse = await fetch(altPath);
+            if (!altResponse.ok) {
+                throw new Error(`Both paths failed. Primary: ${response.status}, Alternative: ${altResponse.status}`);
+            }
+            return await altResponse.text();
+        }
+        return await response.text();
+    } catch (error) {
+        console.error(`Failed to fetch ${htmlPath}:`, error);
+        throw error;
+    }
 }
 
 // 等待DOM稳定
@@ -432,7 +451,7 @@ async function handlePageSpecificInit(page) {
             }, 200);
             break;
             
-        case 'home':
+        case 'content':
             // 确保content页面的关键元素存在
             const checkContentElements = setInterval(() => {
                 const canvas = document.getElementById('canvas');
@@ -482,7 +501,7 @@ function cleanupPageScripts(page) {
     }
     
     // 清理页面特定状态
-    if (page === 'home') {
+    if (page === 'content') {
         // 重置transfer相关状态
         window.isTransferring = false;
         window.transferLock = false;
@@ -520,7 +539,18 @@ function loadPageScript(jsFileName) {
         }
 
         const script = document.createElement('script');
-        script.src = `/js/${jsFileName}`;
+        
+        // 修复脚本路径问题
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        
+        if (isLocal) {
+            script.src = `/js/${jsFileName}`;
+        } else {
+            // 生产环境路径修复
+            const basePath = window.location.pathname.replace('/index.html', '').replace(/\/$/, '');
+            script.src = `${basePath}/js/${jsFileName}`;
+        }
+        
         script.setAttribute('data-page-script', jsFileName);
         
         script.onload = () => {
@@ -529,12 +559,81 @@ function loadPageScript(jsFileName) {
         };
         
         script.onerror = () => {
-            console.warn(`⚠️ Failed to load: ${jsFileName}`);
-            resolve(); // 不阻止页面加载
+            console.warn(`⚠️ Failed to load: ${jsFileName}, trying alternative path...`);
+            
+            // 尝试备选路径
+            script.remove();
+            const altScript = document.createElement('script');
+            altScript.src = `./js/${jsFileName}`;
+            altScript.setAttribute('data-page-script', jsFileName);
+            
+            altScript.onload = () => {
+                console.log(`✅ Loaded script via alternative path: ${jsFileName}`);
+                resolve();
+            };
+            
+            altScript.onerror = () => {
+                console.error(`❌ Failed to load script from all paths: ${jsFileName}`);
+                resolve(); // 不阻止页面加载
+            };
+            
+            document.body.appendChild(altScript);
         };
         
         document.body.appendChild(script);
     });
+}
+
+// 页面初始化 - 自动加载home页面
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Page load manager initializing...');
+    
+    // 设置点击事件监听
+    document.addEventListener('click', function (e) {
+        const pageLink = e.target.closest('[data-page]');
+        if (pageLink) {
+            e.preventDefault();
+            const targetPage = pageLink.dataset.page;
+            console.log(`Navigation clicked: ${targetPage}`);
+            loadPage(targetPage);
+            return;
+        }
+    });
+
+    // 防止iOS双击缩放
+    document.addEventListener('gesturestart', function (e) {
+        e.preventDefault();
+    });
+
+    // 自动加载home页面
+    console.log('🏠 Auto-loading home page...');
+    loadPage('home').catch(error => {
+        console.error('❌ Failed to auto-load home page:', error);
+        
+        // 如果加载失败，显示错误信息和重试按钮
+        const content = document.getElementById("dynamic-content");
+        if (content) {
+            content.innerHTML = `
+                <div class="error-container" style="text-align: center; padding: 50px;">
+                    <h2>页面加载失败</h2>
+                    <p>无法加载首页内容</p>
+                    <p>错误信息: ${error.message}</p>
+                    <button onclick="loadPage('home')" style="padding: 10px 20px; margin: 10px; cursor: pointer;">
+                        重新加载首页
+                    </button>
+                    <br>
+                    <small>如果问题持续，请检查网络连接或联系技术支持</small>
+                </div>
+            `;
+        }
+    });
+});
+
+function closeMobileMenu() {
+    const mobileNav = document.getElementById('mobileNav');
+    if (mobileNav) {
+        mobileNav.style.display = 'none';
+    }
 }
 
 // 工具函数：检查DOM元素是否存在
@@ -564,4 +663,24 @@ function waitForElement(selector, timeout = 5000) {
             reject(new Error(`Element ${selector} not found within ${timeout}ms`));
         }, timeout);
     });
+}
+
+// 调试函数：检查页面资源加载状态
+function debugPageResources() {
+    console.log('🔍 Debugging page resources:');
+    console.log('- Current URL:', window.location.href);
+    console.log('- Base path:', window.location.pathname);
+    console.log('- Host:', window.location.hostname);
+    console.log('- Protocol:', window.location.protocol);
+    
+    // 检查动态内容容器
+    const content = document.getElementById("dynamic-content");
+    console.log('- Dynamic content container:', content ? '✅ Found' : '❌ Missing');
+    
+    // 检查导航按钮
+    const homeButton = document.querySelector('[data-page="home"]');
+    console.log('- Home button:', homeButton ? '✅ Found' : '❌ Missing');
+    
+    // 检查页面管理器状态
+    console.log('- Page load manager:', window.pageLoadManager ? '✅ Ready' : '❌ Missing');
 }</script><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.dbea81369c5124811a1a.js"></script><script defer="defer" src="/js/33.545769f2acdaaebe9ae3.js"></script><script defer="defer" src="/js/798.b0cf1e47f6c8f7e444c1.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script></body></html>
