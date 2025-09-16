@@ -100,85 +100,75 @@
             document.getElementById('mobileNav').style.display = 'none';
         }
 
-        async function loadPage(page) {
+        window.pageLoadManager = {
+    loadingPages: new Set(),
+    loadedPages: new Set(),
+    pageStates: {},
+    scriptRegistry: new Map(),
+    
+    // 检查页面是否正在加载
+    isPageLoading(page) {
+        return this.loadingPages.has(page);
+    },
+    
+    // 标记页面开始加载
+    startPageLoad(page) {
+        this.loadingPages.add(page);
+    },
+    
+    // 标记页面加载完成
+    finishPageLoad(page) {
+        this.loadingPages.delete(page);
+        this.loadedPages.add(page);
+    },
+    
+    // 重置页面状态
+    resetPage(page) {
+        this.loadingPages.delete(page);
+        this.loadedPages.delete(page);
+        delete this.pageStates[page];
+    }
+};
+
+async function loadPage(page) {
     const content = document.getElementById("dynamic-content");
-    if (!content) return;
-
-    // 清理当前页面（如果有清理函数）
-    if (typeof window.cleanupCurrentPage === 'function') {
-        window.cleanupCurrentPage();
+    if (!content) {
+        console.error('Dynamic content container not found');
+        return;
     }
 
-    // 清理特定页面的清理函数
-    if (window.currentPage === 'merch' && typeof window.cleanupMerchPage === 'function') {
-        console.log('Cleaning up merch page before navigation');
-        window.cleanupMerchPage();
-    }
-    
-    if (window.currentPage === 'content' && typeof window.cleanupContentPage === 'function') {
-        console.log('Cleaning up content page before navigation');
-        window.cleanupContentPage();
-    }
-    
-    if (window.currentPage === 'profile' && typeof window.cleanupProfilePage === 'function') {
-        window.cleanupProfilePage();
+    // 防止重复加载同一页面
+    if (window.pageLoadManager.isPageLoading(page)) {
+        console.log(`Page ${page} is already loading, skipping...`);
+        return;
     }
 
-    if (window.currentPage === 'home' && typeof window.cleanupHomePage === 'function') {
-        window.cleanupHomePage();
+    // 如果是同一页面且已完全加载，直接返回
+    if (window.currentPage === page && 
+        window.pageLoadManager.loadedPages.has(page) &&
+        window[`pageInitialized_${page}`]) {
+        console.log(`Page ${page} already loaded and initialized`);
+        return;
     }
-
-    if (window.currentPage && window.currentPage !== page) {
-        cleanupPageScripts(window.currentPage);
-    }
-
-    content.classList.add("fade-out");
 
     try {
-        // 尝试获取 HTML 文件
-        let htmlPath;
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            htmlPath = `/pages/${page}.html`; // 开发环境
-        } else {
-            htmlPath = `${page}.html`; // 生产环境
-        }
+        // 标记开始加载
+        window.pageLoadManager.startPageLoad(page);
+
+        // 清理当前页面
+        await performPageCleanup();
+
+        content.classList.add("fade-out");
+
+        // 获取HTML内容
+        const html = await fetchPageHTML(page);
         
-        const response = await fetch(htmlPath);
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const html = await response.text();
-
-        // 解析 HTML
+        // 解析HTML
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
 
-        // 处理样式 - 改进的样式管理
-        const styles = doc.querySelectorAll('style');
-        styles.forEach(styleEl => {
-            // 移除之前页面的样式（避免冲突）
-            const existingStyles = document.querySelectorAll(`style[data-page]`);
-            existingStyles.forEach(existing => {
-                // 只移除不同页面的样式，保留当前页面的
-                if (existing.getAttribute('data-page') !== page) {
-                    existing.remove();
-                }
-            });
-
-            // 检查是否已经存在当前页面的样式
-            const existingStyle = document.querySelector(`style[data-page="${page}"]`);
-            if (existingStyle) {
-                existingStyle.remove();
-            }
-
-            // 创建新的样式元素
-            const newStyle = document.createElement('style');
-            newStyle.textContent = styleEl.textContent;
-            newStyle.setAttribute('data-page', page);
-            document.head.appendChild(newStyle);
-        });
+        // 处理样式
+        await handlePageStyles(doc, page);
 
         // 更新页面内容
         const pageContent = doc.body.innerHTML || html;
@@ -187,114 +177,391 @@
         // 记录当前页面
         window.currentPage = page;
         
-        // 先加载页面脚本
+        // 等待DOM稳定
+        await waitForDOM();
+        
+        // 加载外部脚本
         await loadPageScript(`page-${page}.js`);
         
-        // ===== 关键修复：完全跳过内联脚本处理 =====
-        // 不处理任何内联脚本，只依赖外部的 page-*.js 文件
-        console.log(`Page ${page} loaded, skipping inline script processing`);
+        // 处理内联脚本（新的安全方式）
+        await handleInlineScriptsSafely(page, doc);
+
+        // 标记页面初始化完成
+        window[`pageInitialized_${page}`] = true;
+        window.pageLoadManager.finishPageLoad(page);
+
+        // 页面特定初始化
+        await handlePageSpecificInit(page);
+
+        console.log(`✅ Page ${page} loaded successfully`);
 
     } catch (error) {
-        console.error('页面加载失败:', error);
-        content.innerHTML = `<p>页面加载失败: ${error.message}</p>`;
+        console.error(`❌ Failed to load page ${page}:`, error);
+        content.innerHTML = `<div class="error-page">
+            <h2>页面加载失败</h2>
+            <p>错误信息: ${error.message}</p>
+            <button onclick="loadPage('${page}')">重新加载</button>
+        </div>`;
+        
+        // 清理加载状态
+        window.pageLoadManager.resetPage(page);
     } finally {
         content.classList.remove("fade-out");
         closeMobileMenu();
     }
+}
 
-    if (page === 'profile') {
-        setTimeout(() => {
-            window.dispatchEvent(new CustomEvent('profilePageLoaded'));
-        }, 100);
+// 获取页面HTML
+async function fetchPageHTML(page) {
+    let htmlPath;
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        htmlPath = `/pages/${page}.html`;
+    } else {
+        htmlPath = `${page}.html`;
     }
-    if (page === 'gallery') {
-        setTimeout(() => {
-            if (typeof initGallery === 'function') {
-                initGallery();
-            } else {
-                console.log('等待Gallery初始化函数...');
-                setTimeout(() => {
-                    if (typeof initGallery === 'function') {
-                        initGallery();
-                    }
-                }, 500);
-            }
-        }, 200);
+    
+    const response = await fetch(htmlPath);
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    return await response.text();
+}
+
+// 等待DOM稳定
+function waitForDOM() {
+    return new Promise(resolve => {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', resolve, { once: true });
+        } else {
+            // 额外等待一帧，确保DOM完全渲染
+            requestAnimationFrame(() => {
+                setTimeout(resolve, 50);
+            });
+        }
+    });
+}
+
+// 安全处理内联脚本
+async function handleInlineScriptsSafely(page, doc) {
+    const scripts = doc.querySelectorAll('script');
+    
+    // 先收集所有脚本内容
+    const scriptContents = Array.from(scripts).map((script, index) => ({
+        index,
+        src: script.src,
+        content: script.textContent?.trim(),
+        isInline: !script.src && script.textContent?.trim()
+    })).filter(s => s.isInline);
+
+    console.log(`Found ${scriptContents.length} inline scripts for page ${page}`);
+
+    // 检查关键函数是否已存在，如果存在则跳过相关脚本
+    const criticalFunctions = ['transferToTShirt', 'saveToDraft', 'initCanvasSection'];
+    const existingFunctions = criticalFunctions.filter(fn => typeof window[fn] === 'function');
+    
+    if (existingFunctions.length > 0) {
+        console.log(`Critical functions already exist: ${existingFunctions.join(', ')}`);
+        console.log(`Skipping inline script execution for page ${page}`);
+        return;
+    }
+
+    // 执行脚本（只在函数不存在时）
+    for (const scriptInfo of scriptContents) {
+        await executeScriptSafely(page, scriptInfo);
     }
 }
 
+// 安全执行单个脚本
+async function executeScriptSafely(page, scriptInfo) {
+    const scriptId = `${page}_script_${scriptInfo.index}`;
+    
+    // 检查是否已执行
+    if (window.pageLoadManager.scriptRegistry.has(scriptId)) {
+        console.log(`Script ${scriptId} already executed, skipping`);
+        return;
+    }
 
+    try {
+        console.log(`Executing script ${scriptId}`);
+        
+        // 创建安全的执行环境
+        const safeExecutor = new Function('page', 'scriptId', `
+            // 防止重复执行检查
+            if (window.pageLoadManager && window.pageLoadManager.scriptRegistry.has('${scriptId}')) {
+                console.log('Script already executed: ${scriptId}');
+                return;
+            }
+            
+            // DOM安全检查包装器
+            const originalGetElementById = document.getElementById;
+            document.getElementById = function(id) {
+                const element = originalGetElementById.call(document, id);
+                if (!element) {
+                    console.warn('Element not found:', id);
+                }
+                return element;
+            };
+            
+            // 执行原始脚本
+            try {
+                ${scriptInfo.content}
+            } catch (error) {
+                console.error('Script execution error:', error);
+                throw error;
+            } finally {
+                // 恢复原始方法
+                document.getElementById = originalGetElementById;
+            }
+        `);
+        
+        // 执行脚本
+        safeExecutor(page, scriptId);
+        
+        // 标记为已执行
+        window.pageLoadManager.scriptRegistry.set(scriptId, {
+            page,
+            executed: true,
+            timestamp: Date.now()
+        });
+        
+    } catch (error) {
+        console.error(`Failed to execute script ${scriptId}:`, error);
+        // 不要阻止页面加载，继续执行其他脚本
+    }
+}
 
+// 处理页面样式
+async function handlePageStyles(doc, page) {
+    const styles = doc.querySelectorAll('style');
+    
+    // 移除其他页面的样式
+    const existingStyles = document.querySelectorAll(`style[data-page]`);
+    existingStyles.forEach(existing => {
+        if (existing.getAttribute('data-page') !== page) {
+            existing.remove();
+        }
+    });
+
+    // 检查并添加当前页面样式
+    const existingStyle = document.querySelector(`style[data-page="${page}"]`);
+    if (existingStyle) {
+        existingStyle.remove();
+    }
+
+    styles.forEach(styleEl => {
+        const newStyle = document.createElement('style');
+        newStyle.textContent = styleEl.textContent;
+        newStyle.setAttribute('data-page', page);
+        document.head.appendChild(newStyle);
+    });
+}
+
+// 执行页面清理（重命名避免递归冲突）
+async function performPageCleanup() {
+    if (!window.currentPage) return;
+
+    const currentPageName = window.currentPage;
+    
+    // 安全调用通用清理函数（如果存在且不是当前函数）
+    if (typeof window.cleanupCurrentPage === 'function' && 
+        window.cleanupCurrentPage !== performPageCleanup) {
+        try {
+            console.log('Calling external cleanup function');
+            window.cleanupCurrentPage();
+        } catch (error) {
+            console.error('Error in external cleanup function:', error);
+        }
+    }
+
+    // 调用页面特定清理函数
+    const cleanupFunctions = {
+        'merch': 'cleanupMerchPage',
+        'content': 'cleanupContentPage', 
+        'profile': 'cleanupProfilePage',
+        'home': 'cleanupHomePage'
+    };
+
+    const cleanupFnName = cleanupFunctions[currentPageName];
+    if (cleanupFnName && typeof window[cleanupFnName] === 'function') {
+        console.log(`Cleaning up ${currentPageName} page`);
+        try {
+            window[cleanupFnName]();
+        } catch (error) {
+            console.error(`Error in cleanup function ${cleanupFnName}:`, error);
+        }
+    }
+
+    // 清理页面脚本和状态
+    cleanupPageScripts(currentPageName);
+    
+    // 重置页面管理器状态
+    window.pageLoadManager.resetPage(currentPageName);
+}
+
+// 页面特定初始化
+async function handlePageSpecificInit(page) {
+    // 等待一帧确保DOM完全ready
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    
+    switch(page) {
+        case 'profile':
+            setTimeout(() => {
+                if (document.getElementById('dynamic-content')) {
+                    window.dispatchEvent(new CustomEvent('profilePageLoaded'));
+                }
+            }, 100);
+            break;
+            
+        case 'gallery':
+            setTimeout(() => {
+                if (typeof initGallery === 'function') {
+                    initGallery();
+                } else {
+                    console.log('等待Gallery初始化函数...');
+                    const checkGallery = setInterval(() => {
+                        if (typeof initGallery === 'function') {
+                            clearInterval(checkGallery);
+                            initGallery();
+                        }
+                    }, 100);
+                    
+                    // 10秒后停止检查
+                    setTimeout(() => clearInterval(checkGallery), 10000);
+                }
+            }, 200);
+            break;
+            
+        case 'content':
+            // 确保content页面的关键元素存在
+            const checkContentElements = setInterval(() => {
+                const canvas = document.getElementById('canvas');
+                const tshirtContainer = document.getElementById('tshirtContainer');
+                
+                if (canvas && tshirtContainer) {
+                    clearInterval(checkContentElements);
+                    console.log('Content page elements ready');
+                }
+            }, 100);
+            
+            setTimeout(() => clearInterval(checkContentElements), 5000);
+            break;
+    }
+}
+
+// 改进的脚本清理
 function cleanupPageScripts(page) {
-    // 移除页面特定的脚本
+    if (!page) return;
+    
+    console.log(`🧹 Cleaning up scripts for page: ${page}`);
+    
+    // 移除页面脚本
     const pageScript = document.querySelector(`script[data-page-script="page-${page}.js"]`);
     if (pageScript) {
         pageScript.remove();
+        console.log(`Removed page script: page-${page}.js`);
     }
     
-    // 重置执行状态
-    if (window.pageScriptExecuted) {
-        delete window[`pageScriptExecuted_${page}`];
-    }
+    // 清理初始化状态
+    delete window[`pageInitialized_${page}`];
     
-    // 清理页面初始化状态
-    if (window[`pageInitialized_${page}`]) {
-        delete window[`pageInitialized_${page}`];
-    }
-    
-    // 清理内联脚本执行记录
-    if (window.executedInlineScripts) {
-        const scriptsToRemove = Array.from(window.executedInlineScripts).filter(scriptId => 
-            scriptId.startsWith(`${page}_inline_`)
-        );
-        scriptsToRemove.forEach(scriptId => {
-            window.executedInlineScripts.delete(scriptId);
+    // 清理脚本注册表中相关记录
+    if (window.pageLoadManager.scriptRegistry) {
+        const scriptsToRemove = [];
+        window.pageLoadManager.scriptRegistry.forEach((info, scriptId) => {
+            if (info.page === page) {
+                scriptsToRemove.push(scriptId);
+            }
         });
+        
+        scriptsToRemove.forEach(scriptId => {
+            window.pageLoadManager.scriptRegistry.delete(scriptId);
+        });
+        
+        console.log(`Cleaned ${scriptsToRemove.length} script registry entries`);
     }
     
-    // 从已加载列表中移除
-    if (window.loadedPageScripts) {
-        const index = window.loadedPageScripts.indexOf(page);
-        if (index > -1) {
-            window.loadedPageScripts.splice(index, 1);
-        }
-    }
-    
-    // 清理transfer相关状态
-    if (page === 'home') {
-        window.contentPageLoaded = false;
-        window.canvasSectionInitialized = false;
+    // 清理页面特定状态
+    if (page === 'content') {
+        // 重置transfer相关状态
         window.isTransferring = false;
         window.transferLock = false;
+        
+        // 清理可能的重复定义的函数
+        const criticalFunctions = ['transferToTShirt', 'saveToDraft', 'initCanvasSection'];
+        criticalFunctions.forEach(fn => {
+            if (typeof window[fn] === 'function') {
+                console.log(`Keeping critical function: ${fn}`);
+                // 不删除，但可以重置相关状态
+            }
+        });
     }
 }
 
-
+// 改进的外部脚本加载
 function loadPageScript(jsFileName) {
-    return new Promise((resolve, reject) => {
-        
-        // 强制防重复：检查函数是否已经存在
-        if (jsFileName === 'page-content.js' && typeof window.transferToTShirt === 'function') {
-            console.log('Content page functions already exist, skipping script load');
-            resolve();
-            return;
+    return new Promise((resolve) => {
+        // 检查关键函数是否已存在
+        if (jsFileName === 'page-content.js') {
+            const criticalFunctions = ['transferToTShirt', 'saveToDraft'];
+            const allExist = criticalFunctions.every(fn => typeof window[fn] === 'function');
+            
+            if (allExist) {
+                console.log('All critical functions exist, skipping script reload');
+                resolve();
+                return;
+            }
         }
         
+        // 移除现有脚本
         const existingScript = document.querySelector(`script[data-page-script="${jsFileName}"]`);
         if (existingScript) {
             existingScript.remove();
         }
 
         const script = document.createElement('script');
-        
-        script.src = `/js/${jsFileName}`; 
-
+        script.src = `/js/${jsFileName}`;
         script.setAttribute('data-page-script', jsFileName);
-        script.onload = resolve;
-        script.onerror = () => {
-            console.warn(`无法加载页面脚本: ${jsFileName}`);
-            resolve(); // 忽略失败防止阻断页面逻辑
+        
+        script.onload = () => {
+            console.log(`✅ Loaded external script: ${jsFileName}`);
+            resolve();
         };
+        
+        script.onerror = () => {
+            console.warn(`⚠️ Failed to load: ${jsFileName}`);
+            resolve(); // 不阻止页面加载
+        };
+        
         document.body.appendChild(script);
+    });
+}
+
+// 工具函数：检查DOM元素是否存在
+function waitForElement(selector, timeout = 5000) {
+    return new Promise((resolve, reject) => {
+        const element = document.querySelector(selector);
+        if (element) {
+            resolve(element);
+            return;
+        }
+        
+        const observer = new MutationObserver((mutations) => {
+            const element = document.querySelector(selector);
+            if (element) {
+                observer.disconnect();
+                resolve(element);
+            }
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+        
+        setTimeout(() => {
+            observer.disconnect();
+            reject(new Error(`Element ${selector} not found within ${timeout}ms`));
+        }, timeout);
     });
 }</script><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.dbea81369c5124811a1a.js"></script><script defer="defer" src="/js/33.545769f2acdaaebe9ae3.js"></script><script defer="defer" src="/js/798.b0cf1e47f6c8f7e444c1.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script></body></html>
