@@ -432,7 +432,7 @@ async function handlePageSpecificInit(page) {
             }, 200);
             break;
             
-        case 'content':
+        case 'home':
             // 确保content页面的关键元素存在
             const checkContentElements = setInterval(() => {
                 const canvas = document.getElementById('canvas');
@@ -482,7 +482,7 @@ function cleanupPageScripts(page) {
     }
     
     // 清理页面特定状态
-    if (page === 'content') {
+    if (page === 'home') {
         // 重置transfer相关状态
         window.isTransferring = false;
         window.transferLock = false;
