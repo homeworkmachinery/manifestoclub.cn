@@ -190,68 +190,9 @@
         // 先加载页面脚本
         await loadPageScript(`page-${page}.js`);
         
-        // 关键修复：添加防重复执行标记
-        const inlineScriptKey = `inline_executed_${page}_${Date.now()}`;
-        
-        // 处理内联脚本 - 添加防重复机制
-        const scripts = content.querySelectorAll('script');
-        const scriptPromises = Array.from(scripts).map((script, index) => {
-            return new Promise((resolve, reject) => {
-                if (script.src) {
-                    // 外部脚本
-                    const newScript = document.createElement('script');
-                    newScript.src = script.src;
-                    newScript.onload = resolve;
-                    newScript.onerror = () => {
-                        console.warn(`Failed to load script: ${script.src}`);
-                        resolve();
-                    };
-                    document.body.appendChild(newScript);
-                } else if (script.textContent.trim()) {
-                    // 内联脚本 - 防重复执行
-                    const scriptId = `${page}_inline_${index}`;
-                    
-                    // 检查是否已执行过这个脚本
-                    if (!window.executedInlineScripts) {
-                        window.executedInlineScripts = new Set();
-                    }
-                    
-                    if (!window.executedInlineScripts.has(scriptId)) {
-                        try {
-                            // 标记为已执行
-                            window.executedInlineScripts.add(scriptId);
-                            
-                            // 包装执行以避免重复
-                            const wrappedScript = `
-                                (function() {
-                                    if (window.pageInitialized_${page}) {
-                                        console.log('Page ${page} already initialized, skipping inline script');
-                                        return;
-                                    }
-                                    ${script.textContent}
-                                })();
-                            `;
-                            
-                            eval(wrappedScript);
-                            resolve();
-                        } catch (error) {
-                            console.error('Script execution error:', error);
-                            resolve();
-                        }
-                    } else {
-                        console.log(`Inline script ${scriptId} already executed, skipping`);
-                        resolve();
-                    }
-                } else {
-                    resolve();
-                }
-            });
-        });
-
-        await Promise.all(scriptPromises);
-
-        // 标记页面已初始化
-        window[`pageInitialized_${page}`] = true;
+        // ===== 关键修复：完全跳过内联脚本处理 =====
+        // 不处理任何内联脚本，只依赖外部的 page-*.js 文件
+        console.log(`Page ${page} loaded, skipping inline script processing`);
 
     } catch (error) {
         console.error('页面加载失败:', error);
@@ -281,6 +222,9 @@
         }, 200);
     }
 }
+
+
+
 function cleanupPageScripts(page) {
     // 移除页面特定的脚本
     const pageScript = document.querySelector(`script[data-page-script="page-${page}.js"]`);
@@ -325,24 +269,32 @@ function cleanupPageScripts(page) {
     }
 }
 
-        function loadPageScript(jsFileName) {
-            return new Promise((resolve, reject) => {
-                const existingScript = document.querySelector(`script[data-page-script="${jsFileName}"]`);
-                if (existingScript) {
-                    // 如果已加载则重新执行（或者直接 resolve）
-                    existingScript.remove();
-                }
 
-                const script = document.createElement('script');
-                script.src = `/js/${jsFileName}`;  // 保持与 webpack 输出一致
+function loadPageScript(jsFileName) {
+    return new Promise((resolve, reject) => {
+        
+        // 强制防重复：检查函数是否已经存在
+        if (jsFileName === 'page-content.js' && typeof window.transferToTShirt === 'function') {
+            console.log('Content page functions already exist, skipping script load');
+            resolve();
+            return;
+        }
+        
+        const existingScript = document.querySelector(`script[data-page-script="${jsFileName}"]`);
+        if (existingScript) {
+            existingScript.remove();
+        }
 
+        const script = document.createElement('script');
+        
+        script.src = `/js/${jsFileName}`; 
 
-                script.setAttribute('data-page-script', jsFileName);
-                script.onload = resolve;
-                script.onerror = () => {
-                    console.warn(`无法加载页面脚本: ${jsFileName}`);
-                    resolve(); // 忽略失败防止阻断页面逻辑
-                };
-                document.body.appendChild(script);
-            });
-        }</script><script defer="defer" src="/js/vendors.314e4d5535f69dab0237.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.bb0bc8eeb42d4f70fac9.js"></script><script defer="defer" src="/js/33.545769f2acdaaebe9ae3.js"></script><script defer="defer" src="/js/798.b0cf1e47f6c8f7e444c1.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script></body></html>
+        script.setAttribute('data-page-script', jsFileName);
+        script.onload = resolve;
+        script.onerror = () => {
+            console.warn(`无法加载页面脚本: ${jsFileName}`);
+            resolve(); // 忽略失败防止阻断页面逻辑
+        };
+        document.body.appendChild(script);
+    });
+}</script><script defer="defer" src="/js/vendors.08ee64c9e60251b5d335.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/828.dbea81369c5124811a1a.js"></script><script defer="defer" src="/js/33.545769f2acdaaebe9ae3.js"></script><script defer="defer" src="/js/798.b0cf1e47f6c8f7e444c1.js"></script><script defer="defer" src="/js/global.9e411c2b11604bb8b1b6.js"></script></body></html>
