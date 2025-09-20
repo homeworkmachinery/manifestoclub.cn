@@ -1,4 +1,4 @@
-<head><link href="/css/styles.468f603e6325f44eec34.css" rel="stylesheet"></head><style data-page="profile">* {
+<head><link href="/css/styles.c6120c67c82cba3af7ca.css" rel="stylesheet"></head><style data-page="profile">* {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
@@ -156,8 +156,33 @@
         cursor: pointer;
     }
 
+    .status {
+    text-align: right;
+}
+
+.status-badge {
+    color: white; /* 默认文字颜色 */
+    padding: 5px 10px;
+    font-size: 15px;
+    font-weight: bold;
+    display: inline-block;
+}
+
     /* 响应式设计 */
     @media(max-width:899px) {
+
+
+        .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .status {
+        text-align: left;
+        margin-top: 5px;
+    }
+
+
+
         .container {
             display: flex;
             flex-direction: column;
@@ -248,4 +273,14 @@
     max-width: 100vw !important;
     max-height: 95vh !important;
   }
-      }</style><div class="container"><div class="left-panel"><div class="menu-item active" data-target="draft">DRAFT</div><div class="menu-item" data-target="order">ORDER</div><div class="menu-item" data-target="setting">SETTING</div><div class="member-code-container"><img id="member-barcode-complete" alt="Member Code and Barcode" style="display: none;"></div></div><div class="right-panel"><div class="content-section" id="draft"></div><div class="content-section" id="order"></div><div class="content-section" id="setting"></div></div></div><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.f5b447eb90dab98066ee.js"></script><script defer="defer" src="/js/page-profile.043f8de0ff0606f86d74.js"></script>
+
+  .order-header {
+    flex-direction: column; /* 从左右布局改成上下布局 */
+    align-items: flex-start; /* 左对齐 */
+  }
+
+  .order-header .status {
+    margin-top: 5px;  /* 给 status 加点间距 */
+    text-align: left; /* 左对齐 */
+  }
+      }</style><div class="container"><div class="left-panel"><div class="menu-item active" data-target="draft">DRAFT</div><div class="menu-item" data-target="order">ORDER</div><div class="menu-item" data-target="setting">SETTING</div><div class="member-code-container"><img id="member-barcode-complete" alt="Member Code and Barcode" style="display: none;"></div></div><div class="right-panel"><div class="content-section" id="draft"></div><div class="content-section" id="order"></div><div class="content-section" id="setting"></div></div></div><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.a735b273aba34fb02a70.js"></script><script defer="defer" src="/js/page-profile.89a556373e97137c6cee.js"></script>
