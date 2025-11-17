@@ -33,7 +33,7 @@
         align-items: center;
         width: calc(100% - 40px);
         position: fixed;
-        z-index: 1000;
+   
         top: 100px;
 
     }
@@ -315,7 +315,10 @@
         padding: 5px;
 }
 }</style><link href="/css/styles.c6120c67c82cba3af7ca.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>PRODUCT DETAILS</h1><a data-page="merch" class="back-btn">← BACK TO SHOP</a></div><div class="panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-year" id="productYear">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info">✓ In Stock - Ready to Ship</div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button><div class="product-category"><div class="category-label">CATEGORY</div><span class="category-value" id="productCategory">Console</span></div></div><div class="product-details"><div class="details-content" id="productDetails"></div></div></div><script>(function () {
-
+            if (!window.currentPageParams) {
+        window.currentPageParams = {};
+    }
+    
             function cleanupContentPage() {
                 console.log('Cleaning up content page...');
                 // 清理全局变量
@@ -350,15 +353,15 @@
                     year: '1982-2024',
                     price: '¥1450',
                     category: 'Game Console',
-                    mainImage: 'images/merch/1.jpg',
+                    mainImage: '/images/merch/1.jpg',
                     description: `
-                        <img src="images/merch/details/default-header.png">
-                        <img src="images/merch/details/1-1.avif">
-                        <img src="images/merch/details/1-2.webp">
-                        <img src="images/merch/details/1-3.jpg">
-                        <img src="images/merch/details/1-4.avif">
-                        <img src="images/merch/details/1-5.avif">
-                        <img src="images/merch/details/1-6.avif">
+                        <img src="/images/merch/details/default-header.png">
+                        <img src="/images/merch/details/1-1.avif">
+                        <img src="/images/merch/details/1-2.webp">
+                        <img src="/images/merch/details/1-3.jpg">
+                        <img src="/images/merch/details/1-4.avif">
+                        <img src="/images/merch/details/1-5.avif">
+                        <img src="/images/merch/details/1-6.avif">
                     `
                 },
                 '2': {
@@ -366,33 +369,33 @@
                     year: '1977-2023',
                     price: '¥1580',
                     category: 'Game Console',
-                    mainImage: 'images/merch/2.jpg',
+                    mainImage: '/images/merch/2.jpg',
                     description: `
-                    <img src="images/merch/details/default-header.png">
-                        <img src="images/merch/details/2-1.avif" alt="Detail">
-                        <img src="images/merch/details/2-2.avif" alt="Detail">
-                        <img src="images/merch/details/2-3.avif" alt="Detail">
-                        <img src="images/merch/details/2-4.png" alt="Detail">
-                        <img src="images/merch/details/2-5.avif" alt="Detail">
-                        <img src="images/merch/details/2-6.avif" alt="Detail">
-                        <img src="images/merch/details/2-7.avif" alt="Detail">
-                        <img src="images/merch/details/2-8.avif" alt="Detail">
+                    <img src="/images/merch/details/default-header.png">
+                        <img src="/images/merch/details/2-1.avif" alt="Detail">
+                        <img src="/images/merch/details/2-2.avif" alt="Detail">
+                        <img src="/images/merch/details/2-3.avif" alt="Detail">
+                        <img src="/images/merch/details/2-4.png" alt="Detail">
+                        <img src="/images/merch/details/2-5.avif" alt="Detail">
+                        <img src="/images/merch/details/2-6.avif" alt="Detail">
+                        <img src="/images/merch/details/2-7.avif" alt="Detail">
+                        <img src="/images/merch/details/2-8.avif" alt="Detail">
                     `
                 },
                 '3': {
-                    name: 'Atari 7800+ Console',
+                    name: 'Atari 7800+ Console & Gamepad',
                     year: '1986-2024',
                     price: '¥1450',
                     category: 'Game Console',
-                    mainImage: 'images/merch/3.jpg',
+                    mainImage: '/images/merch/3.jpg',
                     description: `
-                    <img src="images/merch/details/default-header.png">
-                        <img src="images/merch/details/3-1.avif" alt="Detail">
-                        <img src="images/merch/details/3-2.avif" alt="Detail">
-                        <img src="images/merch/details/3-3.webp" alt="Detail">
-                        <img src="images/merch/details/3-4.avif" alt="Detail">
-                        <img src="images/merch/details/3-5.webp" alt="Detail">
-                        <img src="images/merch/details/3-6.jpg" alt="Detail">
+                    <img src="/images/merch/details/default-header.png">
+                        <img src="/images/merch/details/3-1.avif" alt="Detail">
+                        <img src="/images/merch/details/3-2.avif" alt="Detail">
+                        <img src="/images/merch/details/3-3.webp" alt="Detail">
+                        <img src="/images/merch/details/3-4.avif" alt="Detail">
+                        <img src="/images/merch/details/3-5.webp" alt="Detail">
+                        <img src="/images/merch/details/3-6.jpg" alt="Detail">
                     `
                 },
                 '4': {
@@ -400,16 +403,36 @@
                     year: '1979-2024',
                     price: '¥889',
                     category: 'Game Console',
-                    mainImage: 'images/merch/4.avif',
+                    mainImage: '/images/merch/4.avif',
                     description: `
-                    <img src="images/merch/details/default-header.png">
-                        <img src="images/merch/details/4-1.avif" alt="Detail">
-                        <img src="images/merch/details/4-2.webp" alt="Detail">
-                        <img src="images/merch/details/4-3.avif" alt="Detail">
-                        <img src="images/merch/details/4-4.avif" alt="Detail">
-                        <img src="images/merch/details/4-5.avif" alt="Detail">
-                        <img src="images/merch/details/4-6.webp" alt="Detail">
-                        <img src="images/merch/details/4-7.avif" alt="Detail">
+                    <img src="/images/merch/details/default-header.png">
+                        <img src="/images/merch/details/4-1.avif" alt="Detail">
+                        <img src="/images/merch/details/4-2.webp" alt="Detail">
+                        <img src="/images/merch/details/4-3.avif" alt="Detail">
+                        <img src="/images/merch/details/4-4.avif" alt="Detail">
+                        <img src="/images/merch/details/4-5.avif" alt="Detail">
+                        <img src="/images/merch/details/4-6.webp" alt="Detail">
+                        <img src="/images/merch/details/4-7.avif" alt="Detail">
+                    `
+                },
+                '6': {
+                    name: 'THEC64 MINI Console & Joystick',
+                    year: '1982-2018',
+                    price: '¥730',
+                    category: 'Game Console',
+                    mainImage: '/images/merch/6.png',
+                    description: `
+                    <img src="/images/merch/details/default-header.png">
+                        <img src="/images/merch/details/6-1.avif" alt="Detail">
+                        <img src="/images/merch/details/6-2.avif" alt="Detail">
+                        <img src="/images/merch/details/6-3.avif" alt="Detail">
+                        <img src="/images/merch/details/6-4.jpg" alt="Detail">
+                        <img src="/images/merch/details/6-9.jpg" alt="Detail">
+                        <img src="/images/merch/details/6-5.avif" alt="Detail">
+                        <img src="/images/merch/details/6-6.avif" alt="Detail">
+                        <img src="/images/merch/details/6-7.jpg" alt="Detail">
+                        <img src="/images/merch/details/6-8.jpg" alt="Detail">
+                        <img src="/images/merch/details/5-20.avif" alt="Detail">
                     `
                 },
                 '5': {
@@ -417,77 +440,77 @@
                     year: '1980-2025',
                     price: '¥480',
                     category: 'Game Cartridge',
-                    mainImage: 'images/merch/5.avif',
+                    mainImage: '/images/merch/5.avif',
                     variants: {
             'a': {
                 name: 'Asteroids Deluxe',
-                image: 'images/merch/details/5-a.png',
+                image: '/images/merch/details/5-a.png',
                 description: '行星游戏'
             },
             'b': {
                 name: 'SPACE DUEL', 
-                image: 'images/merch/details/5-b.png',
+                image: '/images/merch/details/5-b.png',
                 description: '太空大战'
             },
             'c': {
                 name: 'BERSERK',
-                image: 'images/merch/details/5-c.png',
+                image: '/images/merch/details/5-c.png',
                 description: '狂暴'
             },
             'd': {
                 name: 'FRENZY',
-                image: 'images/merch/details/5-d.png',
+                image: '/images/merch/details/5-d.png',
                 description: '狂乱'
             },
             'e': {
                 name: 'CRYSTAL QUEST',
-                image: 'images/merch/details/5-e.png',
+                image: '/images/merch/details/5-e.png',
                 description: '水晶之旅'
             },
             'f': {
                 name: 'DARK CHAMBERS',
-                image: 'images/merch/details/5-f.png',
+                image: '/images/merch/details/5-f.png',
                 description: '暗室'
             },
             'g': {
                 name: 'Tiger Heli',
-                image: 'images/merch/details/5-g.png',
+                image: '/images/merch/details/5-g.png',
                 description: '猛虎直升机'
             },
             'h': {
                 name: 'COUNTERMEASURE 2',
-                image: 'images/merch/details/5-h.png',
+                image: '/images/merch/details/5-h.png',
                 description: '对策2'
             },
             'i': {
                 name: 'SUPER CIRCUS',
-                image: 'images/merch/details/5-i.png',
+                image: '/images/merch/details/5-i.png',
                 description: '超级马戏团'
             },
         },
 
                     description: `
-                    <img src="images/merch/details/default-header.png">
-                    <img src="images/merch/details/5-1.avif" alt="Detail">
-<img src="images/merch/details/5-2.avif" alt="Detail">
-<img src="images/merch/details/5-3.avif" alt="Detail">
-<img src="images/merch/details/5-4.avif" alt="Detail">
-<img src="images/merch/details/5-5.avif" alt="Detail">
-<img src="images/merch/details/5-6.avif" alt="Detail">
-<img src="images/merch/details/5-7.avif" alt="Detail">
-<img src="images/merch/details/5-8.avif" alt="Detail">
-<img src="images/merch/details/5-9.avif" alt="Detail">
-<img src="images/merch/details/5-10.avif" alt="Detail">
-<img src="images/merch/details/5-11.avif" alt="Detail">
-<img src="images/merch/details/5-12.avif" alt="Detail">
-<img src="images/merch/details/5-13.avif" alt="Detail">
-<img src="images/merch/details/5-14.avif" alt="Detail">
-<img src="images/merch/details/5-15.avif" alt="Detail">
-<img src="images/merch/details/5-16.avif" alt="Detail">
-<img src="images/merch/details/5-17.avif" alt="Detail">
-<img src="images/merch/details/5-18.avif" alt="Detail">
-<img src="images/merch/details/5-19.avif" alt="Detail">
-<img src="images/merch/details/5-20.avif" alt="Detail">
+                    <img src="/images/merch/details/default-header.png">
+                    <img src="/images/merch/details/5-1.avif" alt="Detail">
+<img src="/images/merch/details/5-2.avif" alt="Detail">
+<img src="/images/merch/details/5-3.avif" alt="Detail">
+<img src="/images/merch/details/5-4.avif" alt="Detail">
+<img src="/images/merch/details/5-5.avif" alt="Detail">
+<img src="/images/merch/details/5-6.avif" alt="Detail">
+<img src="/images/merch/details/5-7.avif" alt="Detail">
+<img src="/images/merch/details/5-8.avif" alt="Detail">
+<img src="/images/merch/details/5-9.avif" alt="Detail">
+<img src="/images/merch/details/5-10.avif" alt="Detail">
+<img src="/images/merch/details/5-11.avif" alt="Detail">
+<img src="/images/merch/details/5-12.avif" alt="Detail">
+<img src="/images/merch/details/5-13.avif" alt="Detail">
+<img src="/images/merch/details/5-14.avif" alt="Detail">
+<img src="/images/merch/details/5-15.avif" alt="Detail">
+<img src="/images/merch/details/5-16.avif" alt="Detail">
+<img src="/images/merch/details/5-17.avif" alt="Detail">
+<img src="/images/merch/details/5-18.avif" alt="Detail">
+<img src="/images/merch/details/5-19.avif" alt="Detail">
+<img src="/images/merch/details/5-20.avif" alt="Detail">
                     `
                 }
             };
@@ -499,6 +522,12 @@
         return;
     }
     
+    const existingSelector = document.querySelector('.game-options');
+    if (existingSelector) {
+        existingSelector.remove();
+        console.log('Removed existing game selector');
+    }
+
     // 在价格和库存信息之间插入游戏选择器
     const priceElement = document.querySelector('.product-price');
     const stockInfo = document.querySelector('.stock-info');
@@ -528,11 +557,20 @@
 // 3. 添加游戏选择事件处理
 function bindGameSelectionEvents(product) {
     const gameOptions = document.querySelectorAll('.game-option');
+
+    gameOptions.forEach(option => {
+        const newOption = option.cloneNode(true);
+        option.parentNode.replaceChild(newOption, option);
+    });
+    const refreshedOptions = document.querySelectorAll('.game-option');
     const mainImage = document.getElementById('mainImage');
+
+
+
     const selectedInfo = document.querySelector('.selected-game-info');
     const selectedNameEl = document.getElementById('selectedGameName');
     
-    gameOptions.forEach(option => {
+    refreshedOptions.forEach(option => {
         option.addEventListener('click', function() {
             // 移除其他选中状态
             gameOptions.forEach(opt => opt.classList.remove('selected'));
@@ -571,57 +609,59 @@ function bindGameSelectionEvents(product) {
 }
 
 
-            // 加载产品信息
-            function loadProduct() {
-                console.log('Content page: Loading product information...');
+        // 加载产品信息
+function loadProduct() {
+    console.log('Content page: Loading product information...');
 
-                let productId = null;
-                let productData = null;
+    let productId = null;
+    let productData = null;
 
-                // 尝试从 sessionStorage 获取产品数据
-                try {
-                    const pendingData = sessionStorage.getItem('pendingProduct');
-                    console.log('SessionStorage pendingProduct:', pendingData);
+    // 优先从URL参数获取产品ID
+    if (window.currentPageParams && window.currentPageParams.id) {
+        productId = window.currentPageParams.id;
+        console.log('Got product ID from URL params:', productId);
+    }
+    
+    // 如果URL没有参数,尝试从 sessionStorage 获取
+    if (!productId) {
+        try {
+            const pendingData = sessionStorage.getItem('pendingProduct');
+            console.log('SessionStorage pendingProduct:', pendingData);
 
-                    if (pendingData) {
-                        productData = JSON.parse(pendingData);
-                        productId = productData.id;
-                        console.log('Got product from sessionStorage:', productId, productData);
+            if (pendingData) {
+                productData = JSON.parse(pendingData);
+                productId = productData.id;
+                console.log('Got product from sessionStorage:', productId, productData);
 
-                        // 清除已使用的数据
-                        sessionStorage.removeItem('pendingProduct');
-                    }
-                } catch (e) {
-                    console.error('Failed to parse pending product:', e);
-                }
-
-                // 如果没有找到产品ID，使用默认值
-                if (!productId) {
-                    console.warn('No product ID found, defaulting to product 1');
-                    productId = '1';
-                }
-
-                // 从数据库获取完整产品信息
-                const product = productDatabase[productId];
-
-                if (!product) {
-                    console.error('Product not found in database:', productId);
-                    showError();
-                    return;
-                }
-
-                console.log('Loading product from database:', product.name);
-
-                // 更新页面内容
-                updatePageContent(product, productId);
+                // 清除已使用的数据
+                sessionStorage.removeItem('pendingProduct');
             }
+        } catch (e) {
+            console.error('Failed to parse pending product:', e);
+        }
+    }
+
+    // 从数据库获取完整产品信息
+    const product = productDatabase[productId];
+
+    if (!product) {
+        console.error('Product not found in database:', productId);
+        showError();
+        return;
+    }
+
+    console.log('Loading product from database:', product.name);
+
+    // 更新页面内容
+    updatePageContent(product, productId);
+}
 
             // 更新页面内容
             function updatePageContent(product, productId) {
                 // 更新主图
                 const mainImage = document.getElementById('mainImage');
                 if (mainImage) {
-                    mainImage.src = product.mainImage || `images/merch/${productId}.jpg`;
+                    mainImage.src = product.mainImage || `/images/merch/${productId}.jpg`;
                     mainImage.alt = product.name;
                 }
 
@@ -670,19 +710,48 @@ function bindGameSelectionEvents(product) {
 
             // 初始化
             function initContentPage() {
-                console.log('Initializing content page...');
-                loadProduct();
-
-                // 绑定返回按钮
-                const backBtn = document.querySelector('.back-btn');
-                if (backBtn) {
-                    backBtn.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        if (typeof window.loadPage === 'function') {
-                            window.loadPage('merch');
-                        }
-                    });
+            console.log('Initializing content page...');
+            
+            // 立即加载产品
+            loadProduct();
+            setTimeout(() => {
+        try {
+            const usedProduct = sessionStorage.getItem('pendingProduct');
+            if (usedProduct) {
+                console.log('Cleaning up used sessionStorage data');
+                sessionStorage.removeItem('pendingProduct');
+                sessionStorage.removeItem('lastProductClick');
+            }
+        } catch (e) {
+            console.error('Error cleaning sessionStorage:', e);
+        }
+    }, 1000);
+            // 监听URL参数变化
+            window.paramsEventHandler = function(event) {
+                if (event.detail.page === 'merch-content') {
+                    console.log('URL parameters changed, reloading product:', event.detail.params);
+                    // 更新参数并重新加载
+                    window.currentPageParams = event.detail.params;
+                    loadProduct();
                 }
+            };
+            window.addEventListener('pageParamsLoaded', window.paramsEventHandler);
+
+
+             
+          // 绑定返回按钮
+const backBtn = document.querySelector('.back-btn');
+if (backBtn) {
+    backBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        // 使用路由导航返回商品列表页
+        if (window.router && window.router.navigate) {
+            window.router.navigate('merch');
+        } else if (typeof window.loadPage === 'function') {
+            window.loadPage('merch');
+        }
+    });
+}
 
                 // 绑定添加到购物车按钮
                 const addBtn = document.getElementById('addToCartBtn');
@@ -774,7 +843,7 @@ function bindGameSelectionEvents(product) {
             productName: product.name + variantName, // 包含游戏名称
             productYear: product.year,
             productCategory: product.category,
-            productImage: selectedVariant?.image || product.mainImage || `images/merch/${product.id}.jpg`,
+            productImage: selectedVariant?.image || product.mainImage || `/images/merch/${product.id}.jpg`,
             productType: 'retro-console',
             // 新增变体信息
             variantKey: selectedVariant?.key,
@@ -887,4 +956,4 @@ function bindGameSelectionEvents(product) {
 
             // SPA导航后重新初始化
             window.addEventListener('contentPageLoaded', initContentPage);
-        })();</script><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.f14bc7332303844ccf34.js"></script></body>
+        })();</script><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.271567e60b33403dbece.js"></script></body>
