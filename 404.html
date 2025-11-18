@@ -1,4 +1,11 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>Redirecting...</title><style>body {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <style>
+        body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex;
             justify-content: center;
@@ -22,7 +29,10 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }</style><script>// GitHub Pages SPA 路由解决方案
+        }
+    </style>
+    <script>
+        // GitHub Pages SPA 路由解决方案
         (function() {
             const path = window.location.pathname;
             const search = window.location.search;
@@ -39,6 +49,14 @@
             }));
             
             // 重定向到根页面
-            // 使用 replace 避免在历史记录中产生额外条目
             window.location.replace('/');
-        })();</script><link href="/css/styles.c6120c67c82cba3af7ca.css" rel="stylesheet"></head><body><div class="loading"><div class="spinner"></div><p>Redirecting...</p></div><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.8cc81bfbc6216e5353e7.js"></script></body></html>
+        })();
+    </script>
+</head>
+<body>
+    <div class="loading">
+        <div class="spinner"></div>
+        <p>Redirecting...</p>
+    </div>
+</body>
+</html>
