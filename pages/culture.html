@@ -1,1 +1,1282 @@
-<head><link href="/css/styles.c6120c67c82cba3af7ca.css" rel="stylesheet"></head><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.8cc81bfbc6216e5353e7.js"></script>
+<style data-page="culture">* {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* 顶部导航 */
+    .nav-header {
+        border: 2px solid black;
+        padding: 5px;
+        margin-bottom: 20px;
+        background-color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: calc(100% - 40px);
+        position: fixed;
+        z-index: 10;
+        top: 100px;
+
+    }
+
+    .nav-header h1 {
+        font-size: 24px;
+    }
+
+    .back-btn {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+
+
+    .books {
+        margin-top: 62px;
+        border-top: 2px solid black;
+    }
+
+    .book {
+        border: 2px solid black;
+        padding: 5px;
+        border-top: none;
+        display: flex;
+        position: relative;
+
+    }
+
+    .book-img {
+        flex: 0 0 100px;
+    }
+
+    .book-img img {
+        width: 100%;
+        height: auto;
+        display: block;
+
+    }
+
+    .book-description {
+        flex: 1;
+        margin-left: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+
+
+
+    .book-btn {
+        display: flex;
+        gap: 10px;
+        position: absolute;
+        bottom: 10px;
+    }
+
+    .book-btn>div {
+        border: 2px solid black;
+        cursor: pointer;
+
+    }
+
+    .book-btn>div:hover {
+        background-color: black;
+        color: white;
+    }
+
+    .book-btn .want.active {
+        background-color: Black;
+        color: white;
+
+    }
+
+    .book-btn .read.active {
+        background-color: Black;
+        color: white;
+
+    }
+
+    /* Modal 样式 */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal.show {
+        display: flex;
+    }
+
+    .modal-content {
+        background-color: white;
+        border: 2px solid black;
+        padding: 20px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid black;
+    }
+
+    .modal-header h2 {
+        font-size: 20px;
+    }
+
+    .close-btn {
+        cursor: pointer;
+        font-size: 24px;
+        border: none;
+        background: none;
+        padding: 0;
+    }
+
+    .note-form {
+        margin-bottom: 20px;
+    }
+
+    .note-form textarea {
+        width: 100%;
+        min-height: 120px;
+        padding: 10px;
+        border: 2px solid black;
+        font-family: inherit;
+        font-size: 14px;
+        resize: vertical;
+    }
+
+    .note-form button {
+        margin-top: 10px;
+        padding: 8px 20px;
+        border: 2px solid black;
+        background-color: white;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .note-form button:hover {
+        background-color: black;
+        color: white;
+    }
+
+    .notes-list {
+        margin-top: 20px;
+    }
+
+    .note-item {
+        border: 2px solid black;
+        padding: 15px;
+        margin-bottom: 10px;
+    }
+
+    .note-content {
+        margin-bottom: 10px;
+        line-height: 1.6;
+    }
+
+    .note-meta {
+        font-size: 12px;
+        color: #666;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .note-delete {
+        cursor: pointer;
+
+        font-size: 12px;
+    }
+
+    .note-delete:hover {
+        text-decoration: underline;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+    }
+
+    .empty-notes {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+    }
+
+    .note-form textarea:focus,
+    .note-form input:focus {
+        outline: none;
+        border: 2px solid black;
+    }
+
+
+    /* 在 .book 样式后添加 */
+    .book-notes-area {
+        display: none;
+        border: 2px solid black;
+        padding: 15px;
+        border-top: none;
+    }
+
+    .book-notes-area.show {
+        display: block;
+    }
+
+    .notes-navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+
+
+    }
+
+    .nav-arrow {
+        cursor: pointer;
+        padding: 5px 15px;
+        border: 2px solid black;
+        background-color: white;
+        font-size: 18px;
+    }
+
+    .nav-arrow:hover {
+        background-color: black;
+        color: white;
+    }
+
+    .nav-arrow.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+
+
+    .current-note {
+        padding: 15px;
+        border: 2px solid black;
+        background-color: white;
+        min-height: 100px;
+    }
+
+    .current-note-content {
+        margin-bottom: 10px;
+        line-height: 1.6;
+    }
+
+    .current-note-meta {
+        font-size: 12px;
+        color: #666;
+    }
+
+
+
+    @media(max-width:899px) {
+        .nav-header {
+            margin-top: -20px;
+            width: calc(100% - 20px);
+        }
+
+        .books {
+            margin-top: 54px;
+        }
+
+ .books{
+font-size: 16px;
+}
+  .book-btn {
+        display: flex;
+        gap: 5px;
+        position: absolute;
+        bottom: 10px;
+    }
+
+       .book-description {
+        flex: 1;
+        margin-left: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    }</style><link href="/css/styles.c6120c67c82cba3af7ca.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>CULTURE</h1><a data-page="print" class="back-btn">← BACK TO LIBRARY</a></div><div class="books" id="booksContainer"></div></div><div class="modal" id="noteModal"><div class="modal-content"><div class="modal-header"><h2 id="modalBookTitle">Book Notes</h2><button class="close-btn" onclick="closeNoteModal()">×</button></div><div class="note-form"><div style="display: flex; gap: 10px; margin-bottom: 10px;"><input type="number" id="pageStart" placeholder="起始页" style="width: 100px; padding: 5px; border: 2px solid black;" oninput="this.style.borderColor='black'"> <span style="line-height: 30px;">-</span> <input type="number" id="pageEnd" placeholder="结束页" style="width: 100px; padding: 5px; border: 2px solid black;"></div><textarea id="noteContent" placeholder="Write your note here..."></textarea> <button onclick="saveNote()">Add Note</button></div><div class="notes-list" id="notesList"><div class="loading">Loading notes...</div></div></div></div><script>(function () {
+            let bookNotesCache = {};
+            let currentNoteIndex = {};
+            let currentUser = null;
+            let currentBookId = null;
+
+            console.log('Culture页面开始加载');
+    console.log('BOOKS_DATA 状态:', typeof window.BOOKS_DATA !== 'undefined' ? '已加载' : '未加载');
+    console.log('supabase 状态:', typeof supabase !== 'undefined' ? '已加载' : '未加载');
+
+
+
+
+  // 新增：动态生成书籍列表
+  function renderBooks() {
+        const booksContainer = document.getElementById('booksContainer');
+        const cultureBooks = Object.values(window.BOOKS_DATA).filter(book => book.category === 'culture');
+        
+        if (cultureBooks.length === 0) {
+            booksContainer.innerHTML = '<div class="empty-message">暂无文化类书籍</div>';
+            return;
+        }
+
+        booksContainer.innerHTML = cultureBooks.map(book => `
+            <div class="book" data-book-id="${book.id}" data-book-title="${book.title}">
+                <div class="book-img">
+                    <img src="${book.imgSrc}" alt="${book.title}" onerror="this.src='/images/default-book.jpg'">
+                </div>
+                <div class="book-description">
+                    <div class="book-title">${book.title}</div>
+                    <div class="book-meta">
+                        ${book.author}${book.translator ? ' / ' + book.translator : ''} / ${book.publisher} / ${book.publishDate}${book.pages ? ' / 页数: ' + book.pages : ''}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function waitForDependencies() {
+        return new Promise((resolve) => {
+            const checkDependencies = setInterval(() => {
+                if (typeof supabase !== 'undefined' && window.BOOKS_DATA) {
+                    clearInterval(checkDependencies);
+                    resolve();
+                }
+            }, 100);
+        });
+    }
+       
+
+    async function initCulture() {
+        console.log('开始初始化Culture页面');
+        
+        // 等待依赖项加载
+        await waitForDependencies();
+        
+        // 渲染书籍列表
+        renderBooks();
+        
+        await checkUser();
+        initializeBookButtons(); // 初始化书籍按钮和笔记区域
+        await updateBookCounts(); // 更新计数
+
+ // ========== 新增：检查是否需要滚动到特定书籍 ==========
+ const scrollToBookId = sessionStorage.getItem('scrollToBookId');
+    const shouldOpenNotes = sessionStorage.getItem('openNotesArea');
+
+    if (scrollToBookId) {
+        // 清除 sessionStorage
+        sessionStorage.removeItem('scrollToBookId');
+        sessionStorage.removeItem('openNotesArea');
+        
+        // 等待页面渲染完成
+        setTimeout(async () => {
+            const bookElement = document.querySelector(`.book[data-book-id="${scrollToBookId}"]`);
+            if (bookElement) {
+                // 滚动到书籍位置
+                bookElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+              
+            // 添加高亮效果
+        bookElement.style.backgroundColor = 'black';
+        bookElement.style.color = 'white';
+        bookElement.style.borderColor = 'white'; // 边框变白
+        
+        const innerElements = bookElement.querySelectorAll('*');
+        const bookBtnDivs = bookElement.querySelectorAll('.book-btn > div'); // 特别选择按钮元素
+        
+        innerElements.forEach(el => {
+            el.style.color = 'white';
+        });
+        
+        // 特别处理按钮边框
+        bookBtnDivs.forEach(btn => {
+            btn.style.borderColor = 'white';
+        });
+        
+        setTimeout(() => {
+            bookElement.style.backgroundColor = '';
+            bookElement.style.color = '';
+            bookElement.style.borderColor = ''; // 恢复边框颜色
+            
+            // 恢复内部元素的颜色
+            innerElements.forEach(el => {
+                el.style.color = '';
+            });
+            
+            // 恢复按钮边框颜色
+            bookBtnDivs.forEach(btn => {
+                btn.style.borderColor = '';
+            });
+        }, 1500);
+        
+        // 如果需要打开笔记区域
+        if (shouldOpenNotes === 'true') {
+            const bookTitle = bookElement.dataset.bookTitle;
+            // 再等待一下，确保滚动完成
+            setTimeout(() => {
+                toggleNotesArea(scrollToBookId, bookTitle);
+            }, 500);
+        }
+    }
+}, 300);
+                
+        
+    }
+    }
+
+            // 新增：初始化书籍按钮和笔记区域
+            function initializeBookButtons() {
+                const books = document.querySelectorAll('.book');
+
+                books.forEach(book => {
+                    const bookId = book.dataset.bookId;
+                    const bookTitle = book.dataset.bookTitle;
+                    const bookDescription = book.querySelector('.book-description');
+
+                    if (book.querySelector('.book-btn')) {
+                return; // 如果已经初始化，跳过
+            }
+
+
+                    // 创建按钮区域
+                    const bookBtn = document.createElement('div');
+                    bookBtn.className = 'book-btn';
+                    bookBtn.innerHTML = `
+            <div class="want" onclick="toggleWant('${bookId}')">
+                WANT(<span class="want-count">0</span>)
+            </div>
+            <div class="read" onclick="toggleReading('${bookId}')">
+                READ(<span class="read-count">0</span>)
+            </div>
+            <div class="note" onclick="toggleNotesArea('${bookId}', '${bookTitle}')">
+                NOTES(<span class="note-count">0</span>)
+            </div>
+            <div class="add" onclick="openNoteModal('${bookId}', '${bookTitle}')">+</div>
+        `;
+                    bookDescription.appendChild(bookBtn);
+
+                    // 创建笔记展开区域
+                    const notesArea = document.createElement('div');
+                    notesArea.className = 'book-notes-area';
+                    notesArea.id = `notes-area-${bookId}`;
+                    notesArea.innerHTML = `
+            <div class="notes-navigation">
+                <div class="nav-arrow" onclick="prevNote('${bookId}')">←</div>
+                <div class="note-page-info">
+                    <span id="current-note-index-${bookId}">0</span> / <span id="total-notes-${bookId}">0</span>
+                </div>
+                <div class="nav-arrow" onclick="nextNote('${bookId}')">→</div>
+            </div>
+            <div class="current-note" id="current-note-${bookId}">
+                <div class="loading">Loading notes...</div>
+            </div>
+        `;
+                    book.parentNode.insertBefore(notesArea, book.nextSibling);
+                });
+            }
+
+
+
+
+
+
+            // 检查用户登录状态
+            async function checkUser() {
+                const { data: { user } } = await supabase.auth.getUser();
+                currentUser = user;
+                console.log('当前用户:', currentUser ? currentUser.id : '未登录');
+            }
+
+            async function updateBookCounts() {
+                const books = document.querySelectorAll('.book');
+                const bookIds = Array.from(books).map(book => book.dataset.bookId);
+
+                try {
+                    // 获取想读计数
+                    const { data: wantCounts } = await supabase
+                        .from('book_wants')
+                        .select('book_id')
+                        .in('book_id', bookIds);
+
+                    const wantCountMap = {};
+                    if (wantCounts) {
+                        wantCounts.forEach(item => {
+                            wantCountMap[item.book_id] = (wantCountMap[item.book_id] || 0) + 1;
+                        });
+                    }
+
+                    // 获取在读计数
+                    const { data: readingCounts } = await supabase
+                        .from('book_readings')
+                        .select('book_id')
+                        .in('book_id', bookIds);
+
+                    const readingCountMap = {};
+                    if (readingCounts) {
+                        readingCounts.forEach(item => {
+                            readingCountMap[item.book_id] = (readingCountMap[item.book_id] || 0) + 1;
+                        });
+                    }
+
+                    // 获取笔记计数
+                    const { data: noteCounts } = await supabase
+                        .from('book_notes')
+                        .select('book_id')
+                        .in('book_id', bookIds);
+
+                    const noteCountMap = {};
+                    if (noteCounts) {
+                        noteCounts.forEach(item => {
+                            noteCountMap[item.book_id] = (noteCountMap[item.book_id] || 0) + 1;
+                        });
+                    }
+
+                    // 获取用户状态
+                    let userWants = new Set();
+                    let userReadings = new Set();
+
+                    if (currentUser) {
+                        const { data: wants } = await supabase
+                            .from('book_wants')
+                            .select('book_id')
+                            .eq('user_id', currentUser.id)
+                            .in('book_id', bookIds);
+
+                        if (wants) {
+                            wants.forEach(want => userWants.add(want.book_id));
+                        }
+
+                        const { data: readings } = await supabase
+                            .from('book_readings')
+                            .select('book_id')
+                            .eq('user_id', currentUser.id)
+                            .in('book_id', bookIds);
+
+                        if (readings) {
+                            readings.forEach(reading => userReadings.add(reading.book_id));
+                        }
+                    }
+
+                    // 更新页面显示
+                    books.forEach(book => {
+                        const bookId = book.dataset.bookId;
+                        const wantBtn = book.querySelector('.want');
+                        const readBtn = book.querySelector('.read');
+
+                        // 更新计数
+                        book.querySelector('.want-count').textContent = wantCountMap[bookId] || 0;
+                        book.querySelector('.read-count').textContent = readingCountMap[bookId] || 0;
+                        book.querySelector('.note-count').textContent = noteCountMap[bookId] || 0;
+
+                        if (wantBtn && readBtn) {
+                // 更新计数（无论是否登录都更新）
+                const wantCountEl = book.querySelector('.want-count');
+                const readCountEl = book.querySelector('.read-count');
+                const noteCountEl = book.querySelector('.note-count');
+                
+                if (wantCountEl) wantCountEl.textContent = wantCountMap[bookId] || 0;
+                if (readCountEl) readCountEl.textContent = readingCountMap[bookId] || 0;
+                if (noteCountEl) noteCountEl.textContent = noteCountMap[bookId] || 0;
+
+                // 更新状态（如果用户已登录）
+                if (currentUser) {
+                    if (userWants.has(bookId)) {
+                        wantBtn.classList.add('active');
+                    } else {
+                        wantBtn.classList.remove('active');
+                    }
+
+                    if (userReadings.has(bookId)) {
+                        readBtn.classList.add('active');
+                    } else {
+                        readBtn.classList.remove('active');
+                    }
+                } else {
+                    // 未登录时移除active状态
+                    wantBtn.classList.remove('active');
+                    readBtn.classList.remove('active');
+                }
+            }
+        });
+
+                } catch (error) {
+                    console.error('更新计数失败:', error);
+                }
+            }
+            initCulture();
+
+            // 切换"想读"状态
+            window.toggleWant = async function (bookId) {
+
+
+                if (!currentUser) {
+                    alert('请先登录');
+                    return;
+                }
+
+                try {
+                    const { data: existingReading } = await supabase
+                        .from('book_readings')
+                        .select('id')
+                        .eq('user_id', currentUser.id)
+                        .eq('book_id', bookId)
+                        .maybeSingle();
+
+                    // 如果已经在读，先删除在读状态
+                    if (existingReading) {
+                        await supabase.from('book_readings').delete().eq('id', existingReading.id);
+                    }
+                    const { data: existingWant } = await supabase
+                        .from('book_wants')
+                        .select('id')
+                        .eq('user_id', currentUser.id)
+                        .eq('book_id', bookId)
+                        .maybeSingle();
+
+                    if (existingWant) {
+                        // 如果已经想读，则取消想读
+                        await supabase.from('book_wants').delete().eq('id', existingWant.id);
+                    } else {
+                        // 如果没有想读，则添加想读
+                        await supabase.from('book_wants').insert([{ user_id: currentUser.id, book_id: bookId }]);
+                    }
+                    await updateBookCounts();
+                } catch (error) {
+                    console.error('操作失败:', error);
+                    alert('操作失败，请重试');
+                }
+            }
+
+
+            window.toggleReading = async function (bookId) {
+                if (!currentUser) {
+                    alert('请先登录');
+                    return;
+                }
+
+                try {
+                    // 检查是否已经想读
+                    const { data: existingWant } = await supabase
+                        .from('book_wants')
+                        .select('id')
+                        .eq('user_id', currentUser.id)
+                        .eq('book_id', bookId)
+                        .maybeSingle();
+
+                    // 如果已经想读，先删除想读状态
+                    if (existingWant) {
+                        await supabase.from('book_wants').delete().eq('id', existingWant.id);
+                    }
+
+                    const { data: existingReading } = await supabase
+                        .from('book_readings')
+                        .select('id')
+                        .eq('user_id', currentUser.id)
+                        .eq('book_id', bookId)
+                        .maybeSingle();
+
+                    if (existingReading) {
+                        // 如果已经在读，则取消在读
+                        await supabase.from('book_readings').delete().eq('id', existingReading.id);
+                    } else {
+                        // 如果没有在读，则添加在读
+                        await supabase.from('book_readings').insert([{ user_id: currentUser.id, book_id: bookId }]);
+                    }
+
+                    await updateBookCounts();
+                } catch (error) {
+                    console.error('操作失败:', error);
+                    alert('操作失败，请重试');
+                }
+            }
+
+            window.saveNote = async function () {
+                if (!currentUser) {
+                    alert('请先登录');
+                    return;
+                }
+
+                const noteContent = document.getElementById('noteContent');
+                const pageStart = document.getElementById('pageStart');
+                const pageEnd = document.getElementById('pageEnd');
+                const content = noteContent.value.trim();
+
+                // 移除抖动效果
+                pageStart.classList.remove('input-shake');
+                pageEnd.classList.remove('input-shake');
+
+                if (!content) {
+                    alert('请输入笔记内容');
+                    return;
+                }
+
+                // 验证页码：必须至少填写起始页
+                if (!pageStart.value) {
+                    alert('请填写页码');
+                    return;
+                }
+
+                if (pageEnd.value && parseInt(pageEnd.value) < parseInt(pageStart.value)) {
+                    alert('结束页不能小于起始页');
+                    return;
+                }
+
+                try {
+                    const noteData = {
+                        user_id: currentUser.id,
+                        book_id: currentBookId,
+                        content: content,
+                        page_start: pageStart.value ? parseInt(pageStart.value) : null,
+                        page_end: pageEnd.value ? parseInt(pageEnd.value) : null
+                    };
+
+                    const { error } = await supabase
+                        .from('book_notes')
+                        .insert([noteData]);
+
+                    if (error) throw error;
+
+                    // 清空输入
+                    noteContent.value = '';
+                    pageStart.value = '';
+                    pageEnd.value = '';
+
+                    // 重新加载用户笔记
+                    await loadUserNotes(currentBookId);
+
+                    // 更新计数
+                    await updateBookCounts();
+
+                    // 如果笔记区域是展开的，刷新它
+                    const notesArea = document.getElementById(`notes-area-${currentBookId}`);
+                    if (notesArea && notesArea.classList.contains('show')) {
+                        await loadAllNotes(currentBookId);
+                        // 跳到最后一条笔记（刚添加的）
+                        currentNoteIndex[currentBookId] = (bookNotesCache[currentBookId] || []).length - 1;
+                        displayCurrentNote(currentBookId);
+                    }
+
+                } catch (error) {
+                    console.error('保存笔记失败:', error);
+                    alert('保存失败，请重试');
+                }
+            }
+
+
+
+            // 打开笔记Modal
+            window.openNoteModal = async function (bookId, bookTitle) {
+                if (!currentUser) {
+        alert('请先登录');
+        return;
+    }
+                currentBookId = bookId;
+
+                const modal = document.getElementById('noteModal');
+                const modalTitle = document.getElementById('modalBookTitle');
+                const noteContent = document.getElementById('noteContent');
+
+                modalTitle.textContent = `${bookTitle}`;
+                noteContent.value = '';
+                modal.classList.add('show');
+
+                await loadUserNotes(bookId);
+            }
+
+            // 关闭笔记Modal
+            window.closeNoteModal = function () {
+                const modal = document.getElementById('noteModal');
+                modal.classList.remove('show');
+                currentBookId = null;
+            }
+
+            window.toggleNotesArea = async function (bookId, bookTitle) {
+
+                const notesArea = document.getElementById(`notes-area-${bookId}`);
+
+                // 如果已展开，则收起
+                if (notesArea.classList.contains('show')) {
+                    notesArea.classList.remove('show');
+                    return;
+                }
+
+                // 收起其他所有展开的笔记区域
+                document.querySelectorAll('.book-notes-area.show').forEach(area => {
+                    area.classList.remove('show');
+                });
+
+                // 展开当前区域
+                notesArea.classList.add('show');
+
+                // 加载所有笔记（按页码排序）
+                await loadAllNotes(bookId);
+
+                // 显示第一条笔记
+                currentNoteIndex[bookId] = 0;
+                displayCurrentNote(bookId);
+            }
+
+
+
+            // 新增：加载所有笔记（按页码排序）
+            window.loadAllNotes = async function (bookId) {
+                try {
+                    const { data: notes, error } = await supabase
+                        .from('book_notes')
+                        .select('*')
+                        .eq('book_id', bookId)
+                        .order('page_start', { ascending: true, nullsFirst: false });
+
+                    if (error) throw error;
+
+                    // 缓存笔记数据
+                    bookNotesCache[bookId] = notes || [];
+
+                    // 更新总笔记数
+                    document.getElementById(`total-notes-${bookId}`).textContent = bookNotesCache[bookId].length;
+
+                } catch (error) {
+                    console.error('加载笔记失败:', error);
+                    bookNotesCache[bookId] = [];
+                }
+            }
+
+            // 显示当前笔记
+            async function displayCurrentNote(bookId) {
+
+                const notes = bookNotesCache[bookId] || [];
+                const currentIndex = currentNoteIndex[bookId] || 0;
+                const noteContainer = document.getElementById(`current-note-${bookId}`);
+
+                if (notes.length === 0) {
+                    noteContainer.innerHTML = '<div class="empty-notes">还没有笔记</div>';
+                    document.getElementById(`current-note-index-${bookId}`).textContent = '0';
+                    return;
+                }
+
+                const note = notes[currentIndex];
+
+                // 获取用户信息
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('manifesto')
+                    .eq('user_id', note.user_id)
+                    .single();
+
+                const userName = profile?.manifesto || 'Anonymous';
+                const createdDate = new Date(note.created_at).toLocaleDateString('zh-CN');
+
+                let pageInfo = '';
+                if (note.page_start && note.page_end) {
+                    pageInfo = `P${note.page_start}-${note.page_end}`;
+                } else if (note.page_start) {
+                    pageInfo = `P${note.page_start}`;
+                }
+
+                // 检查是否是当前用户的笔记
+                const isOwner = currentUser && currentUser.id === note.user_id;
+                const actionButtons = isOwner ? `
+        <span class="note-delete" onclick="editNoteFromArea('${note.id}', '${bookId}', ${note.page_start}, ${note.page_end})" style="cursor: pointer; margin-left: 15px;">编辑</span>
+        <span class="note-delete" onclick="deleteNoteFromArea('${note.id}', '${bookId}')" style="cursor: pointer; margin-left: 10px;">删除</span>
+    ` : '';
+
+
+                noteContainer.innerHTML = `
+        <div class="current-note-content" id="area-note-content-${note.id}">${note.content}</div>
+        <div class="current-note-meta">
+            <span>${pageInfo ? pageInfo + ' · ' : ''}${userName} · ${createdDate}</span>
+            ${actionButtons}
+        </div>
+    `;
+
+
+                // 更新当前索引显示
+                document.getElementById(`current-note-index-${bookId}`).textContent = currentIndex + 1;
+
+                // 更新左右箭头状态
+                updateNavigationButtons(bookId);
+            }
+
+            window.deleteNoteFromArea = async function (noteId, bookId) {
+                if (!confirm('确定要删除这条笔记吗？')) {
+                    return;
+                }
+
+                try {
+                    const { error } = await supabase
+                        .from('book_notes')
+                        .delete()
+                        .eq('id', noteId);
+
+                    if (error) throw error;
+
+                    // 重新加载笔记
+                    await loadAllNotes(bookId);
+
+                    // 更新计数
+                    await updateBookCounts();
+
+                    // 调整当前索引
+                    const notes = bookNotesCache[bookId] || [];
+                    if (notes.length === 0) {
+                        currentNoteIndex[bookId] = 0;
+                    } else if (currentNoteIndex[bookId] >= notes.length) {
+                        currentNoteIndex[bookId] = notes.length - 1;
+                    }
+
+                    // 重新显示笔记
+                    displayCurrentNote(bookId);
+
+                } catch (error) {
+                    console.error('删除笔记失败:', error);
+                    alert('删除失败，请重试');
+                }
+            }
+
+
+            // 新增：从展开区域编辑笔记
+            window.editNoteFromArea = function (noteId, bookId, pageStart, pageEnd) {
+                const noteContainer = document.getElementById(`current-note-${bookId}`);
+                const noteContentElement = document.getElementById(`area-note-content-${noteId}`);
+                const currentContent = noteContentElement.textContent;
+
+                // 替换为编辑表单
+                noteContainer.innerHTML = `
+        <div style="margin-bottom: 10px;">
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <input type="number" id="area-edit-pageStart-${noteId}" value="${pageStart || ''}" placeholder="起始页" 
+                    style="width: 100px; padding: 5px; border: 2px solid black;">
+                <span style="line-height: 30px;">-</span>
+                <input type="number" id="area-edit-pageEnd-${noteId}" value="${pageEnd || ''}" placeholder="结束页" 
+                    style="width: 100px; padding: 5px; border: 2px solid black;">
+            </div>
+            <textarea id="area-edit-content-${noteId}" style="width: 100%; min-height: 80px; padding: 10px; border: 2px solid black; font-family: inherit; font-size: 14px; resize: vertical;">${currentContent}</textarea>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="saveEditNoteFromArea('${noteId}', '${bookId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">保存</button>
+            <button onclick="cancelEditNoteFromArea('${bookId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">取消</button>
+        </div>
+    `;
+            }
+
+            // 新增：保存从展开区域编辑的笔记
+            window.saveEditNoteFromArea = async function (noteId, bookId) {
+                const contentElement = document.getElementById(`area-edit-content-${noteId}`);
+                const pageStartElement = document.getElementById(`area-edit-pageStart-${noteId}`);
+                const pageEndElement = document.getElementById(`area-edit-pageEnd-${noteId}`);
+
+                const content = contentElement.value.trim();
+                const pageStart = pageStartElement.value;
+                const pageEnd = pageEndElement.value;
+
+                if (!content) {
+                    alert('请输入笔记内容');
+                    return;
+                }
+
+                // 验证页码：必须至少填写起始页
+                if (!pageStart) {
+                    alert('请填写页码');
+                    return;
+                }
+
+                // 如果填写了结束页，验证结束页不能小于起始页
+                if (pageEnd && parseInt(pageEnd) < parseInt(pageStart)) {
+                    alert('结束页不能小于起始页');
+                    return;
+                }
+
+                try {
+                    const { error } = await supabase
+                        .from('book_notes')
+                        .update({
+                            content: content,
+                            page_start: parseInt(pageStart),
+                            page_end: pageEnd ? parseInt(pageEnd) : null,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', noteId);
+
+                    if (error) throw error;
+
+                    // 重新加载笔记
+                    await loadAllNotes(bookId);
+                    await updateBookCounts();
+
+                    // 重新显示当前笔记
+                    displayCurrentNote(bookId);
+
+                } catch (error) {
+                    console.error('更新笔记失败:', error);
+                    alert('更新失败，请重试');
+                }
+            }
+
+            // 新增：取消从展开区域编辑
+            window.cancelEditNoteFromArea = async function (bookId) {
+                // 重新显示当前笔记
+                displayCurrentNote(bookId);
+            }
+
+            // 新增：更新导航按钮状态
+            function updateNavigationButtons(bookId) {
+                const notes = bookNotesCache[bookId] || [];
+                const currentIndex = currentNoteIndex[bookId] || 0;
+
+                const prevBtn = document.querySelector(`#notes-area-${bookId} .nav-arrow:first-child`);
+                const nextBtn = document.querySelector(`#notes-area-${bookId} .nav-arrow:last-child`);
+
+                // 更新上一条按钮
+                if (currentIndex === 0) {
+                    prevBtn.classList.add('disabled');
+                } else {
+                    prevBtn.classList.remove('disabled');
+                }
+
+                // 更新下一条按钮
+                if (currentIndex >= notes.length - 1) {
+                    nextBtn.classList.add('disabled');
+                } else {
+                    nextBtn.classList.remove('disabled');
+                }
+            }
+
+            // 新增：上一条笔记
+            window.prevNote = function (bookId) {
+                const currentIndex = currentNoteIndex[bookId] || 0;
+                if (currentIndex > 0) {
+                    currentNoteIndex[bookId] = currentIndex - 1;
+                    displayCurrentNote(bookId);
+                }
+            }
+
+            // 新增：下一条笔记
+            window.nextNote = function (bookId) {
+                const notes = bookNotesCache[bookId] || [];
+                const currentIndex = currentNoteIndex[bookId] || 0;
+                if (currentIndex < notes.length - 1) {
+                    currentNoteIndex[bookId] = currentIndex + 1;
+                    displayCurrentNote(bookId);
+                }
+            }
+
+            async function loadUserNotes(bookId) {
+                const notesList = document.getElementById('notesList');
+                notesList.innerHTML = '<div class="loading">Loading notes...</div>';
+
+                if (!currentUser) {
+                    notesList.innerHTML = '<div class="empty-notes">请先登录</div>';
+                    return;
+                }
+
+                try {
+                    // 只查询当前用户的笔记
+                    const { data: notes, error } = await supabase
+                        .from('book_notes')
+                        .select('*')
+                        .eq('book_id', bookId)
+                        .eq('user_id', currentUser.id)
+                        .order('created_at', { ascending: false });
+
+                    if (error) throw error;
+
+                    if (!notes || notes.length === 0) {
+                        notesList.innerHTML = '<div class="empty-notes">你还没有添加笔记</div>';
+                        return;
+                    }
+
+                    notesList.innerHTML = notes.map(note => {
+                        const createdDate = new Date(note.created_at).toLocaleDateString('zh-CN');
+
+                        let pageInfo = '';
+                        if (note.page_start && note.page_end) {
+                            pageInfo = `P${note.page_start}-${note.page_end} · `;
+                        } else if (note.page_start) {
+                            pageInfo = `P${note.page_start} · `;
+                        }
+
+                        return `
+                <div class="note-item" id="note-item-${note.id}">
+                    <div class="note-content" id="note-content-${note.id}">${note.content}</div>
+                    <div class="note-meta">
+                        <span>${pageInfo}${createdDate}</span>
+                        <span>
+                            <span class="note-delete" onclick="editNote('${note.id}', ${note.page_start}, ${note.page_end})" style="cursor: pointer; margin-right: 10px;">编辑</span>
+                            <span class="note-delete" onclick="deleteNote('${note.id}')">删除</span>
+                        </span>
+                    </div>
+                </div>
+            `;
+                    }).join('');
+
+                } catch (error) {
+                    console.error('加载笔记失败:', error);
+                    notesList.innerHTML = '<div class="empty-notes">加载笔记失败</div>';
+                }
+            }
+
+
+            // 编辑笔记
+            window.editNote = function (noteId, pageStart, pageEnd) {
+                const noteContentElement = document.getElementById(`note-content-${noteId}`);
+                const noteItemElement = document.getElementById(`note-item-${noteId}`);
+                const currentContent = noteContentElement.textContent;
+
+                // 替换为编辑表单
+                noteItemElement.innerHTML = `
+        <div style="margin-bottom: 10px;">
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <input type="number" id="edit-pageStart-${noteId}" value="${pageStart || ''}" placeholder="起始页" 
+                    style="width: 100px; padding: 5px; border: 2px solid black;"
+                    oninput="this.style.borderColor='black'">
+                <span style="line-height: 30px;">-</span>
+                <input type="number" id="edit-pageEnd-${noteId}" value="${pageEnd || ''}" placeholder="结束页" 
+                    style="width: 100px; padding: 5px; border: 2px solid black;"
+                    oninput="this.style.borderColor='black'">
+            </div>
+            <textarea id="edit-content-${noteId}" style="width: 100%; min-height: 80px; padding: 10px; border: 2px solid black; font-family: inherit; font-size: 14px; resize: vertical;">${currentContent}</textarea>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="saveEditNote('${noteId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">保存</button>
+            <button onclick="cancelEditNote('${noteId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">取消</button>
+        </div>
+    `;
+            }
+
+            // 保存编辑的笔记
+            window.saveEditNote = async function (noteId) {
+                const contentElement = document.getElementById(`edit-content-${noteId}`);
+                const pageStartElement = document.getElementById(`edit-pageStart-${noteId}`);
+                const pageEndElement = document.getElementById(`edit-pageEnd-${noteId}`);
+
+                const content = contentElement.value.trim();
+                const pageStart = pageStartElement.value;
+                const pageEnd = pageEndElement.value;
+
+                // 重置边框颜色
+                pageStartElement.style.borderColor = 'black';
+                pageEndElement.style.borderColor = 'black';
+
+                if (!content) {
+                    alert('请输入笔记内容');
+                    return;
+                }
+
+                // 验证页码：必须至少填写起始页
+                if (!pageStart) {
+                    alert('请填写页码');
+                    return;
+                }
+
+
+                // 如果填写了结束页，验证结束页不能小于起始页
+                if (pageEnd && parseInt(pageEnd) < parseInt(pageStart)) {
+                    alert('结束页不能小于起始页');
+                    return;
+                }
+
+                try {
+                    const { error } = await supabase
+                        .from('book_notes')
+                        .update({
+                            content: content,
+                            page_start: parseInt(pageStart),
+                            page_end: pageEnd ? parseInt(pageEnd) : null,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', noteId);
+
+                    if (error) throw error;
+
+                    // 重新加载笔记列表
+                    await loadUserNotes(currentBookId);
+                    await updateBookCounts();
+
+                    // 如果笔记区域是展开的，刷新它
+                    const notesArea = document.getElementById(`notes-area-${currentBookId}`);
+                    if (notesArea && notesArea.classList.contains('show')) {
+                        await loadAllNotes(currentBookId);
+                        displayCurrentNote(currentBookId);
+                    }
+
+                } catch (error) {
+                    console.error('更新笔记失败:', error);
+                    alert('更新失败，请重试');
+                }
+            }
+
+            // 取消编辑
+            window.cancelEditNote = async function (noteId) {
+                // 重新加载笔记列表
+                await loadUserNotes(currentBookId);
+            }
+
+
+            window.deleteNote = async function (noteId) {
+                if (!confirm('确定要删除这条笔记吗？')) {
+                    return;
+                }
+
+                try {
+                    const { error } = await supabase
+                        .from('book_notes')
+                        .delete()
+                        .eq('id', noteId);
+
+                    if (error) throw error;
+
+                    await loadUserNotes(currentBookId);
+                    await updateBookCounts();
+
+                    // 如果笔记区域是展开的，刷新它
+                    const notesArea = document.getElementById(`notes-area-${currentBookId}`);
+                    if (notesArea && notesArea.classList.contains('show')) {
+                        await loadAllNotes(currentBookId);
+                        // 如果当前索引超出范围，调整到最后一条
+                        const notes = bookNotesCache[currentBookId] || [];
+                        if (currentNoteIndex[currentBookId] >= notes.length) {
+                            currentNoteIndex[currentBookId] = Math.max(0, notes.length - 1);
+                        }
+                        displayCurrentNote(currentBookId);
+                    }
+
+                } catch (error) {
+                    console.error('删除笔记失败:', error);
+                    alert('删除失败，请重试');
+                }
+            }
+
+
+            // 点击Modal外部关闭
+            document.getElementById('noteModal').addEventListener('click', function (e) {
+                if (e.target === this) {
+                    closeNoteModal();
+                }
+            });
+
+        })();</script><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.923a4956a6272bdc4c0a.js"></script></body>

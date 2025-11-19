@@ -113,7 +113,7 @@
           .book-items{
             gap: 10px;
           }
-        }</style><link href="/css/styles.c6120c67c82cba3af7ca.css" rel="stylesheet"><body><div class="library"><h1>Home Library</h1><p>My personal library — feel free to read and scan in-house</p></div><div class="section"><ul class="library-items"><li data-id="game" data-type="library"><img src="/images/library/001.png" width="250px"><div class="overlay"><span class="title">GAME</span></div></li><li data-id="culture" data-type="library"><img src="/images/library/004.png" width="250px"><div class="overlay"><span class="title">CULTURE</span></div></li><li data-id="design" data-type="library"><img src="/images/library/002.png" width="250px"><div class="overlay"><span class="title">DESIGN</span></div></li><li data-id="law" data-type="library"><img src="/images/library/003.png" width="250px"><div class="overlay"><span class="title">LAW</span></div></li></ul></div><div class="books"><h1>Self-Published Books</h1><p>Using home printers to produce compact books of all kinds — from chapbooks to catalogs and handy guides</p></div><div class="section"><ul class="book-items"><li data-id="ground-ip" data-type="book"><img src="/images/library/005.png" width="250px"><div class="overlay"><span class="title">GROUND IP</span></div></li><li data-id="shadow-chapbooks" data-type="book"><img src="/images/library/005.png" width="250px"><div class="overlay"><span class="title">SHADOW CHAPBOOKS</span></div></li><li data-id="comics" data-type="book"><img src="/images/library/005.png" width="250px"><div class="overlay"><span class="title">COMICS</span></div></li></ul></div><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.8cc81bfbc6216e5353e7.js"></script></body><script>(function() {
+        }</style><link href="/css/styles.c6120c67c82cba3af7ca.css" rel="stylesheet"><body><div class="library"><h1>Home Library</h1><p>My personal library — feel free to read and scan in-house</p></div><div class="section"><ul class="library-items"><li data-id="game" data-type="library"><img src="/images/library/001.png" width="250px"><div class="overlay"><span class="title">GAME</span></div></li><li data-id="culture" data-type="library"><img src="/images/library/004.png" width="250px"><div class="overlay"><span class="title">CULTURE</span></div></li><li data-id="design" data-type="library"><img src="/images/library/002.png" width="250px"><div class="overlay"><span class="title">DESIGN</span></div></li><li data-id="law" data-type="library"><img src="/images/library/003.png" width="250px"><div class="overlay"><span class="title">LAW</span></div></li></ul></div><div class="books"><h1>Self-Published Books</h1><p>Using home printers to produce compact books of all kinds — from chapbooks to catalogs and handy guides</p></div><div class="section"><ul class="book-items"><li data-id="ground-ip" data-type="book"><img src="/images/library/005.png" width="250px"><div class="overlay"><span class="title">GROUND IP</span></div></li><li data-id="shadow-chapbooks" data-type="book"><img src="/images/library/005.png" width="250px"><div class="overlay"><span class="title">SHADOW CHAPBOOKS</span></div></li><li data-id="comics" data-type="book"><img src="/images/library/005.png" width="250px"><div class="overlay"><span class="title">COMICS</span></div></li></ul></div><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.923a4956a6272bdc4c0a.js"></script></body><script>(function() {
 
             console.log('[Library] Page script starting at:', new Date().toISOString());
             
@@ -197,6 +197,39 @@
     } else if (typeof window.loadPage === 'function') {
         window.loadPage('law');
     }
+} else if (itemId === 'culture') {
+                    // 在导航前先清理 culture 页面的旧状态
+                    if (window.cleanupCulturePage) {
+                        window.cleanupCulturePage();
+                    }
+                    
+                    if (window.router && window.router.navigate) {
+                        window.router.navigate('culture');
+                    } else if (typeof window.loadPage === 'function') {
+                        window.loadPage('culture');
+                    }
+                } else if (itemId === 'game') {
+                    // 在导航前先清理 game 页面的旧状态
+                    if (window.cleanupGamePage) {
+                        window.cleanupGamePage();
+                    }
+                    
+                    if (window.router && window.router.navigate) {
+                        window.router.navigate('game');
+                    } else if (typeof window.loadPage === 'function') {
+                        window.loadPage('game');
+                    }
+                } else if (itemId === 'design') {
+                    // 在导航前先清理 design 页面的旧状态
+                    if (window.cleanupDesignPage) {
+                        window.cleanupDesignPage();
+                    }
+                    
+                    if (window.router && window.router.navigate) {
+                        window.router.navigate('design');
+                    } else if (typeof window.loadPage === 'function') {
+                        window.loadPage('design');
+                    }
 } else {
                         // 其他项目导航到通用详情页（如果需要）
                         console.log(`Navigate to ${itemId} page (not implemented yet)`);
