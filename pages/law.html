@@ -304,22 +304,23 @@
             margin-top: 54px;
         }
 
- .books{
-font-size: 16px;
-}
-  .book-btn {
-        display: flex;
-        gap: 5px;
-        position: absolute;
-        bottom: 10px;
-    }
+        .books {
+            font-size: 16px;
+        }
 
-       .book-description {
-        flex: 1;
-        margin-left: 10px;
-        display: flex;
-        flex-direction: column;
-    }
+        .book-btn {
+            display: flex;
+            gap: 5px;
+            position: absolute;
+            bottom: 10px;
+        }
+
+        .book-description {
+            flex: 1;
+            margin-left: 10px;
+            display: flex;
+            flex-direction: column;
+        }
 
     }</style><link href="/css/styles.c6120c67c82cba3af7ca.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>LAW</h1><a data-page="print" class="back-btn">← BACK TO LIBRARY</a></div><div class="books" id="booksContainer"></div></div><div class="modal" id="noteModal"><div class="modal-content"><div class="modal-header"><h2 id="modalBookTitle">Book Notes</h2><button class="close-btn" onclick="closeNoteModal()">×</button></div><div class="note-form"><div style="display: flex; gap: 10px; margin-bottom: 10px;"><input type="number" id="pageStart" placeholder="起始页" style="width: 100px; padding: 5px; border: 2px solid black;" oninput="this.style.borderColor='black'"> <span style="line-height: 30px;">-</span> <input type="number" id="pageEnd" placeholder="结束页" style="width: 100px; padding: 5px; border: 2px solid black;"></div><textarea id="noteContent" placeholder="Write your note here..."></textarea> <button onclick="saveNote()">Add Note</button></div><div class="notes-list" id="notesList"><div class="loading">Loading notes...</div></div></div></div><script>(function () {
             let bookNotesCache = {};
@@ -328,23 +329,23 @@ font-size: 16px;
             let currentBookId = null;
 
             console.log('Law页面开始加载');
-    console.log('BOOKS_DATA 状态:', typeof window.BOOKS_DATA !== 'undefined' ? '已加载' : '未加载');
-    console.log('supabase 状态:', typeof supabase !== 'undefined' ? '已加载' : '未加载');
+            console.log('BOOKS_DATA 状态:', typeof window.BOOKS_DATA !== 'undefined' ? '已加载' : '未加载');
+            console.log('supabase 状态:', typeof supabase !== 'undefined' ? '已加载' : '未加载');
 
 
 
 
-  // 新增：动态生成书籍列表
-  function renderBooks() {
-        const booksContainer = document.getElementById('booksContainer');
-        const lawBooks = Object.values(window.BOOKS_DATA).filter(book => book.category === 'law');
-        
-        if (lawBooks.length === 0) {
-            booksContainer.innerHTML = '<div class="empty-message">暂无法律类书籍</div>';
-            return;
-        }
+            // 新增：动态生成书籍列表
+            function renderBooks() {
+                const booksContainer = document.getElementById('booksContainer');
+                const lawBooks = Object.values(window.BOOKS_DATA).filter(book => book.category === 'law');
 
-        booksContainer.innerHTML = lawBooks.map(book => `
+                if (lawBooks.length === 0) {
+                    booksContainer.innerHTML = '<div class="empty-message">暂无法律类书籍</div>';
+                    return;
+                }
+
+                booksContainer.innerHTML = lawBooks.map(book => `
             <div class="book" data-book-id="${book.id}" data-book-title="${book.title}">
                 <div class="book-img">
                     <img src="${book.imgSrc}" alt="${book.title}" onerror="this.src='/images/default-book.jpg'">
@@ -352,102 +353,102 @@ font-size: 16px;
                 <div class="book-description">
                     <div class="book-title">${book.title}</div>
                     <div class="book-meta">
-                        ${book.author}${book.translator ? ' / ' + book.translator : ''} / ${book.publisher} / ${book.publishDate}${book.pages ? ' / 页数: ' + book.pages : ''}
+                        ${book.author}${book.translator ? ' / ' + book.translator : ''} / ${book.publisher} / ${book.publishDate}${book.pages ? ' / Pages: ' + book.pages : ''}
                     </div>
                 </div>
             </div>
         `).join('');
-    }
+            }
 
-    async function waitForDependencies() {
-        return new Promise((resolve) => {
-            const checkDependencies = setInterval(() => {
-                if (typeof supabase !== 'undefined' && window.BOOKS_DATA) {
-                    clearInterval(checkDependencies);
-                    resolve();
+            async function waitForDependencies() {
+                return new Promise((resolve) => {
+                    const checkDependencies = setInterval(() => {
+                        if (typeof supabase !== 'undefined' && window.BOOKS_DATA) {
+                            clearInterval(checkDependencies);
+                            resolve();
+                        }
+                    }, 100);
+                });
+            }
+
+
+            async function initLaw() {
+                console.log('开始初始化Law页面');
+
+                // 等待依赖项加载
+                await waitForDependencies();
+
+                // 渲染书籍列表
+                renderBooks();
+
+                await checkUser();
+                initializeBookButtons(); // 初始化书籍按钮和笔记区域
+                await updateBookCounts(); // 更新计数
+
+                // ========== 新增：检查是否需要滚动到特定书籍 ==========
+                const scrollToBookId = sessionStorage.getItem('scrollToBookId');
+                const shouldOpenNotes = sessionStorage.getItem('openNotesArea');
+
+                if (scrollToBookId) {
+                    // 清除 sessionStorage
+                    sessionStorage.removeItem('scrollToBookId');
+                    sessionStorage.removeItem('openNotesArea');
+
+                    // 等待页面渲染完成
+                    setTimeout(async () => {
+                        const bookElement = document.querySelector(`.book[data-book-id="${scrollToBookId}"]`);
+                        if (bookElement) {
+                            // 滚动到书籍位置
+                            bookElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+
+                            // 添加高亮效果
+                            bookElement.style.backgroundColor = 'black';
+                            bookElement.style.color = 'white';
+                            bookElement.style.borderColor = 'white'; // 边框变白
+
+                            const innerElements = bookElement.querySelectorAll('*');
+                            const bookBtnDivs = bookElement.querySelectorAll('.book-btn > div'); // 特别选择按钮元素
+
+                            innerElements.forEach(el => {
+                                el.style.color = 'white';
+                            });
+
+                            // 特别处理按钮边框
+                            bookBtnDivs.forEach(btn => {
+                                btn.style.borderColor = 'white';
+                            });
+
+                            setTimeout(() => {
+                                bookElement.style.backgroundColor = '';
+                                bookElement.style.color = '';
+                                bookElement.style.borderColor = ''; // 恢复边框颜色
+
+                                // 恢复内部元素的颜色
+                                innerElements.forEach(el => {
+                                    el.style.color = '';
+                                });
+
+                                // 恢复按钮边框颜色
+                                bookBtnDivs.forEach(btn => {
+                                    btn.style.borderColor = '';
+                                });
+                            }, 1500);
+
+                            // 如果需要打开笔记区域
+                            if (shouldOpenNotes === 'true') {
+                                const bookTitle = bookElement.dataset.bookTitle;
+                                // 再等待一下，确保滚动完成
+                                setTimeout(() => {
+                                    toggleNotesArea(scrollToBookId, bookTitle);
+                                }, 500);
+                            }
+                        }
+                    }, 300);
+
+
                 }
-            }, 100);
-        });
-    }
-       
-
-    async function initLaw() {
-        console.log('开始初始化Law页面');
-        
-        // 等待依赖项加载
-        await waitForDependencies();
-        
-        // 渲染书籍列表
-        renderBooks();
-        
-        await checkUser();
-        initializeBookButtons(); // 初始化书籍按钮和笔记区域
-        await updateBookCounts(); // 更新计数
-
- // ========== 新增：检查是否需要滚动到特定书籍 ==========
- const scrollToBookId = sessionStorage.getItem('scrollToBookId');
-    const shouldOpenNotes = sessionStorage.getItem('openNotesArea');
-
-    if (scrollToBookId) {
-        // 清除 sessionStorage
-        sessionStorage.removeItem('scrollToBookId');
-        sessionStorage.removeItem('openNotesArea');
-        
-        // 等待页面渲染完成
-        setTimeout(async () => {
-            const bookElement = document.querySelector(`.book[data-book-id="${scrollToBookId}"]`);
-            if (bookElement) {
-                // 滚动到书籍位置
-                bookElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
-              
-            // 添加高亮效果
-        bookElement.style.backgroundColor = 'black';
-        bookElement.style.color = 'white';
-        bookElement.style.borderColor = 'white'; // 边框变白
-        
-        const innerElements = bookElement.querySelectorAll('*');
-        const bookBtnDivs = bookElement.querySelectorAll('.book-btn > div'); // 特别选择按钮元素
-        
-        innerElements.forEach(el => {
-            el.style.color = 'white';
-        });
-        
-        // 特别处理按钮边框
-        bookBtnDivs.forEach(btn => {
-            btn.style.borderColor = 'white';
-        });
-        
-        setTimeout(() => {
-            bookElement.style.backgroundColor = '';
-            bookElement.style.color = '';
-            bookElement.style.borderColor = ''; // 恢复边框颜色
-            
-            // 恢复内部元素的颜色
-            innerElements.forEach(el => {
-                el.style.color = '';
-            });
-            
-            // 恢复按钮边框颜色
-            bookBtnDivs.forEach(btn => {
-                btn.style.borderColor = '';
-            });
-        }, 1500);
-        
-        // 如果需要打开笔记区域
-        if (shouldOpenNotes === 'true') {
-            const bookTitle = bookElement.dataset.bookTitle;
-            // 再等待一下，确保滚动完成
-            setTimeout(() => {
-                toggleNotesArea(scrollToBookId, bookTitle);
-            }, 500);
-        }
-    }
-}, 300);
-                
-        
-    }
-    }
+            }
 
             // 新增：初始化书籍按钮和笔记区域
             function initializeBookButtons() {
@@ -459,8 +460,8 @@ font-size: 16px;
                     const bookDescription = book.querySelector('.book-description');
 
                     if (book.querySelector('.book-btn')) {
-                return; // 如果已经初始化，跳过
-            }
+                        return; // 如果已经初始化，跳过
+                    }
 
 
                     // 创建按钮区域
@@ -594,35 +595,35 @@ font-size: 16px;
                         book.querySelector('.note-count').textContent = noteCountMap[bookId] || 0;
 
                         if (wantBtn && readBtn) {
-                // 更新计数（无论是否登录都更新）
-                const wantCountEl = book.querySelector('.want-count');
-                const readCountEl = book.querySelector('.read-count');
-                const noteCountEl = book.querySelector('.note-count');
-                
-                if (wantCountEl) wantCountEl.textContent = wantCountMap[bookId] || 0;
-                if (readCountEl) readCountEl.textContent = readingCountMap[bookId] || 0;
-                if (noteCountEl) noteCountEl.textContent = noteCountMap[bookId] || 0;
+                            // 更新计数（无论是否登录都更新）
+                            const wantCountEl = book.querySelector('.want-count');
+                            const readCountEl = book.querySelector('.read-count');
+                            const noteCountEl = book.querySelector('.note-count');
 
-                // 更新状态（如果用户已登录）
-                if (currentUser) {
-                    if (userWants.has(bookId)) {
-                        wantBtn.classList.add('active');
-                    } else {
-                        wantBtn.classList.remove('active');
-                    }
+                            if (wantCountEl) wantCountEl.textContent = wantCountMap[bookId] || 0;
+                            if (readCountEl) readCountEl.textContent = readingCountMap[bookId] || 0;
+                            if (noteCountEl) noteCountEl.textContent = noteCountMap[bookId] || 0;
 
-                    if (userReadings.has(bookId)) {
-                        readBtn.classList.add('active');
-                    } else {
-                        readBtn.classList.remove('active');
-                    }
-                } else {
-                    // 未登录时移除active状态
-                    wantBtn.classList.remove('active');
-                    readBtn.classList.remove('active');
-                }
-            }
-        });
+                            // 更新状态（如果用户已登录）
+                            if (currentUser) {
+                                if (userWants.has(bookId)) {
+                                    wantBtn.classList.add('active');
+                                } else {
+                                    wantBtn.classList.remove('active');
+                                }
+
+                                if (userReadings.has(bookId)) {
+                                    readBtn.classList.add('active');
+                                } else {
+                                    readBtn.classList.remove('active');
+                                }
+                            } else {
+                                // 未登录时移除active状态
+                                wantBtn.classList.remove('active');
+                                readBtn.classList.remove('active');
+                            }
+                        }
+                    });
 
                 } catch (error) {
                     console.error('更新计数失败:', error);
@@ -792,9 +793,9 @@ font-size: 16px;
             // 打开笔记Modal
             window.openNoteModal = async function (bookId, bookTitle) {
                 if (!currentUser) {
-        alert('请先登录');
-        return;
-    }
+                    alert('请先登录');
+                    return;
+                }
                 currentBookId = bookId;
 
                 const modal = document.getElementById('noteModal');
@@ -866,47 +867,54 @@ font-size: 16px;
                 }
             }
 
-            // 显示当前笔记
-            async function displayCurrentNote(bookId) {
 
-                const notes = bookNotesCache[bookId] || [];
-                const currentIndex = currentNoteIndex[bookId] || 0;
-                const noteContainer = document.getElementById(`current-note-${bookId}`);
+        // 显示当前笔记
+async function displayCurrentNote(bookId) {
+    const notes = bookNotesCache[bookId] || [];
+    const currentIndex = currentNoteIndex[bookId] || 0;
+    const noteContainer = document.getElementById(`current-note-${bookId}`);
 
-                if (notes.length === 0) {
-                    noteContainer.innerHTML = '<div class="empty-notes">还没有笔记</div>';
-                    document.getElementById(`current-note-index-${bookId}`).textContent = '0';
-                    return;
-                }
+    if (notes.length === 0) {
+        noteContainer.innerHTML = '<div class="empty-notes">还没有笔记</div>';
+        document.getElementById(`current-note-index-${bookId}`).textContent = '0';
+        return;
+    }
 
-                const note = notes[currentIndex];
+    const note = notes[currentIndex];
 
-                // 获取用户信息
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('manifesto')
-                    .eq('user_id', note.user_id)
-                    .single();
+    // 获取用户信息
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('manifesto')
+        .eq('user_id', note.user_id)
+        .single();
 
-                const userName = profile?.manifesto || 'Anonymous';
-                const createdDate = new Date(note.created_at).toLocaleDateString('zh-CN');
+    const userName = profile?.manifesto || 'Anonymous';
+    const createdDate = new Date(note.created_at).toLocaleDateString('zh-CN');
 
-                let pageInfo = '';
-                if (note.page_start && note.page_end) {
-                    pageInfo = `P${note.page_start}-${note.page_end}`;
-                } else if (note.page_start) {
-                    pageInfo = `P${note.page_start}`;
-                }
+    let pageInfo = '';
+    if (note.page_start && note.page_end) {
+        pageInfo = `P${note.page_start}-${note.page_end}`;
+    } else if (note.page_start) {
+        pageInfo = `P${note.page_start}`;
+    }
 
-                // 检查是否是当前用户的笔记
-                const isOwner = currentUser && currentUser.id === note.user_id;
-                const actionButtons = isOwner ? `
+    // 检查是否是当前用户的笔记
+    const isOwner = currentUser && currentUser.id === note.user_id;
+    const actionButtons = isOwner ? `
         <span class="note-delete" onclick="editNoteFromArea('${note.id}', '${bookId}', ${note.page_start}, ${note.page_end})" style="cursor: pointer; margin-left: 15px;">编辑</span>
         <span class="note-delete" onclick="deleteNoteFromArea('${note.id}', '${bookId}')" style="cursor: pointer; margin-left: 10px;">删除</span>
     ` : '';
 
+    // 添加打印按钮
+    const printButton = `
+        <button class="print-btn" onclick="printNote('${bookId}', ${currentIndex})" style="background: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin: 10px 0; font-size: 14px;">
+            打印笔记
+        </button>
+    `;
 
-                noteContainer.innerHTML = `
+    noteContainer.innerHTML = `
+        ${printButton}
         <div class="current-note-content" id="area-note-content-${note.id}">${note.content}</div>
         <div class="current-note-meta">
             <span>${pageInfo ? pageInfo + ' · ' : ''}${userName} · ${createdDate}</span>
@@ -914,13 +922,14 @@ font-size: 16px;
         </div>
     `;
 
+    // 更新当前索引显示
+    document.getElementById(`current-note-index-${bookId}`).textContent = currentIndex + 1;
 
-                // 更新当前索引显示
-                document.getElementById(`current-note-index-${bookId}`).textContent = currentIndex + 1;
+    // 更新左右箭头状态
+    updateNavigationButtons(bookId);
+}
 
-                // 更新左右箭头状态
-                updateNavigationButtons(bookId);
-            }
+
 
             window.deleteNoteFromArea = async function (noteId, bookId) {
                 if (!confirm('确定要删除这条笔记吗？')) {
@@ -984,6 +993,9 @@ font-size: 16px;
     `;
             }
 
+
+
+
             // 新增：保存从展开区域编辑的笔记
             window.saveEditNoteFromArea = async function (noteId, bookId) {
                 const contentElement = document.getElementById(`area-edit-content-${noteId}`);
@@ -1043,6 +1055,9 @@ font-size: 16px;
                 displayCurrentNote(bookId);
             }
 
+
+
+
             // 新增：更新导航按钮状态
             function updateNavigationButtons(bookId) {
                 const notes = bookNotesCache[bookId] || [];
@@ -1084,6 +1099,9 @@ font-size: 16px;
                     displayCurrentNote(bookId);
                 }
             }
+
+
+
 
             async function loadUserNotes(bookId) {
                 const notesList = document.getElementById('notesList');
@@ -1279,4 +1297,4 @@ font-size: 16px;
                 }
             });
 
-        })();</script><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.7c8e3257026b4f300960.js"></script></body>
+        })();</script><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.38c5e8752c5a40c88fe4.js"></script></body>
