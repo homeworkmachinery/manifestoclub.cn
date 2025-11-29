@@ -195,6 +195,8 @@
     .note-content {
         margin-bottom: 10px;
         line-height: 1.6;
+        white-space: pre-wrap;
+ 
     }
 
     .note-meta {
@@ -214,7 +216,9 @@
     .note-delete:hover {
         text-decoration: underline;
     }
-
+    .note-print:hover {
+        text-decoration: underline;
+    }
     .loading {
         text-align: center;
         padding: 20px;
@@ -285,6 +289,8 @@
     .current-note-content {
         margin-bottom: 10px;
         line-height: 1.6;
+        white-space: pre-wrap;
+ 
     }
 
     .current-note-meta {
@@ -327,6 +333,7 @@
             let currentNoteIndex = {};
             let currentUser = null;
             let currentBookId = null;
+            let noteAnnotations = {};
 
             console.log('Law页面开始加载');
             console.log('BOOKS_DATA 状态:', typeof window.BOOKS_DATA !== 'undefined' ? '已加载' : '未加载');
@@ -725,8 +732,11 @@
                 const noteContent = document.getElementById('noteContent');
                 const pageStart = document.getElementById('pageStart');
                 const pageEnd = document.getElementById('pageEnd');
-                const content = noteContent.value.trim();
-
+                const rawContent = noteContent.value.trim();
+                const content = rawContent.split('\n').map(para => {
+    const trimmed = para.trim();
+    return trimmed ? '　　' + trimmed : ''; // 使用全角空格
+}).join('\n');
                 // 移除抖动效果
                 pageStart.classList.remove('input-shake');
                 pageEnd.classList.remove('input-shake');
@@ -880,6 +890,8 @@ async function displayCurrentNote(bookId) {
         return;
     }
 
+
+    
     const note = notes[currentIndex];
 
     // 获取用户信息
@@ -904,17 +916,11 @@ async function displayCurrentNote(bookId) {
     const actionButtons = isOwner ? `
         <span class="note-delete" onclick="editNoteFromArea('${note.id}', '${bookId}', ${note.page_start}, ${note.page_end})" style="cursor: pointer; margin-left: 15px;">编辑</span>
         <span class="note-delete" onclick="deleteNoteFromArea('${note.id}', '${bookId}')" style="cursor: pointer; margin-left: 10px;">删除</span>
+        <span class="note-print" onclick="printNote('${bookId}', ${currentIndex})" style="cursor: pointer; margin-left: 10px;">打印</span>
     ` : '';
 
-    // 添加打印按钮
-    const printButton = `
-        <button class="print-btn" onclick="printNote('${bookId}', ${currentIndex})" style="background: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin: 10px 0; font-size: 14px;">
-            打印笔记
-        </button>
-    `;
-
+ 
     noteContainer.innerHTML = `
-        ${printButton}
         <div class="current-note-content" id="area-note-content-${note.id}">${note.content}</div>
         <div class="current-note-meta">
             <span>${pageInfo ? pageInfo + ' · ' : ''}${userName} · ${createdDate}</span>
@@ -968,13 +974,21 @@ async function displayCurrentNote(bookId) {
             }
 
 
+
+            
+
             // 新增：从展开区域编辑笔记
             window.editNoteFromArea = function (noteId, bookId, pageStart, pageEnd) {
                 const noteContainer = document.getElementById(`current-note-${bookId}`);
                 const noteContentElement = document.getElementById(`area-note-content-${noteId}`);
+               
                 const currentContent = noteContentElement.textContent;
 
-                // 替换为编辑表单
+                if (!noteAnnotations[noteId]) {
+                    noteAnnotations[noteId] = [];
+                }
+
+
                 noteContainer.innerHTML = `
         <div style="margin-bottom: 10px;">
             <div style="display: flex; gap: 10px; margin-bottom: 10px;">
@@ -984,17 +998,144 @@ async function displayCurrentNote(bookId) {
                 <input type="number" id="area-edit-pageEnd-${noteId}" value="${pageEnd || ''}" placeholder="结束页" 
                     style="width: 100px; padding: 5px; border: 2px solid black;">
             </div>
-            <textarea id="area-edit-content-${noteId}" style="width: 100%; min-height: 80px; padding: 10px; border: 2px solid black; font-family: inherit; font-size: 14px; resize: vertical;">${currentContent}</textarea>
+            <div style="margin-bottom: 10px;">
+                <button onclick="addAnnotationFromArea('${noteId}', '${bookId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">添加注解</button>
+                <span style="margin-left: 10px; font-size: 12px; color: #666;">选中文字后点击此按钮</span>
+            </div>
+            <div id="area-edit-content-${noteId}" contenteditable="true" style="width: 100%; min-height: 120px; padding: 10px; border: 2px solid black; font-family: inherit; font-size: 14px; overflow-y: auto; white-space: pre-wrap;">${currentContent}</div>
+            <div id="area-annotations-${noteId}" style="margin-top: 15px; padding-top: 15px; border-top: 2px solid black;">
+                <!-- 注解列表将在这里显示 -->
+            </div>
         </div>
         <div style="display: flex; gap: 10px;">
             <button onclick="saveEditNoteFromArea('${noteId}', '${bookId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">保存</button>
             <button onclick="cancelEditNoteFromArea('${bookId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">取消</button>
         </div>
     `;
+
+    // 渲染已有注解
+    renderAnnotationsFromArea(noteId);
             }
 
 
+            window.addAnnotationFromArea = function(noteId, bookId) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount || selection.isCollapsed) {
+        alert('请先选中需要注解的文字');
+        return;
+    }
 
+    const selectedText = selection.toString();
+    const range = selection.getRangeAt(0);
+    const editContent = document.getElementById(`area-edit-content-${noteId}`);
+    
+    // 确保选区在编辑区域内
+    if (!editContent.contains(range.commonAncestorContainer)) {
+        alert('请在笔记内容区域选择文字');
+        return;
+    }
+
+    // 创建注解
+    const annotationNumber = noteAnnotations[noteId].length + 1;
+    const annotation = {
+        id: Date.now(),
+        number: annotationNumber,
+        text: selectedText,
+        note: ''
+    };
+
+    // 在选中文字后插入带圈数字
+    const circledNumber = getCircledNumber(annotationNumber);
+    const span = document.createElement('span');
+    span.style.color = '#0066cc';
+    span.style.fontSize = '0.85em';
+    span.style.verticalAlign = 'super';
+    span.textContent = circledNumber;
+    
+    range.collapse(false);
+    range.insertNode(span);
+
+    // 保存注解
+    noteAnnotations[noteId].push(annotation);
+    
+    // 清除选区
+    selection.removeAllRanges();
+    
+    // 重新渲染注解列表
+    renderAnnotationsFromArea(noteId);
+}
+
+// 渲染展开区域的注解列表
+function renderAnnotationsFromArea(noteId) {
+    const annotationsContainer = document.getElementById(`area-annotations-${noteId}`);
+    if (!annotationsContainer) return;
+
+    const annotations = noteAnnotations[noteId] || [];
+    
+    if (annotations.length === 0) {
+        annotationsContainer.innerHTML = '<div style="color: #999; font-size: 14px;">暂无注解</div>';
+        return;
+    }
+
+    annotationsContainer.innerHTML = `
+        <div style="font-weight: bold; margin-bottom: 10px;">注解:</div>
+        ${annotations.map(ann => `
+            <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; background-color: #f9f9f9;">
+                <div style="margin-bottom: 5px;">
+                    <span style="color: #0066cc; font-weight: bold;">${getCircledNumber(ann.number)}</span>
+                    <span style="color: #666; font-size: 14px;">"${ann.text}"</span>
+                    <button onclick="deleteAnnotationFromArea('${noteId}', ${ann.id})" style="float: right; padding: 2px 8px; border: 1px solid black; background: white; cursor: pointer; font-size: 12px;">删除</button>
+                </div>
+                <textarea id="area-annotation-note-${ann.id}" style="width: 100%; min-height: 60px; padding: 5px; border: 1px solid #ccc; font-size: 13px;" placeholder="在此输入注解内容...">${ann.note}</textarea>
+            </div>
+        `).join('')}
+    `;
+
+    // 绑定textarea的change事件
+    annotations.forEach(ann => {
+        const textarea = document.getElementById(`area-annotation-note-${ann.id}`);
+        if (textarea) {
+            textarea.addEventListener('input', function() {
+                const annotation = noteAnnotations[noteId].find(a => a.id === ann.id);
+                if (annotation) {
+                    annotation.note = this.value;
+                }
+            });
+        }
+    });
+}
+
+// 从展开区域删除注解
+window.deleteAnnotationFromArea = function(noteId, annotationId) {
+    if (!confirm('确定删除这条注解吗？')) return;
+
+    const index = noteAnnotations[noteId].findIndex(a => a.id === annotationId);
+    if (index === -1) return;
+
+    // 删除注解
+    noteAnnotations[noteId].splice(index, 1);
+
+    // 重新编号
+    noteAnnotations[noteId].forEach((ann, idx) => {
+        ann.number = idx + 1;
+    });
+
+    // 重新渲染整个内容区域和注解
+    const editContent = document.getElementById(`area-edit-content-${noteId}`);
+    const html = editContent.innerHTML;
+    
+    // 移除所有带圈数字标记
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    tempDiv.querySelectorAll('span[style*="color: rgb(0, 102, 204)"]').forEach(span => {
+        span.remove();
+    });
+    
+    editContent.innerHTML = tempDiv.innerHTML;
+
+    // 重新渲染注解列表
+    renderAnnotationsFromArea(noteId);
+}
 
             // 新增：保存从展开区域编辑的笔记
             window.saveEditNoteFromArea = async function (noteId, bookId) {
@@ -1002,7 +1143,11 @@ async function displayCurrentNote(bookId) {
                 const pageStartElement = document.getElementById(`area-edit-pageStart-${noteId}`);
                 const pageEndElement = document.getElementById(`area-edit-pageEnd-${noteId}`);
 
-                const content = contentElement.value.trim();
+                const rawContent = contentElement.textContent.trim(); 
+                const content = rawContent.split('\n').map(para => {
+        const trimmed = para.trim();
+        return trimmed ? '　　' + trimmed : '';
+    }).join('\n');
                 const pageStart = pageStartElement.value;
                 const pageEnd = pageEndElement.value;
 
@@ -1164,8 +1309,11 @@ async function displayCurrentNote(bookId) {
                 const noteContentElement = document.getElementById(`note-content-${noteId}`);
                 const noteItemElement = document.getElementById(`note-item-${noteId}`);
                 const currentContent = noteContentElement.textContent;
+                
+                if (!noteAnnotations[noteId]) {
+                    noteAnnotations[noteId] = [];
+                }
 
-                // 替换为编辑表单
                 noteItemElement.innerHTML = `
         <div style="margin-bottom: 10px;">
             <div style="display: flex; gap: 10px; margin-bottom: 10px;">
@@ -1177,13 +1325,153 @@ async function displayCurrentNote(bookId) {
                     style="width: 100px; padding: 5px; border: 2px solid black;"
                     oninput="this.style.borderColor='black'">
             </div>
-            <textarea id="edit-content-${noteId}" style="width: 100%; min-height: 80px; padding: 10px; border: 2px solid black; font-family: inherit; font-size: 14px; resize: vertical;">${currentContent}</textarea>
+            <div style="margin-bottom: 10px;">
+                <button onclick="addAnnotation('${noteId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">添加注解</button>
+                <span style="margin-left: 10px; font-size: 12px; color: #666;">选中文字后点击此按钮</span>
+            </div>
+            <div id="edit-content-${noteId}" contenteditable="true" style="width: 100%; min-height: 120px; padding: 10px; border: 2px solid black; font-family: inherit; font-size: 14px; overflow-y: auto; white-space: pre-wrap;">${currentContent}</div>
+            <div id="annotations-${noteId}" style="margin-top: 15px; padding-top: 15px; border-top: 2px solid black;">
+                <!-- 注解列表将在这里显示 -->
+            </div>
         </div>
         <div style="display: flex; gap: 10px;">
             <button onclick="saveEditNote('${noteId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">保存</button>
             <button onclick="cancelEditNote('${noteId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">取消</button>
         </div>
     `;
+
+                // 渲染已有注解
+                renderAnnotations(noteId);
+            }
+
+            // 添加注解
+            window.addAnnotation = function(noteId) {
+                const selection = window.getSelection();
+                if (!selection.rangeCount || selection.isCollapsed) {
+                    alert('请先选中需要注解的文字');
+                    return;
+                }
+
+                const selectedText = selection.toString();
+                const range = selection.getRangeAt(0);
+                const editContent = document.getElementById(`edit-content-${noteId}`);
+                
+                // 确保选区在编辑区域内
+                if (!editContent.contains(range.commonAncestorContainer)) {
+                    alert('请在笔记内容区域选择文字');
+                    return;
+                }
+
+                // 创建注解
+                const annotationNumber = noteAnnotations[noteId].length + 1;
+                const annotation = {
+                    id: Date.now(),
+                    number: annotationNumber,
+                    text: selectedText,
+                    note: ''
+                };
+
+                // 在选中文字后插入带圈数字
+                const circledNumber = getCircledNumber(annotationNumber);
+                const span = document.createElement('span');
+                span.style.color = '#0066cc';
+                span.style.fontSize = '0.85em';
+                span.style.verticalAlign = 'super';
+                span.textContent = circledNumber;
+                
+                range.collapse(false);
+                range.insertNode(span);
+
+                // 保存注解
+                noteAnnotations[noteId].push(annotation);
+                
+                // 清除选区
+                selection.removeAllRanges();
+                
+                // 重新渲染注解列表
+                renderAnnotations(noteId);
+            }
+
+            
+            function getCircledNumber(num) {
+                const circledNumbers = ['⓪','①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩',
+                                       '⑪','⑫','⑬','⑭','⑮','⑯','⑰','⑱','⑲','⑳'];
+                if (num <= 20) {
+                    return circledNumbers[num];
+                }
+                return `(${num})`;
+            }
+
+            // 渲染注解列表
+            function renderAnnotations(noteId) {
+                const annotationsContainer = document.getElementById(`annotations-${noteId}`);
+                if (!annotationsContainer) return;
+
+                const annotations = noteAnnotations[noteId] || [];
+                
+                if (annotations.length === 0) {
+                    annotationsContainer.innerHTML = '<div style="color: #999; font-size: 14px;">暂无注解</div>';
+                    return;
+                }
+
+                annotationsContainer.innerHTML = `
+                    <div style="font-weight: bold; margin-bottom: 10px;">注解:</div>
+                    ${annotations.map(ann => `
+                        <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; background-color: #f9f9f9;">
+                            <div style="margin-bottom: 5px;">
+                                <span style="color: #0066cc; font-weight: bold;">${getCircledNumber(ann.number)}</span>
+                                <span style="color: #666; font-size: 14px;">"${ann.text}"</span>
+                                <button onclick="deleteAnnotation('${noteId}', ${ann.id})" style="float: right; padding: 2px 8px; border: 1px solid black; background: white; cursor: pointer; font-size: 12px;">删除</button>
+                            </div>
+                            <textarea id="annotation-note-${ann.id}" style="width: 100%; min-height: 60px; padding: 5px; border: 1px solid #ccc; font-size: 13px;" placeholder="在此输入注解内容...">${ann.note}</textarea>
+                        </div>
+                    `).join('')}
+                `;
+
+                // 绑定textarea的change事件
+                annotations.forEach(ann => {
+                    const textarea = document.getElementById(`annotation-note-${ann.id}`);
+                    if (textarea) {
+                        textarea.addEventListener('input', function() {
+                            const annotation = noteAnnotations[noteId].find(a => a.id === ann.id);
+                            if (annotation) {
+                                annotation.note = this.value;
+                            }
+                        });
+                    }
+                });
+            }
+
+            // 删除注解
+            window.deleteAnnotation = function(noteId, annotationId) {
+                if (!confirm('确定删除这条注解吗？')) return;
+
+                const index = noteAnnotations[noteId].findIndex(a => a.id === annotationId);
+                if (index === -1) return;
+
+                // 删除注解
+                noteAnnotations[noteId].splice(index, 1);
+
+                // 重新编号
+                noteAnnotations[noteId].forEach((ann, idx) => {
+                    ann.number = idx + 1;
+                });
+
+                // 重新渲染整个内容区域和注解
+                const editContent = document.getElementById(`edit-content-${noteId}`);
+                const html = editContent.innerHTML;
+                
+                // 移除所有带圈数字标记
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                tempDiv.querySelectorAll('span[style*="color: rgb(0, 102, 204)"]').forEach(span => {
+                    span.remove();
+                });
+                
+                editContent.innerHTML = tempDiv.innerHTML;
+
+                // 重新添加标记（这里简化处理，实际使用中可能需要更复杂的逻辑）
+                renderAnnotations(noteId);
             }
 
             // 保存编辑的笔记
@@ -1192,7 +1480,11 @@ async function displayCurrentNote(bookId) {
                 const pageStartElement = document.getElementById(`edit-pageStart-${noteId}`);
                 const pageEndElement = document.getElementById(`edit-pageEnd-${noteId}`);
 
-                const content = contentElement.value.trim();
+                const rawContent = contentElement.value.trim();
+                const content = rawContent.split('\n').map(para => {
+        const trimmed = para.trim();
+        return trimmed ? '　　' + trimmed : '';
+    }).join('\n');
                 const pageStart = pageStartElement.value;
                 const pageEnd = pageEndElement.value;
 
@@ -1290,6 +1582,153 @@ async function displayCurrentNote(bookId) {
             }
 
 
+
+            // 打印笔记功能
+            window.printNote = function(bookId, noteIndex) {
+                const notes = bookNotesCache[bookId] || [];
+                if (notes.length === 0 || noteIndex >= notes.length) {
+                    alert('没有可打印的笔记');
+                    return;
+                }
+
+                const note = notes[noteIndex];
+                const bookData = window.BOOKS_DATA[bookId];
+                const bookTitle = bookData ? bookData.title : '未知书籍';
+                const bookImgSrc = bookData ? bookData.imgSrc : '';
+                // 创建打印窗口
+                const printWindow = window.open('', '_blank');
+                
+                let pageInfo = '';
+                if (note.page_start && note.page_end) {
+                    pageInfo = `P${note.page_start}-${note.page_end}`;
+                } else if (note.page_start) {
+                    pageInfo = `P${note.page_start}`;
+                }
+
+                const printContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>打印笔记 - ${bookTitle}</title>
+                        <style>
+                            body {
+                                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                                padding: 40px;
+                                max-width: 800px;
+                                margin: 0 auto;
+                            }
+                            .book-meta {
+                    font-size: 16px;
+                    margin-bottom: 15px;
+                    line-height: 1.6;
+                    text-align: center;
+                }
+                            .book-title {
+                                font-size: 24px;
+                                font-weight: bold;
+                                margin-bottom: 10px;
+                                text-align: center;
+                            }
+                            .page-info {
+                                margin-top: -5px;
+                                font-size: 16px;
+                                text-align: center;
+                            }
+                          
+                            .header {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    margin-bottom: 20px;
+                    width: 100%;
+                }
+
+                            .book-cover {
+                    width: 250px;          
+                    object-fit: cover;
+                    margin-bottom: 20px;
+                }
+                .book-info {
+                    text-align: center;
+                    width: 100%;
+                }
+                .book-title {
+                    font-size: 28px;
+                    font-weight: bold;
+                    margin-bottom: 15px;
+                    text-align: center;
+                }
+
+                            .note-content {
+                                font-size: 16px;
+                                line-height: 1.6;
+                                white-space: pre-wrap;
+                             
+    
+                            }
+
+                            .print-date {
+                                margin-top: 30px;
+                                font-size: 14px;
+                                text-align: center;
+                                line-height: 1.6;
+                            }
+
+                            @media print {
+                                body {
+                                    align-items: center;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                ${bookImgSrc ? `
+                    <img class="book-cover" src="${bookImgSrc}" alt="${bookTitle}" onerror="this.style.display='none'">
+                ` : ''}
+                <div class="book-info">
+                    <div class="book-title">${bookTitle}</div>
+                    <div class="book-meta">
+                        ${bookData ? `
+                            ${bookData.author || ''}
+                            ${bookData.translator ? ' / ' + bookData.translator : ''}
+                            ${bookData.publisher ? ' / ' + bookData.publisher : ''}
+                            ${bookData.publishDate ? ' / ' + bookData.publishDate : ''}
+                        ` : ''}
+                    </div>
+                    ${pageInfo ? `<div class="page-info">${pageInfo}</div>` : ''}
+                </div>
+            </div>
+
+                        
+                        <div class="note-content">${note.content}</div>
+                        <div class="print-date">
+                CREATED AT: ${new Date(note.created_at).toLocaleString('zh-CN')}<br>
+                PRINTED AT: ${new Date().toLocaleString('zh-CN')}
+            </div>
+            <script>
+                window.onload = function() {
+                    // 延迟打印以确保图片加载完成
+                    setTimeout(function() {
+                        window.print();
+                        // 打印后5秒自动关闭窗口
+                        setTimeout(function() {
+                            window.close();
+                        }, 5000);
+                    }, 500);
+                }
+            <\\/script>
+                    <\\/body>
+                    <\\/html>
+                `;
+
+                printWindow.document.write(printContent);
+                printWindow.document.close();
+            };
+
+
             // 点击Modal外部关闭
             document.getElementById('noteModal').addEventListener('click', function (e) {
                 if (e.target === this) {
@@ -1297,4 +1736,4 @@ async function displayCurrentNote(bookId) {
                 }
             });
 
-        })();</script><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.38c5e8752c5a40c88fe4.js"></script></body>
+        })();</script><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.a39d89864bb5601ead06.js"></script></body>
