@@ -298,7 +298,36 @@
         color: #666;
     }
 
+/* 在CSS末尾添加注解样式 */
+.note-annotations {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px solid #eee;
+}
 
+.annotations-section {
+    font-size: 14px;
+}
+
+.annotations-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #666;
+}
+
+.annotation-item {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.annotation-marker {
+    color: black;
+    margin-right: 10px;
+}
+
+.annotation-text {
+    color: #333;
+}
 
     @media(max-width:899px) {
         .nav-header {
@@ -913,18 +942,24 @@ async function displayCurrentNote(bookId) {
 
     // 检查是否是当前用户的笔记
     const isOwner = currentUser && currentUser.id === note.user_id;
-    const actionButtons = isOwner ? `
+   const ownerButtons = isOwner ? `
         <span class="note-delete" onclick="editNoteFromArea('${note.id}', '${bookId}', ${note.page_start}, ${note.page_end})" style="cursor: pointer; margin-left: 15px;">编辑</span>
         <span class="note-delete" onclick="deleteNoteFromArea('${note.id}', '${bookId}')" style="cursor: pointer; margin-left: 10px;">删除</span>
-        <span class="note-print" onclick="printNote('${bookId}', ${currentIndex})" style="cursor: pointer; margin-left: 10px;">打印</span>
     ` : '';
 
+    const printButton = `<span class="note-print" onclick="printNote('${bookId}', ${currentIndex})" style="cursor: pointer; margin-left: 10px;">打印</span>`;
  
+
+    const annotations = await getNoteAnnotations(note.id);
+    const annotationsHtml = renderAnnotationsForDisplay(annotations);
+
+
     noteContainer.innerHTML = `
         <div class="current-note-content" id="area-note-content-${note.id}">${note.content}</div>
         <div class="current-note-meta">
             <span>${pageInfo ? pageInfo + ' · ' : ''}${userName} · ${createdDate}</span>
-            ${actionButtons}
+            ${ownerButtons}
+            ${printButton}
         </div>
     `;
 
@@ -935,6 +970,41 @@ async function displayCurrentNote(bookId) {
     updateNavigationButtons(bookId);
 }
 
+
+async function getNoteAnnotations(noteId) {
+    try {
+        const { data: annotations, error } = await supabase
+            .from('note_annotations')
+            .select('*')
+            .eq('note_id', noteId)
+            .order('display_order', { ascending: true });
+
+        if (error) throw error;
+        return annotations || [];
+    } catch (error) {
+        console.error('获取注解失败:', error);
+        return [];
+    }
+}
+
+
+function renderAnnotationsForDisplay(annotations) {
+    if (!annotations || annotations.length === 0) {
+        return '';
+    }
+
+    return `
+        <div class="annotations-section">
+            <div class="annotations-title">注解:</div>
+            ${annotations.map(ann => `
+                <div class="annotation-item">
+                    <span class="annotation-marker">${getCircledNumber(ann.display_order)}</span>
+                    <span class="annotation-text">${ann.annotation_text}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
 
 
             window.deleteNoteFromArea = async function (noteId, bookId) {
@@ -1078,7 +1148,6 @@ function renderAnnotationsFromArea(noteId) {
     }
 
     annotationsContainer.innerHTML = `
-        <div style="font-weight: bold; margin-bottom: 10px;">注解:</div>
         ${annotations.map(ann => `
             <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; background-color: #f9f9f9;">
                 <div style="margin-bottom: 5px;">
@@ -1180,7 +1249,7 @@ window.deleteAnnotationFromArea = function(noteId, annotationId) {
                         .eq('id', noteId);
 
                     if (error) throw error;
-
+                    await saveAnnotationsToDatabase(noteId, noteAnnotations[noteId] || []);
                     // 重新加载笔记
                     await loadAllNotes(bookId);
                     await updateBookCounts();
@@ -1201,7 +1270,37 @@ window.deleteAnnotationFromArea = function(noteId, annotationId) {
             }
 
 
+            async function saveAnnotationsToDatabase(noteId, annotations) {
+    try {
+        // 先删除该笔记的所有旧注解
+        const { error: deleteError } = await supabase
+            .from('note_annotations')
+            .delete()
+            .eq('note_id', noteId);
 
+        if (deleteError) throw deleteError;
+
+        // 如果有新注解，插入到数据库
+        if (annotations && annotations.length > 0) {
+            const annotationsToInsert = annotations.map((ann, index) => ({
+                note_id: noteId,
+                original_text: ann.text,
+                annotation_text: ann.note,
+                display_order: index + 1,
+                created_at: new Date().toISOString()
+            }));
+
+            const { error: insertError } = await supabase
+                .from('note_annotations')
+                .insert(annotationsToInsert);
+
+            if (insertError) throw insertError;
+        }
+    } catch (error) {
+        console.error('保存注解失败:', error);
+        throw error;
+    }
+}
 
             // 新增：更新导航按钮状态
             function updateNavigationButtons(bookId) {
@@ -1291,6 +1390,7 @@ window.deleteAnnotationFromArea = function(noteId, annotationId) {
                         <span>
                             <span class="note-delete" onclick="editNote('${note.id}', ${note.page_start}, ${note.page_end})" style="cursor: pointer; margin-right: 10px;">编辑</span>
                             <span class="note-delete" onclick="deleteNote('${note.id}')">删除</span>
+                       
                         </span>
                     </div>
                 </div>
@@ -1415,11 +1515,11 @@ window.deleteAnnotationFromArea = function(noteId, annotationId) {
                 }
 
                 annotationsContainer.innerHTML = `
-                    <div style="font-weight: bold; margin-bottom: 10px;">注解:</div>
+               
                     ${annotations.map(ann => `
                         <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; background-color: #f9f9f9;">
                             <div style="margin-bottom: 5px;">
-                                <span style="color: #0066cc; font-weight: bold;">${getCircledNumber(ann.number)}</span>
+                                <span>${getCircledNumber(ann.number)}</span>
                                 <span style="color: #666; font-size: 14px;">"${ann.text}"</span>
                                 <button onclick="deleteAnnotation('${noteId}', ${ann.id})" style="float: right; padding: 2px 8px; border: 1px solid black; background: white; cursor: pointer; font-size: 12px;">删除</button>
                             </div>
@@ -1583,150 +1683,188 @@ window.deleteAnnotationFromArea = function(noteId, annotationId) {
 
 
 
-            // 打印笔记功能
-            window.printNote = function(bookId, noteIndex) {
-                const notes = bookNotesCache[bookId] || [];
-                if (notes.length === 0 || noteIndex >= notes.length) {
-                    alert('没有可打印的笔记');
-                    return;
-                }
+         // 打印笔记功能
+window.printNote = function(bookId, noteIndex) {
+    const notes = bookNotesCache[bookId] || [];
+    if (notes.length === 0 || noteIndex >= notes.length) {
+        alert('没有可打印的笔记');
+        return;
+    }
 
-                const note = notes[noteIndex];
-                const bookData = window.BOOKS_DATA[bookId];
-                const bookTitle = bookData ? bookData.title : '未知书籍';
-                const bookImgSrc = bookData ? bookData.imgSrc : '';
-                // 创建打印窗口
-                const printWindow = window.open('', '_blank');
-                
-                let pageInfo = '';
-                if (note.page_start && note.page_end) {
-                    pageInfo = `P${note.page_start}-${note.page_end}`;
-                } else if (note.page_start) {
-                    pageInfo = `P${note.page_start}`;
-                }
-
-                const printContent = `
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <meta charset="UTF-8">
-                        <title>打印笔记 - ${bookTitle}</title>
-                        <style>
-                            body {
-                                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-                                padding: 40px;
-                                max-width: 800px;
-                                margin: 0 auto;
-                            }
-                            .book-meta {
-                    font-size: 16px;
-                    margin-bottom: 15px;
-                    line-height: 1.6;
-                    text-align: center;
-                }
-                            .book-title {
-                                font-size: 24px;
-                                font-weight: bold;
-                                margin-bottom: 10px;
-                                text-align: center;
-                            }
-                            .page-info {
-                                margin-top: -5px;
-                                font-size: 16px;
-                                text-align: center;
-                            }
-                          
-                            .header {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    margin-bottom: 20px;
-                    width: 100%;
-                }
-
-                            .book-cover {
-                    width: 250px;          
-                    object-fit: cover;
-                    margin-bottom: 20px;
-                }
-                .book-info {
-                    text-align: center;
-                    width: 100%;
-                }
-                .book-title {
-                    font-size: 28px;
-                    font-weight: bold;
-                    margin-bottom: 15px;
-                    text-align: center;
-                }
-
-                            .note-content {
-                                font-size: 16px;
-                                line-height: 1.6;
-                                white-space: pre-wrap;
-                             
+    const note = notes[noteIndex];
+    const bookData = window.BOOKS_DATA[bookId];
+    const bookTitle = bookData ? bookData.title : '未知书籍';
+    const bookImgSrc = bookData ? bookData.imgSrc : '';
     
-                            }
+    // 获取注解
+    getNoteAnnotations(note.id).then(annotations => {
+        // 创建打印窗口
+        const printWindow = window.open('', '_blank');
+        
+        let pageInfo = '';
+        if (note.page_start && note.page_end) {
+            pageInfo = `P${note.page_start}-${note.page_end}`;
+        } else if (note.page_start) {
+            pageInfo = `P${note.page_start}`;
+        }
 
-                            .print-date {
-                                margin-top: 30px;
-                                font-size: 14px;
-                                text-align: center;
-                                line-height: 1.6;
-                            }
+        const annotationsHtml = renderAnnotationsForPrint(annotations);
 
-                            @media print {
-                                body {
-                                    align-items: center;
-                                }
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="header">
-                ${bookImgSrc ? `
-                    <img class="book-cover" src="${bookImgSrc}" alt="${bookTitle}" onerror="this.style.display='none'">
-                ` : ''}
-                <div class="book-info">
-                    <div class="book-title">${bookTitle}</div>
-                    <div class="book-meta">
-                        ${bookData ? `
-                            ${bookData.author || ''}
-                            ${bookData.translator ? ' / ' + bookData.translator : ''}
-                            ${bookData.publisher ? ' / ' + bookData.publisher : ''}
-                            ${bookData.publishDate ? ' / ' + bookData.publishDate : ''}
-                        ` : ''}
+        const printContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>打印笔记 - ${bookTitle}</title>
+                <style>
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                        padding: 40px;
+                        max-width: 800px;
+                        margin: 0 auto;
+                    }
+                    .book-meta {
+                        font-size: 16px;
+                        margin-bottom: 15px;
+                        line-height: 1.6;
+                        text-align: center;
+                    }
+                    .book-title {
+                        font-size: 24px;
+                        font-weight: bold;
+                        margin-bottom: 10px;
+                        text-align: center;
+                    }
+                    .page-info {
+                        margin-top: -5px;
+                        font-size: 16px;
+                        text-align: center;
+                    }
+                    .header {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        margin-bottom: 20px;
+                        width: 100%;
+                    }
+                    .book-cover {
+                        width: 250px;          
+                        object-fit: cover;
+                        margin-bottom: 20px;
+                    }
+                    .book-info {
+                        text-align: center;
+                        width: 100%;
+                    }
+                    .book-title {
+                        font-size: 28px;
+                        font-weight: bold;
+                        margin-bottom: 15px;
+                        text-align: center;
+                    }
+                    .note-content {
+                        font-size: 16px;
+                        line-height: 1.6;
+                        white-space: pre-wrap;
+                        margin-bottom: 20px;
+                    }
+                    .annotations-section {
+                        margin-top: 30px;
+                        padding-top: 20px;
+                        border-top: 1px solid #ddd;
+                    }
+                    .annotations-title {
+                        font-weight: bold;
+                        margin-bottom: 10px;
+                        font-size: 16px;
+                    }
+                    .annotation-item {
+                        margin-bottom: 10px;
+                        line-height: 1.5;
+                    }
+                    .annotation-marker {
+                        color: #0066cc;
+                        font-weight: bold;
+                        margin-right: 8px;
+                    }
+                    .print-date {
+                        margin-top: 30px;
+                        font-size: 14px;
+                        text-align: center;
+                        line-height: 1.6;
+                    }
+                    @media print {
+                        body {
+                            align-items: center;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    ${bookImgSrc ? `
+                        <img class="book-cover" src="${bookImgSrc}" alt="${bookTitle}" onerror="this.style.display='none'">
+                    ` : ''}
+                    <div class="book-info">
+                        <div class="book-title">${bookTitle}</div>
+                        <div class="book-meta">
+                            ${bookData ? `
+                                ${bookData.author || ''}
+                                ${bookData.translator ? ' / ' + bookData.translator : ''}
+                                ${bookData.publisher ? ' / ' + bookData.publisher : ''}
+                                ${bookData.publishDate ? ' / ' + bookData.publishDate : ''}
+                            ` : ''}
+                        </div>
+                        ${pageInfo ? `<div class="page-info">${pageInfo}</div>` : ''}
                     </div>
-                    ${pageInfo ? `<div class="page-info">${pageInfo}</div>` : ''}
                 </div>
-            </div>
-
-                        
-                        <div class="note-content">${note.content}</div>
-                        <div class="print-date">
-                CREATED AT: ${new Date(note.created_at).toLocaleString('zh-CN')}<br>
-                PRINTED AT: ${new Date().toLocaleString('zh-CN')}
-            </div>
-            <script>
-                window.onload = function() {
-                    // 延迟打印以确保图片加载完成
-                    setTimeout(function() {
-                        window.print();
-                        // 打印后5秒自动关闭窗口
+                
+                <div class="note-content">${note.content}</div>
+                
+                ${annotationsHtml}
+                
+                <div class="print-date">
+                    CREATED AT: ${new Date(note.created_at).toLocaleString('zh-CN')}<br>
+                    PRINTED AT: ${new Date().toLocaleString('zh-CN')}
+                </div>
+                <script>
+                    window.onload = function() {
                         setTimeout(function() {
-                            window.close();
-                        }, 5000);
-                    }, 500);
-                }
-            <\\/script>
-                    <\\/body>
-                    <\\/html>
-                `;
+                            window.print();
+                            setTimeout(function() {
+                                window.close();
+                            }, 5000);
+                        }, 500);
+                    }
+                <\\/script>
+            <\\/body>
+            <\\/html>
+        `;
 
-                printWindow.document.write(printContent);
-                printWindow.document.close();
-            };
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+    });
+};
+
+// 渲染打印用的注解
+function renderAnnotationsForPrint(annotations) {
+    if (!annotations || annotations.length === 0) {
+        return '';
+    }
+
+    return `
+        <div class="annotations-section">
+            <div class="annotations-title">注解:</div>
+            ${annotations.map(ann => `
+                <div class="annotation-item">
+                    <span class="annotation-marker">${getCircledNumber(ann.display_order)}</span>
+                    <span class="annotation-text">${ann.annotation_text}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
 
 
             // 点击Modal外部关闭
@@ -1736,4 +1874,4 @@ window.deleteAnnotationFromArea = function(noteId, annotationId) {
                 }
             });
 
-        })();</script><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.a39d89864bb5601ead06.js"></script></body>
+        })();</script><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.7235c4e759923ad3714e.js"></script></body>
