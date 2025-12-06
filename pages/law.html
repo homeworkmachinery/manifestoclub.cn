@@ -908,7 +908,7 @@
 
 
         // 显示当前笔记
-async function displayCurrentNote(bookId) {
+        async function displayCurrentNote(bookId) {
     const notes = bookNotesCache[bookId] || [];
     const currentIndex = currentNoteIndex[bookId] || 0;
     const noteContainer = document.getElementById(`current-note-${bookId}`);
@@ -919,8 +919,6 @@ async function displayCurrentNote(bookId) {
         return;
     }
 
-
-    
     const note = notes[currentIndex];
 
     // 获取用户信息
@@ -942,20 +940,21 @@ async function displayCurrentNote(bookId) {
 
     // 检查是否是当前用户的笔记
     const isOwner = currentUser && currentUser.id === note.user_id;
-   const ownerButtons = isOwner ? `
+    const ownerButtons = isOwner ? `
         <span class="note-delete" onclick="editNoteFromArea('${note.id}', '${bookId}', ${note.page_start}, ${note.page_end})" style="cursor: pointer; margin-left: 15px;">编辑</span>
         <span class="note-delete" onclick="deleteNoteFromArea('${note.id}', '${bookId}')" style="cursor: pointer; margin-left: 10px;">删除</span>
     ` : '';
 
     const printButton = `<span class="note-print" onclick="printNote('${bookId}', ${currentIndex})" style="cursor: pointer; margin-left: 10px;">打印</span>`;
- 
 
+    // 获取并渲染注解
     const annotations = await getNoteAnnotations(note.id);
-    const annotationsHtml = renderAnnotationsForDisplay(annotations);
-
-
+    
+    // 将注解内容插入到笔记中
+    const annotatedContent = injectAnnotationsIntoContent(note.content, annotations);
+    
     noteContainer.innerHTML = `
-        <div class="current-note-content" id="area-note-content-${note.id}">${note.content}</div>
+        <div class="current-note-content" id="area-note-content-${note.id}">${annotatedContent}</div>
         <div class="current-note-meta">
             <span>${pageInfo ? pageInfo + ' · ' : ''}${userName} · ${createdDate}</span>
             ${ownerButtons}
@@ -969,6 +968,76 @@ async function displayCurrentNote(bookId) {
     // 更新左右箭头状态
     updateNavigationButtons(bookId);
 }
+
+
+function injectAnnotationsIntoContent(content, annotations) {
+    if (!annotations || annotations.length === 0) {
+        return content;
+    }
+
+    // 创建一个临时容器来解析HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = content;
+    
+    // 按显示顺序排序注解
+    const sortedAnnotations = [...annotations].sort((a, b) => a.display_order - b.display_order);
+    
+    // 在笔记末尾添加注解内容
+    let resultContent = content;
+    
+    // 添加注解列表
+    if (sortedAnnotations.length > 0) {
+        resultContent += '\n\n<div class="annotations-section">';
+        resultContent += '<div class="annotations-title" style="font-weight: bold; margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">注解:</div>';
+        
+        sortedAnnotations.forEach(ann => {
+            resultContent += `
+                <div class="annotation-item" style="margin-bottom: 10px;">
+                    <span class="annotation-marker" style="color: #0066cc; font-weight: bold;">${getCircledNumber(ann.display_order)}</span>
+                    <span class="annotation-text">${ann.annotation_text}</span>
+                </div>
+            `;
+        });
+        
+        resultContent += '</div>';
+    }
+    
+    return resultContent;
+}
+
+async function saveAnnotationsToDatabase(noteId, annotations) {
+    try {
+        // 先删除该笔记的所有旧注解
+        const { error: deleteError } = await supabase
+            .from('note_annotations')
+            .delete()
+            .eq('note_id', noteId);
+
+        if (deleteError) throw deleteError;
+
+        // 如果有新注解，插入到数据库
+        if (annotations && annotations.length > 0) {
+            // 按注解在笔记中的出现顺序排序
+            const annotationsToInsert = annotations.map((ann, index) => ({
+                note_id: noteId,
+                original_text: ann.text,
+                annotation_text: ann.note,
+                display_order: ann.number, // 使用注解的number字段作为显示顺序
+                created_at: new Date().toISOString()
+            }));
+
+            const { error: insertError } = await supabase
+                .from('note_annotations')
+                .insert(annotationsToInsert);
+
+            if (insertError) throw insertError;
+        }
+    } catch (error) {
+        console.error('保存注解失败:', error);
+        throw error;
+    }
+}
+
 
 
 async function getNoteAnnotations(noteId) {
@@ -1105,17 +1174,74 @@ function renderAnnotationsForDisplay(annotations) {
         return;
     }
 
+    // 获取当前所有注解，计算下一个序号
+    const currentAnnotations = noteAnnotations[noteId] || [];
+    const nextNumber = currentAnnotations.length + 1;
+
     // 创建注解
-    const annotationNumber = noteAnnotations[noteId].length + 1;
     const annotation = {
         id: Date.now(),
-        number: annotationNumber,
+        number: nextNumber, // 这是显示顺序，不是创建时间
         text: selectedText,
         note: ''
     };
 
     // 在选中文字后插入带圈数字
-    const circledNumber = getCircledNumber(annotationNumber);
+    const circledNumber = getCircledNumber(nextNumber);
+    const span = document.createElement('span');
+    span.style.color = '#0066cc';
+    span.style.fontSize = '0.85em';
+    span.style.verticalAlign = 'super';
+    span.textContent = circledNumber;
+    
+    range.collapse(false);
+    range.insertNode(span);
+
+    // 保存注解到数组
+    if (!noteAnnotations[noteId]) {
+        noteAnnotations[noteId] = [];
+    }
+    noteAnnotations[noteId].push(annotation);
+    
+    // 清除选区
+    selection.removeAllRanges();
+    
+    // 重新渲染注解列表
+    renderAnnotationsFromArea(noteId);
+}
+
+// 同样修改addAnnotation函数（用于modal中的编辑）
+window.addAnnotation = function(noteId) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount || selection.isCollapsed) {
+        alert('请先选中需要注解的文字');
+        return;
+    }
+
+    const selectedText = selection.toString();
+    const range = selection.getRangeAt(0);
+    const editContent = document.getElementById(`edit-content-${noteId}`);
+    
+    // 确保选区在编辑区域内
+    if (!editContent.contains(range.commonAncestorContainer)) {
+        alert('请在笔记内容区域选择文字');
+        return;
+    }
+
+    // 获取当前所有注解，计算下一个序号
+    const currentAnnotations = noteAnnotations[noteId] || [];
+    const nextNumber = currentAnnotations.length + 1;
+
+    // 创建注解
+    const annotation = {
+        id: Date.now(),
+        number: nextNumber,
+        text: selectedText,
+        note: ''
+    };
+
+    // 在选中文字后插入带圈数字
+    const circledNumber = getCircledNumber(nextNumber);
     const span = document.createElement('span');
     span.style.color = '#0066cc';
     span.style.fontSize = '0.85em';
@@ -1126,14 +1252,18 @@ function renderAnnotationsForDisplay(annotations) {
     range.insertNode(span);
 
     // 保存注解
+    if (!noteAnnotations[noteId]) {
+        noteAnnotations[noteId] = [];
+    }
     noteAnnotations[noteId].push(annotation);
     
     // 清除选区
     selection.removeAllRanges();
     
     // 重新渲染注解列表
-    renderAnnotationsFromArea(noteId);
+    renderAnnotations(noteId);
 }
+
 
 // 渲染展开区域的注解列表
 function renderAnnotationsFromArea(noteId) {
@@ -1178,29 +1308,48 @@ function renderAnnotationsFromArea(noteId) {
 window.deleteAnnotationFromArea = function(noteId, annotationId) {
     if (!confirm('确定删除这条注解吗？')) return;
 
-    const index = noteAnnotations[noteId].findIndex(a => a.id === annotationId);
+    const annotations = noteAnnotations[noteId] || [];
+    const index = annotations.findIndex(a => a.id === annotationId);
     if (index === -1) return;
 
     // 删除注解
-    noteAnnotations[noteId].splice(index, 1);
+    annotations.splice(index, 1);
 
-    // 重新编号
-    noteAnnotations[noteId].forEach((ann, idx) => {
+    // 重新编号（保持顺序）
+    annotations.forEach((ann, idx) => {
         ann.number = idx + 1;
     });
 
-    // 重新渲染整个内容区域和注解
+    // 重新渲染整个内容区域
     const editContent = document.getElementById(`area-edit-content-${noteId}`);
     const html = editContent.innerHTML;
     
     // 移除所有带圈数字标记
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
-    tempDiv.querySelectorAll('span[style*="color: rgb(0, 102, 204)"]').forEach(span => {
-        span.remove();
+    const coloredSpans = tempDiv.querySelectorAll('span');
+    coloredSpans.forEach(span => {
+        if (span.style.color === 'rgb(0, 102, 204)' || span.style.color === '#0066cc') {
+            span.remove();
+        }
     });
     
+    // 清空内容并重新插入标记
     editContent.innerHTML = tempDiv.innerHTML;
+    
+    // 重新插入带圈数字标记
+    const textContent = editContent.textContent || editContent.innerText;
+    editContent.innerHTML = textContent; // 先清空所有格式
+    
+    // 重新为每个注解插入标记
+    annotations.forEach(ann => {
+        const text = editContent.textContent || editContent.innerText;
+        const circledNumber = getCircledNumber(ann.number);
+        
+        // 这里需要更复杂的逻辑来找到原文位置
+        // 简化处理：在最后添加
+        editContent.innerHTML += ` <span style="color: #0066cc; font-size: 0.85em; vertical-align: super;">${circledNumber}</span>`;
+    });
 
     // 重新渲染注解列表
     renderAnnotationsFromArea(noteId);
@@ -1874,4 +2023,4 @@ function renderAnnotationsForPrint(annotations) {
                 }
             });
 
-        })();</script><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.96be849cafa97d7af15a.js"></script></body>
+        })();</script><script defer="defer" src="/js/vendors.59606a4d8afa88538fd5.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.123d02369ebf632be330.js"></script></body>
