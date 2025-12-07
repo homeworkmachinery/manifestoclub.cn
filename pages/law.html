@@ -190,13 +190,14 @@
         border: 2px solid black;
         padding: 15px;
         margin-bottom: 10px;
+        font-size: 14px;
     }
 
     .note-content {
         margin-bottom: 10px;
         line-height: 1.6;
         white-space: pre-wrap;
- 
+        font-size: 14px; 
     }
 
     .note-meta {
@@ -981,7 +982,7 @@ async function displayCurrentNote(bookId) {
         const isOwner = currentUser && currentUser.id === freshNote.user_id;
         const ownerButtons = isOwner ? `
             <span class="note-delete" onclick="editNoteFromArea('${freshNote.id}', '${bookId}', ${freshNote.page_start}, ${freshNote.page_end})" style="cursor: pointer; margin-left: 15px;">编辑</span>
-            <span class="note-delete" onclick="deleteNoteFromArea('${freshNote.id}', '${bookId}')" style="cursor: pointer; margin-left: 10px;">删除</span>
+            <span class="note-delete" onclick="deleteNote('${freshNote.id}', '${bookId}')" style="cursor: pointer; margin-left: 10px;">删除</span>
         ` : '';
 
         const printButton = `<span class="note-print" onclick="printNote('${bookId}', ${currentIndex})" style="cursor: pointer; margin-left: 10px;">打印</span>`;
@@ -992,10 +993,10 @@ async function displayCurrentNote(bookId) {
         // 渲染注解部分
         const annotationsHtml = annotations && annotations.length > 0 ? `
             <div class="note-annotations" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
-                <div style="font-weight: bold; margin-bottom: 10px; font-size: 14px;">注解:</div>
+                <div style="font-weight: bold; margin-bottom: 10px; font-size: 16px;">注解:</div>
                 ${annotations.map(ann => `
-                    <div style="margin-bottom: 8px; line-height: 1.4; font-size: 13px;">
-                        <span style="color: #0066cc; font-weight: bold; margin-right: 6px;">${getCircledNumber(ann.display_order)}</span>
+                    <div style="margin-bottom: 8px; line-height: 1.4; font-size: 15px;">
+                        <span style="color: black; font-weight: bold; margin-right: 6px;">${getCircledNumber(ann.display_order)}</span>
                         <span>${ann.annotation_text || '（无注解内容）'}</span>
                     </div>
                 `).join('')}
@@ -1003,15 +1004,8 @@ async function displayCurrentNote(bookId) {
         ` : '';
 
         noteContainer.innerHTML = `
-            <div class="current-note-content" style="line-height: 1.6; margin-bottom: 15px; white-space: pre-wrap;">
-                ${contentWithAnnotations}
-            </div>
-            ${annotationsHtml}
-            <div class="current-note-meta">
-                <span>${pageInfo ? pageInfo + ' · ' : ''}${userName} · ${createdDate}</span>
-                ${ownerButtons}
-                ${printButton}
-            </div>
+        <div class="current-note-content" style="line-height: 1.6; margin-bottom: 15px; white-space: pre-wrap;">${contentWithAnnotations}</div>
+        ${annotationsHtml}<div class="current-note-meta"><span>${pageInfo ? pageInfo + ' · ' : ''}${userName} · ${createdDate}</span>${ownerButtons}${printButton}</div>
         `;
 
     } catch (error) {
@@ -1199,21 +1193,19 @@ window.editNoteFromArea = async function (noteId, bookId, pageStart, pageEnd) {
         return;
     }
     
-
-    // 获取内容，保留已有的带圈数字标记
-    // 注意：这里应该显示数据库中的原始内容，包含标记
     let contentToEdit = note.content;
+    // 移除带圈数字标记
     contentToEdit = contentToEdit.replace(/[①-⑳⓪]/g, '');
-    // 移除每段开头的全角空格，编辑时不需要它们
-    // contentToEdit = contentToEdit.split('\n').map(para => {
-    //     const trimmed = para.trim();
-    //     if (trimmed === '') {
-    //         return '';
-    //     }
-    //     // 移除开头的全角空格，编辑时不需要它们
-    //     return trimmed.replace(/^　+/g, '');
-    // }).join('\n');
-
+    
+    // 移除每段开头的全角空格
+    contentToEdit = contentToEdit.split('\n').map(para => {
+        const trimmed = para.trim();
+        if (trimmed === '') {
+            return '';
+        }
+        // 移除开头的全角空格
+        return trimmed.replace(/^　+/g, '');
+    }).join('\n');
 
 
     noteContainer.innerHTML = `
@@ -1564,38 +1556,35 @@ window.saveEditNoteFromArea = async function (noteId, bookId) {
         htmlContent = htmlContent.replace(/<span[^>]*>[①-⑳⓪]<\/span>/g, '');
         htmlContent = htmlContent.replace(/[①-⑳⓪]/g, '');
         
-        // 转换为纯文本
-      
-        let content = contentElement.textContent || contentElement.innerText;
+  
         
-        // 更彻底地清理内容
-        // 移除所有不可见的空白字符（除了换行）
-        content = content
-            .replace(/\r/g, '') // 移除回车符
-            .replace(/[\t]/g, ' ') // 制表符替换为空格
-            .replace(/\s+/g, ' ') // 多个连续空格合并为一个
+        // 清理内容 - 移除多余的空格和制表符
+        htmlContent = htmlContent
+            .replace(/<div>/g, '\n')
+            .replace(/<\/div>/g, '')
+            .replace(/<br>/g, '\n')
+            .replace(/<br\s*\/?>/g, '\n')
+            .replace(/&nbsp;/g, ' ')
+            .replace(/<[^>]+>/g, '')
             .trim();
         
-        // 将内容按行分割，处理空行
-        const lines = content.split('\n');
-        
-        // 处理每行，确保第一行也有两个全角空格
-        content = lines.map((line, index) => {
-            const trimmed = line.trim();
+            let content = htmlContent;
+
+        // 为每段添加两个全角空格 - 简化逻辑
+        content = content.split('\n').map(para => {
+            const trimmed = para;
             if (trimmed === '') {
-                return ''; // 保持空行
+                return '';
             }
-            
-            // 移除已有的全角空格，然后添加两个全角空格
-            // 这里的关键：第一行也要处理
-            let cleanLine = trimmed.replace(/^　+/g, '');
-            return '　　' + cleanLine;
+            // 移除任何现有的全角空格，然后添加两个全角空格
+            const cleanPara = trimmed.replace(/^　+/g, '');
+            return '　　' + cleanPara;
         }).join('\n');
         
         const pageStart = pageStartElement.value;
         const pageEnd = pageEndElement.value;
 
-        if (!content) {
+        if (!content || content.trim() === '') {
             alert('请输入笔记内容');
             throw new Error('内容为空');
         }
@@ -1609,6 +1598,29 @@ window.saveEditNoteFromArea = async function (noteId, bookId) {
         if (pageEnd && parseInt(pageEnd) < parseInt(pageStart)) {
             alert('结束页不能小于起始页');
             throw new Error('页码错误');
+        }
+
+        // 获取当前的注解数组
+        const annotations = noteAnnotations[noteId] || [];
+        
+        // 如果有注解，在内容中插入新的带圈数字标记
+        if (annotations.length > 0) {
+            // 按number排序
+            const sortedAnnotations = [...annotations].sort((a, b) => a.number - b.number);
+            
+            // 为每个注解查找文本并插入标记
+            sortedAnnotations.forEach(ann => {
+                if (ann.text && content.includes(ann.text)) {
+                    const circledNum = getCircledNumber(ann.number);
+                    // 只替换第一个匹配项
+                    const regex = new RegExp(ann.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+                    let count = 0;
+                    content = content.replace(regex, (match) => {
+                        count++;
+                        return count === 1 ? match + circledNum : match;
+                    });
+                }
+            });
         }
 
         // 更新笔记内容（包含标记）
@@ -1625,7 +1637,6 @@ window.saveEditNoteFromArea = async function (noteId, bookId) {
         if (noteError) throw noteError;
         
         // 保存注解到数据库
-        const annotations = noteAnnotations[noteId] || [];
         if (annotations.length > 0) {
             // 删除旧的注解
             const { error: deleteError } = await supabase
@@ -1856,10 +1867,18 @@ window.saveEditNoteFromArea = async function (noteId, bookId) {
             });
         }
 
-
         let editContent = currentContent;
-
         editContent = editContent.replace(/[①-⑳⓪]/g, '');
+        
+        // 移除每段开头的全角空格
+        editContent = editContent.split('\n').map(para => {
+            const trimmed = para.trim();
+            if (trimmed === '') {
+                return '';
+            }
+            // 移除开头的全角空格
+            return trimmed.replace(/^　+/g, '');
+        }).join('\n');
 
         noteItemElement.innerHTML = `
         <div style="margin-bottom: 10px;">
@@ -1876,7 +1895,7 @@ window.saveEditNoteFromArea = async function (noteId, bookId) {
                 <button onclick="addAnnotation('${noteId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">添加注解</button>
                 <span style="margin-left: 10px; font-size: 12px; color: #666;">选中文字后点击此按钮</span>
             </div>
-            <div id="edit-content-${noteId}" contenteditable="true" style="width: 100%; min-height: 120px; padding: 10px; border: 2px solid black; font-family: inherit; font-size: 14px; overflow-y: auto; white-space: pre-wrap;">${currentContent}</div>
+            <div id="edit-content-${noteId}" contenteditable="true" style="width: 100%; min-height: 120px; padding: 10px; border: 2px solid black; font-family: inherit; font-size: 14px; overflow-y: auto; white-space: pre-wrap;">${editContent}</div>  <!-- 关键修改：使用 editContent 而不是 currentContent -->
             <div id="annotations-${noteId}" style="margin-top: 15px; padding-top: 15px; border-top: 2px solid black;">
                 <!-- 注解列表将在这里显示 -->
             </div>
@@ -2049,16 +2068,21 @@ window.saveEditNote = async function (noteId) {
     htmlContent = htmlContent.replace(/<span[^>]*>[①-⑳⓪]<\/span>/g, '');
     htmlContent = htmlContent.replace(/[①-⑳⓪]/g, '');
     
-    // 转换为纯文本，保留换行和段落
-    let content = htmlContent
-        .replace(/<div>/g, '\n')
-        .replace(/<\/div>/g, '')
-        .replace(/<br>/g, '\n')
-        .replace(/&nbsp;/g, ' ')
-        .replace(/<[^>]+>/g, '') // 移除剩余HTML标签
+
+ // 转换为纯文本
+ htmlContent = htmlContent
+        .replace(/<div>/g, '\n') // <div> 转换为换行
+        .replace(/<\/div>/g, '') // 移除 </div>
+        .replace(/<br>/g, '\n')  // <br> 转换为换行
+        .replace(/<br\s*\/?>/g, '\n') // 处理各种格式的<br>
+        .replace(/&nbsp;/g, ' ') // &nbsp; 转换为空格
+        .replace(/<[^>]+>/g, '') // 移除其他所有HTML标签
         .trim();
     
-    // 首先进行分段处理，每段前面加两个全角空格
+    // 将内容分割为行
+    let content = htmlContent;
+    
+    // 为每段添加两个全角空格
     content = content.split('\n').map(para => {
         const trimmed = para.trim();
         if (trimmed === '') {
@@ -2193,8 +2217,7 @@ window.saveEditNote = async function (noteId) {
             await displayCurrentNote(currentBookId);
         }
 
-        // 显示成功消息
-        alert('保存成功！');
+        
 
     } catch (error) {
         console.error('更新笔记失败:', error);
@@ -2340,7 +2363,7 @@ window.printNote = function(bookId, noteIndex) {
                         line-height: 1.5;
                     }
                     .annotation-marker {
-                        color: #0066cc;
+                        color: black;
                         font-weight: bold;
                         margin-right: 8px;
                     }
@@ -2432,4 +2455,4 @@ function renderAnnotationsForPrint(annotations) {
                 }
             });
 
-        })();</script><script defer="defer" src="/js/vendors.1e26f8ac0292fd96d6e1.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.d5c953b80d30441fbf4f.js"></script></body>
+        })();</script><script defer="defer" src="/js/vendors.1e26f8ac0292fd96d6e1.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.2090e18288e3b20c3fc8.js"></script></body>
