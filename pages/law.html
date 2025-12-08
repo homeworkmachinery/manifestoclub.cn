@@ -983,17 +983,10 @@ async function displayCurrentNote(bookId) {
         const ownerButtons = isOwner ? `
             <span class="note-delete" onclick="editNoteFromArea('${freshNote.id}', '${bookId}', ${freshNote.page_start}, ${freshNote.page_end})" style="cursor: pointer; margin-left: 15px;">编辑</span>
             <span class="note-delete" onclick="deleteNote('${freshNote.id}', '${bookId}')" style="cursor: pointer; margin-left: 10px;">删除</span>
-<<<<<<< HEAD
             <span class="note-print" onclick="printNote('${bookId}', ${currentIndex})" style="cursor: pointer; margin-left: 10px;">打印</span>
         ` : '';
 
        
-=======
-        ` : '';
-
-        const printButton = `<span class="note-print" onclick="printNote('${bookId}', ${currentIndex})" style="cursor: pointer; margin-left: 10px;">打印</span>`;
-
->>>>>>> c70591e94975817ffdd02d66fab510935ea2abf7
         // 渲染内容
         let contentWithAnnotations = freshNote.content;
 
@@ -1012,11 +1005,7 @@ async function displayCurrentNote(bookId) {
 
         noteContainer.innerHTML = `
         <div class="current-note-content" style="line-height: 1.6; margin-bottom: 15px; white-space: pre-wrap;">${contentWithAnnotations}</div>
-<<<<<<< HEAD
         ${annotationsHtml}<div class="current-note-meta"><span>${pageInfo ? pageInfo + ' · ' : ''}${userName} · ${createdDate}</span>${ownerButtons}</div>
-=======
-        ${annotationsHtml}<div class="current-note-meta"><span>${pageInfo ? pageInfo + ' · ' : ''}${userName} · ${createdDate}</span>${ownerButtons}${printButton}</div>
->>>>>>> c70591e94975817ffdd02d66fab510935ea2abf7
         `;
 
     } catch (error) {
@@ -1778,11 +1767,7 @@ window.saveEditNoteFromArea = async function (noteId, bookId) {
         if (error) throw error;
 
         if (!notes || notes.length === 0) {
-<<<<<<< HEAD
             notesList.innerHTML = '<div class="empty-notes">You have no notes yet</div>';
-=======
-            notesList.innerHTML = '<div class="empty-notes">你还没有添加笔记</div>';
->>>>>>> c70591e94975817ffdd02d66fab510935ea2abf7
             return;
         }
 
@@ -2479,8 +2464,4 @@ function renderAnnotationsForPrint(annotations) {
                 }
             });
 
-<<<<<<< HEAD
         })();</script><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.868e772543ced87a7e06.js"></script></body>
-=======
-        })();</script><script defer="defer" src="/js/vendors.1e26f8ac0292fd96d6e1.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.2090e18288e3b20c3fc8.js"></script></body>
->>>>>>> c70591e94975817ffdd02d66fab510935ea2abf7
