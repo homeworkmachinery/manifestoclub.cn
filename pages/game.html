@@ -190,11 +190,14 @@
         border: 2px solid black;
         padding: 15px;
         margin-bottom: 10px;
+        font-size: 14px;
     }
 
     .note-content {
         margin-bottom: 10px;
         line-height: 1.6;
+        white-space: pre-wrap;
+        font-size: 14px; 
     }
 
     .note-meta {
@@ -214,7 +217,9 @@
     .note-delete:hover {
         text-decoration: underline;
     }
-
+    .note-print:hover {
+        text-decoration: underline;
+    }
     .loading {
         text-align: center;
         padding: 20px;
@@ -285,6 +290,8 @@
     .current-note-content {
         margin-bottom: 10px;
         line-height: 1.6;
+        white-space: pre-wrap;
+ 
     }
 
     .current-note-meta {
@@ -292,6 +299,7 @@
         color: #666;
     }
 
+/* 在CSS末尾添加注解样式 */
 
 
     @media(max-width:899px) {
@@ -304,47 +312,49 @@
             margin-top: 54px;
         }
 
- .books{
-font-size: 16px;
-}
-  .book-btn {
-        display: flex;
-        gap: 5px;
-        position: absolute;
-        bottom: 10px;
-    }
+        .books {
+            font-size: 16px;
+        }
 
-       .book-description {
-        flex: 1;
-        margin-left: 10px;
-        display: flex;
-        flex-direction: column;
-    }
+        .book-btn {
+            display: flex;
+            gap: 5px;
+            position: absolute;
+            bottom: 10px;
+        }
 
-    }</style><link href="/css/styles.c6120c67c82cba3af7ca.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>GAME</h1><a data-page="print" class="back-btn">← BACK TO LIBRARY</a></div><div class="books" id="booksContainer"></div></div><div class="modal" id="noteModal"><div class="modal-content"><div class="modal-header"><h2 id="modalBookTitle">Book Notes</h2><button class="close-btn" onclick="closeNoteModal()">×</button></div><div class="note-form"><div style="display: flex; gap: 10px; margin-bottom: 10px;"><input type="number" id="pageStart" placeholder="起始页" style="width: 100px; padding: 5px; border: 2px solid black;" oninput="this.style.borderColor='black'"> <span style="line-height: 30px;">-</span> <input type="number" id="pageEnd" placeholder="结束页" style="width: 100px; padding: 5px; border: 2px solid black;"></div><textarea id="noteContent" placeholder="Write your note here..."></textarea> <button onclick="saveNote()">Add Note</button></div><div class="notes-list" id="notesList"><div class="loading">Loading notes...</div></div></div></div><script>(function () {
+        .book-description {
+            flex: 1;
+            margin-left: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+    }</style><link href="/css/styles.c6120c67c82cba3af7ca.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>game</h1><a data-page="print" class="back-btn">← BACK TO LIBRARY</a></div><div class="books" id="booksContainer"></div></div><div class="modal" id="noteModal"><div class="modal-content"><div class="modal-header"><h2 id="modalBookTitle">Book Notes</h2><button class="close-btn" onclick="closeNoteModal()">×</button></div><div class="note-form"><div style="display: flex; gap: 10px; margin-bottom: 10px;"><input type="number" id="pageStart" placeholder="Start Page" style="width: 100px; padding: 5px; border: 2px solid black;" oninput="this.style.borderColor='black'"> <span style="line-height: 30px;">-</span> <input type="number" id="pageEnd" placeholder="End Page" style="width: 100px; padding: 5px; border: 2px solid black;"></div><textarea id="noteContent" placeholder="Write your note here..."></textarea> <button onclick="saveNote()">Add Note</button></div><div class="notes-list" id="notesList"><div class="loading">Loading notes...</div></div></div></div><script>(function () {
             let bookNotesCache = {};
             let currentNoteIndex = {};
             let currentUser = null;
             let currentBookId = null;
+            let noteAnnotations = {};
 
-            console.log('Game页面开始加载');
-    console.log('BOOKS_DATA 状态:', typeof window.BOOKS_DATA !== 'undefined' ? '已加载' : '未加载');
-    console.log('supabase 状态:', typeof supabase !== 'undefined' ? '已加载' : '未加载');
+            console.log('game页面开始加载');
+            console.log('BOOKS_DATA 状态:', typeof window.BOOKS_DATA !== 'undefined' ? '已加载' : '未加载');
+            console.log('supabase 状态:', typeof supabase !== 'undefined' ? '已加载' : '未加载');
 
 
 
 
-  // 新增：动态生成书籍列表
-  function renderBooks() {
-        const booksContainer = document.getElementById('booksContainer');
-        const gameBooks = Object.values(window.BOOKS_DATA).filter(book => book.category === 'game');
-        
-        if (gameBooks.length === 0) {
-            booksContainer.innerHTML = '<div class="empty-message">暂无文化类书籍</div>';
-            return;
-        }
+            // 新增：动态生成书籍列表
+            function renderBooks() {
+                const booksContainer = document.getElementById('booksContainer');
+                const gameBooks = Object.values(window.BOOKS_DATA).filter(book => book.category === 'game');
 
-        booksContainer.innerHTML = gameBooks.map(book => `
+                if (gameBooks.length === 0) {
+                    booksContainer.innerHTML = '<div class="empty-message">暂无法律类书籍</div>';
+                    return;
+                }
+
+                booksContainer.innerHTML = gameBooks.map(book => `
             <div class="book" data-book-id="${book.id}" data-book-title="${book.title}">
                 <div class="book-img">
                     <img src="${book.imgSrc}" alt="${book.title}" onerror="this.src='/images/default-book.jpg'">
@@ -357,97 +367,97 @@ font-size: 16px;
                 </div>
             </div>
         `).join('');
-    }
+            }
 
-    async function waitForDependencies() {
-        return new Promise((resolve) => {
-            const checkDependencies = setInterval(() => {
-                if (typeof supabase !== 'undefined' && window.BOOKS_DATA) {
-                    clearInterval(checkDependencies);
-                    resolve();
+            async function waitForDependencies() {
+                return new Promise((resolve) => {
+                    const checkDependencies = setInterval(() => {
+                        if (typeof supabase !== 'undefined' && window.BOOKS_DATA) {
+                            clearInterval(checkDependencies);
+                            resolve();
+                        }
+                    }, 100);
+                });
+            }
+
+
+            async function initgame() {
+                console.log('开始初始化game页面');
+
+                // 等待依赖项加载
+                await waitForDependencies();
+
+                // 渲染书籍列表
+                renderBooks();
+
+                await checkUser();
+                initializeBookButtons(); // 初始化书籍按钮和笔记区域
+                await updateBookCounts(); // 更新计数
+
+                // ========== 新增：检查是否需要滚动到特定书籍 ==========
+                const scrollToBookId = sessionStorage.getItem('scrollToBookId');
+                const shouldOpenNotes = sessionStorage.getItem('openNotesArea');
+
+                if (scrollToBookId) {
+                    // 清除 sessionStorage
+                    sessionStorage.removeItem('scrollToBookId');
+                    sessionStorage.removeItem('openNotesArea');
+
+                    // 等待页面渲染完成
+                    setTimeout(async () => {
+                        const bookElement = document.querySelector(`.book[data-book-id="${scrollToBookId}"]`);
+                        if (bookElement) {
+                            // 滚动到书籍位置
+                            bookElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+
+                            // 添加高亮效果
+                            bookElement.style.backgroundColor = 'black';
+                            bookElement.style.color = 'white';
+                            bookElement.style.borderColor = 'white'; // 边框变白
+
+                            const innerElements = bookElement.querySelectorAll('*');
+                            const bookBtnDivs = bookElement.querySelectorAll('.book-btn > div'); // 特别选择按钮元素
+
+                            innerElements.forEach(el => {
+                                el.style.color = 'white';
+                            });
+
+                            // 特别处理按钮边框
+                            bookBtnDivs.forEach(btn => {
+                                btn.style.borderColor = 'white';
+                            });
+
+                            setTimeout(() => {
+                                bookElement.style.backgroundColor = '';
+                                bookElement.style.color = '';
+                                bookElement.style.borderColor = ''; // 恢复边框颜色
+
+                                // 恢复内部元素的颜色
+                                innerElements.forEach(el => {
+                                    el.style.color = '';
+                                });
+
+                                // 恢复按钮边框颜色
+                                bookBtnDivs.forEach(btn => {
+                                    btn.style.borderColor = '';
+                                });
+                            }, 1500);
+
+                            // 如果需要打开笔记区域
+                            if (shouldOpenNotes === 'true') {
+                                const bookTitle = bookElement.dataset.bookTitle;
+                                // 再等待一下，确保滚动完成
+                                setTimeout(() => {
+                                    toggleNotesArea(scrollToBookId, bookTitle);
+                                }, 500);
+                            }
+                        }
+                    }, 300);
+
+
                 }
-            }, 100);
-        });
-    }
-       
-
-    async function initGame() {
-        console.log('开始初始化Game页面');
-        
-        // 等待依赖项加载
-        await waitForDependencies();
-        
-        // 渲染书籍列表
-        renderBooks();
-        
-        await checkUser();
-        initializeBookButtons(); // 初始化书籍按钮和笔记区域
-        await updateBookCounts(); // 更新计数
-
- // ========== 新增：检查是否需要滚动到特定书籍 ==========
- const scrollToBookId = sessionStorage.getItem('scrollToBookId');
-    const shouldOpenNotes = sessionStorage.getItem('openNotesArea');
-
-    if (scrollToBookId) {
-        // 清除 sessionStorage
-        sessionStorage.removeItem('scrollToBookId');
-        sessionStorage.removeItem('openNotesArea');
-        
-        // 等待页面渲染完成
-        setTimeout(async () => {
-            const bookElement = document.querySelector(`.book[data-book-id="${scrollToBookId}"]`);
-            if (bookElement) {
-                // 滚动到书籍位置
-                bookElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
-              
-            // 添加高亮效果
-        bookElement.style.backgroundColor = 'black';
-        bookElement.style.color = 'white';
-        bookElement.style.borderColor = 'white'; // 边框变白
-        
-        const innerElements = bookElement.querySelectorAll('*');
-        const bookBtnDivs = bookElement.querySelectorAll('.book-btn > div'); // 特别选择按钮元素
-        
-        innerElements.forEach(el => {
-            el.style.color = 'white';
-        });
-        
-        // 特别处理按钮边框
-        bookBtnDivs.forEach(btn => {
-            btn.style.borderColor = 'white';
-        });
-        
-        setTimeout(() => {
-            bookElement.style.backgroundColor = '';
-            bookElement.style.color = '';
-            bookElement.style.borderColor = ''; // 恢复边框颜色
-            
-            // 恢复内部元素的颜色
-            innerElements.forEach(el => {
-                el.style.color = '';
-            });
-            
-            // 恢复按钮边框颜色
-            bookBtnDivs.forEach(btn => {
-                btn.style.borderColor = '';
-            });
-        }, 1500);
-        
-        // 如果需要打开笔记区域
-        if (shouldOpenNotes === 'true') {
-            const bookTitle = bookElement.dataset.bookTitle;
-            // 再等待一下，确保滚动完成
-            setTimeout(() => {
-                toggleNotesArea(scrollToBookId, bookTitle);
-            }, 500);
-        }
-    }
-}, 300);
-                
-        
-    }
-    }
+            }
 
             // 新增：初始化书籍按钮和笔记区域
             function initializeBookButtons() {
@@ -459,8 +469,8 @@ font-size: 16px;
                     const bookDescription = book.querySelector('.book-description');
 
                     if (book.querySelector('.book-btn')) {
-                return; // 如果已经初始化，跳过
-            }
+                        return; // 如果已经初始化，跳过
+                    }
 
 
                     // 创建按钮区域
@@ -594,41 +604,41 @@ font-size: 16px;
                         book.querySelector('.note-count').textContent = noteCountMap[bookId] || 0;
 
                         if (wantBtn && readBtn) {
-                // 更新计数（无论是否登录都更新）
-                const wantCountEl = book.querySelector('.want-count');
-                const readCountEl = book.querySelector('.read-count');
-                const noteCountEl = book.querySelector('.note-count');
-                
-                if (wantCountEl) wantCountEl.textContent = wantCountMap[bookId] || 0;
-                if (readCountEl) readCountEl.textContent = readingCountMap[bookId] || 0;
-                if (noteCountEl) noteCountEl.textContent = noteCountMap[bookId] || 0;
+                            // 更新计数（无论是否登录都更新）
+                            const wantCountEl = book.querySelector('.want-count');
+                            const readCountEl = book.querySelector('.read-count');
+                            const noteCountEl = book.querySelector('.note-count');
 
-                // 更新状态（如果用户已登录）
-                if (currentUser) {
-                    if (userWants.has(bookId)) {
-                        wantBtn.classList.add('active');
-                    } else {
-                        wantBtn.classList.remove('active');
-                    }
+                            if (wantCountEl) wantCountEl.textContent = wantCountMap[bookId] || 0;
+                            if (readCountEl) readCountEl.textContent = readingCountMap[bookId] || 0;
+                            if (noteCountEl) noteCountEl.textContent = noteCountMap[bookId] || 0;
 
-                    if (userReadings.has(bookId)) {
-                        readBtn.classList.add('active');
-                    } else {
-                        readBtn.classList.remove('active');
-                    }
-                } else {
-                    // 未登录时移除active状态
-                    wantBtn.classList.remove('active');
-                    readBtn.classList.remove('active');
-                }
-            }
-        });
+                            // 更新状态（如果用户已登录）
+                            if (currentUser) {
+                                if (userWants.has(bookId)) {
+                                    wantBtn.classList.add('active');
+                                } else {
+                                    wantBtn.classList.remove('active');
+                                }
+
+                                if (userReadings.has(bookId)) {
+                                    readBtn.classList.add('active');
+                                } else {
+                                    readBtn.classList.remove('active');
+                                }
+                            } else {
+                                // 未登录时移除active状态
+                                wantBtn.classList.remove('active');
+                                readBtn.classList.remove('active');
+                            }
+                        }
+                    });
 
                 } catch (error) {
                     console.error('更新计数失败:', error);
                 }
             }
-            initGame();
+            initgame();
 
             // 切换"想读"状态
             window.toggleWant = async function (bookId) {
@@ -724,7 +734,19 @@ font-size: 16px;
                 const noteContent = document.getElementById('noteContent');
                 const pageStart = document.getElementById('pageStart');
                 const pageEnd = document.getElementById('pageEnd');
-                const content = noteContent.value.trim();
+                const rawContent = noteContent.value.trim();
+                const content = rawContent.split('\n').map(para => {
+    
+                    const trimmed = para.trim();
+    if (trimmed === '') {
+                return '';
+            }
+            
+            let cleanPara = trimmed.replace(/^　+/g, '');
+            return '　　' + cleanPara;
+        }).join('\n');
+
+
 
                 // 移除抖动效果
                 pageStart.classList.remove('input-shake');
@@ -792,9 +814,9 @@ font-size: 16px;
             // 打开笔记Modal
             window.openNoteModal = async function (bookId, bookTitle) {
                 if (!currentUser) {
-        alert('请先登录');
-        return;
-    }
+                    alert('请先登录');
+                    return;
+                }
                 currentBookId = bookId;
 
                 const modal = document.getElementById('noteModal');
@@ -810,10 +832,24 @@ font-size: 16px;
 
             // 关闭笔记Modal
             window.closeNoteModal = function () {
-                const modal = document.getElementById('noteModal');
-                modal.classList.remove('show');
-                currentBookId = null;
-            }
+    const modal = document.getElementById('noteModal');
+    modal.classList.remove('show');
+    currentBookId = null;
+    
+    // 如果有展开的笔记区域，刷新它
+    const openNotesArea = document.querySelector('.book-notes-area.show');
+    if (openNotesArea) {
+        const bookIdMatch = openNotesArea.id.match(/notes-area-(.+)/);
+        if (bookIdMatch) {
+            const bookId = bookIdMatch[1];
+            // 强制刷新缓存并重新显示
+            setTimeout(async () => {
+                await loadAllNotes(bookId, true);
+                await displayCurrentNote(bookId);
+            }, 100);
+        }
+    }
+}
 
             window.toggleNotesArea = async function (bookId, bookTitle) {
 
@@ -843,130 +879,336 @@ font-size: 16px;
 
 
 
-            // 新增：加载所有笔记（按页码排序）
-            window.loadAllNotes = async function (bookId) {
-                try {
-                    const { data: notes, error } = await supabase
-                        .from('book_notes')
-                        .select('*')
-                        .eq('book_id', bookId)
-                        .order('page_start', { ascending: true, nullsFirst: false });
+            window.loadAllNotes = async function (bookId, forceRefresh = false) {
+    try {
+        // 如果强制刷新或缓存为空，从数据库重新加载
+        if (forceRefresh || !bookNotesCache[bookId]) {
+            const { data: notes, error } = await supabase
+                .from('book_notes')
+                .select('*')
+                .eq('book_id', bookId)
+                .order('page_start', { ascending: true, nullsFirst: false });
 
-                    if (error) throw error;
+            if (error) throw error;
 
-                    // 缓存笔记数据
-                    bookNotesCache[bookId] = notes || [];
+            // 缓存笔记数据
+            bookNotesCache[bookId] = notes || [];
 
-                    // 更新总笔记数
-                    document.getElementById(`total-notes-${bookId}`).textContent = bookNotesCache[bookId].length;
-
-                } catch (error) {
-                    console.error('加载笔记失败:', error);
-                    bookNotesCache[bookId] = [];
+            // 为每条笔记获取并处理注解
+            for (let note of bookNotesCache[bookId]) {
+                const annotations = await getNoteAnnotations(note.id);
+                
+                // 如果数据库中有注解，但内容中没有标记，则添加标记
+                if (annotations && annotations.length > 0) {
+                    let content = note.content;
+                    const hasMarkers = /[①-⑳⓪]/.test(content);
+                    
+                    if (!hasMarkers) {
+                        // 按display_order排序
+                        const sortedAnnotations = [...annotations].sort((a, b) => a.display_order - b.display_order);
+                        
+                        // 为每个注解查找原文并添加标记
+                        sortedAnnotations.forEach(ann => {
+                            if (ann.original_text && content.includes(ann.original_text)) {
+                                const circledNum = getCircledNumber(ann.display_order);
+                                // 只替换第一个匹配项
+                                content = content.replace(ann.original_text, ann.original_text + circledNum);
+                            }
+                        });
+                        
+                        // 更新笔记内容
+                        note.content = content;
+                    }
                 }
             }
+        }
 
-            // 显示当前笔记
-            async function displayCurrentNote(bookId) {
+        // 更新总笔记数
+        document.getElementById(`total-notes-${bookId}`).textContent = bookNotesCache[bookId].length;
 
-                const notes = bookNotesCache[bookId] || [];
-                const currentIndex = currentNoteIndex[bookId] || 0;
-                const noteContainer = document.getElementById(`current-note-${bookId}`);
+    } catch (error) {
+        console.error('加载笔记失败:', error);
+        bookNotesCache[bookId] = [];
+    }
+}
 
-                if (notes.length === 0) {
-                    noteContainer.innerHTML = '<div class="empty-notes">还没有笔记</div>';
-                    document.getElementById(`current-note-index-${bookId}`).textContent = '0';
-                    return;
-                }
+   // 显示当前笔记
+async function displayCurrentNote(bookId) {
+    const notes = bookNotesCache[bookId] || [];
+    const currentIndex = currentNoteIndex[bookId] || 0;
+    const noteContainer = document.getElementById(`current-note-${bookId}`);
 
-                const note = notes[currentIndex];
+    if (notes.length === 0) {
+        noteContainer.innerHTML = '<div class="empty-notes">No notes yet</div>';
+        document.getElementById(`current-note-index-${bookId}`).textContent = '0';
+        return;
+    }
 
-                // 获取用户信息
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('manifesto')
-                    .eq('user_id', note.user_id)
-                    .single();
+    const note = notes[currentIndex];
+    
+    // 重新从数据库获取笔记和注解，确保是最新数据
+    try {
+        const { data: freshNote, error } = await supabase
+            .from('book_notes')
+            .select('*')
+            .eq('id', note.id)
+            .single();
+            
+        if (error) throw error;
+        
+        const annotations = await getNoteAnnotations(note.id);
+        
+        // 更新缓存中的笔记数据
+        notes[currentIndex] = freshNote;
+        
+        // 获取用户信息
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('manifesto')
+            .eq('user_id', freshNote.user_id)
+            .single();
 
-                const userName = profile?.manifesto || 'Anonymous';
-                const createdDate = new Date(note.created_at).toLocaleDateString('zh-CN');
+        const userName = profile?.manifesto || 'Anonymous';
+        const createdDate = new Date(freshNote.created_at).toLocaleDateString('zh-CN');
 
-                let pageInfo = '';
-                if (note.page_start && note.page_end) {
-                    pageInfo = `P${note.page_start}-${note.page_end}`;
-                } else if (note.page_start) {
-                    pageInfo = `P${note.page_start}`;
-                }
+        let pageInfo = '';
+        if (freshNote.page_start && freshNote.page_end) {
+            pageInfo = `P${freshNote.page_start}-${freshNote.page_end}`;
+        } else if (freshNote.page_start) {
+            pageInfo = `P${freshNote.page_start}`;
+        }
 
-                // 检查是否是当前用户的笔记
-                const isOwner = currentUser && currentUser.id === note.user_id;
-                const actionButtons = isOwner ? `
-        <span class="note-delete" onclick="editNoteFromArea('${note.id}', '${bookId}', ${note.page_start}, ${note.page_end})" style="cursor: pointer; margin-left: 15px;">编辑</span>
-        <span class="note-delete" onclick="deleteNoteFromArea('${note.id}', '${bookId}')" style="cursor: pointer; margin-left: 10px;">删除</span>
-    ` : '';
+        // 检查是否是当前用户的笔记
+        const isOwner = currentUser && currentUser.id === freshNote.user_id;
+        const ownerButtons = isOwner ? `
+            <span class="note-delete" onclick="editNoteFromArea('${freshNote.id}', '${bookId}', ${freshNote.page_start}, ${freshNote.page_end})" style="cursor: pointer; margin-left: 15px;">编辑</span>
+            <span class="note-delete" onclick="deleteNote('${freshNote.id}', '${bookId}')" style="cursor: pointer; margin-left: 10px;">删除</span>
+            <span class="note-print" onclick="printNote('${bookId}', ${currentIndex})" style="cursor: pointer; margin-left: 10px;">打印</span>
+        ` : '';
+
+       
+        // 渲染内容
+        let contentWithAnnotations = freshNote.content;
+
+        // 渲染注解部分
+        const annotationsHtml = annotations && annotations.length > 0 ? `
+            <div class="note-annotations" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                <div style="font-weight: bold; margin-bottom: 10px; font-size: 16px;">注解:</div>
+                ${annotations.map(ann => `
+                    <div style="margin-bottom: 8px; line-height: 1.4; font-size: 15px;">
+                        <span style="color: black; font-weight: bold; margin-right: 6px;">${getCircledNumber(ann.display_order)}</span>
+                        <span>${ann.annotation_text || '（无注解内容）'}</span>
+                    </div>
+                `).join('')}
+            </div>
+        ` : '';
+
+        noteContainer.innerHTML = `
+        <div class="current-note-content" style="line-height: 1.6; margin-bottom: 15px; white-space: pre-wrap;">${contentWithAnnotations}</div>
+        ${annotationsHtml}<div class="current-note-meta"><span>${pageInfo ? pageInfo + ' · ' : ''}${userName} · ${createdDate}</span>${ownerButtons}</div>
+        `;
+
+    } catch (error) {
+        console.error('获取笔记详情失败:', error);
+        noteContainer.innerHTML = '<div class="empty-notes">加载笔记失败</div>';
+    }
+
+    // 更新当前索引显示
+    document.getElementById(`current-note-index-${bookId}`).textContent = currentIndex + 1;
+
+    // 更新左右箭头状态
+    updateNavigationButtons(bookId);
+}
+
+function extractOriginalContent(content) {
+    // 简单的正则匹配来移除注解标记（如①、②等）
+    const annotationMarkers = /[①-⑳⓪]\s*/g;
+    let cleanedContent = content.replace(annotationMarkers, '');
+    
+    // 检查是否包含注解部分
+    const hasAnnotations = content.includes('<div class="annotations-section">') || 
+                          content.includes('注解:') ||
+                          /[①-⑳⓪]/.test(content);
+    
+    // 如果包含注解HTML部分，移除它
+    if (content.includes('<div class="annotations-section">')) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = content;
+        const annotationSection = tempDiv.querySelector('.annotations-section');
+        if (annotationSection) {
+            annotationSection.remove();
+        }
+        cleanedContent = tempDiv.innerHTML;
+    }
+    
+    return {
+        originalContent: cleanedContent,
+        hasAnnotations: hasAnnotations
+    };
+}
+
+function injectAnnotationsIntoContent(content, annotations) {
+    if (!annotations || annotations.length === 0) {
+        return content;
+    }
+
+    // 创建一个临时容器来解析HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = content;
+    
+    // 按显示顺序排序注解
+    const sortedAnnotations = [...annotations].sort((a, b) => a.display_order - b.display_order);
+    
+    // 在笔记末尾添加注解内容
+    let resultContent = content;
+    
+    // 添加注解列表
+    if (sortedAnnotations.length > 0) {
+        resultContent += '\n\n<div class="annotations-section">';
+        resultContent += '<div class="annotations-title" style="font-weight: bold; margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">注解:</div>';
+        
+        sortedAnnotations.forEach(ann => {
+            resultContent += `
+                <div class="annotation-item" style="margin-bottom: 10px;">
+                    <span class="annotation-marker" style="color: #0066cc; font-weight: bold;">${getCircledNumber(ann.display_order)}</span>
+                    <span class="annotation-text">${ann.annotation_text}</span>
+                </div>
+            `;
+        });
+        
+        resultContent += '</div>';
+    }
+    
+    return resultContent;
+}
+
+async function saveAnnotationsToDatabase(noteId, annotations) {
+    try {
+        // 先删除该笔记的所有旧注解
+        const { error: deleteError } = await supabase
+            .from('note_annotations')
+            .delete()
+            .eq('note_id', noteId);
+
+        if (deleteError) throw deleteError;
+
+        // 如果有新注解，插入到数据库
+        if (annotations && annotations.length > 0) {
+            // 按注解的number字段排序
+            const sortedAnnotations = [...annotations].sort((a, b) => a.number - b.number);
+            
+            const annotationsToInsert = sortedAnnotations.map((ann, index) => ({
+                note_id: noteId,
+                original_text: ann.text, // 保存原文
+                annotation_text: ann.note || '',
+                display_order: ann.number,
+                created_at: new Date().toISOString()
+            }));
+
+            const { error: insertError } = await supabase
+                .from('note_annotations')
+                .insert(annotationsToInsert);
+
+            if (insertError) throw insertError;
+        }
+    } catch (error) {
+        console.error('保存注解失败:', error);
+        throw error;
+    }
+}
 
 
-                noteContainer.innerHTML = `
-        <div class="current-note-content" id="area-note-content-${note.id}">${note.content}</div>
-        <div class="current-note-meta">
-            <span>${pageInfo ? pageInfo + ' · ' : ''}${userName} · ${createdDate}</span>
-            ${actionButtons}
+async function getNoteAnnotations(noteId) {
+    try {
+        const { data: annotations, error } = await supabase
+            .from('note_annotations')
+            .select('*')
+            .eq('note_id', noteId)
+            .order('display_order', { ascending: true });
+
+        if (error) throw error;
+        return annotations || [];
+    } catch (error) {
+        console.error('获取注解失败:', error);
+        return [];
+    }
+}
+
+
+function renderAnnotationsForDisplay(annotations) {
+    if (!annotations || annotations.length === 0) {
+        return '';
+    }
+
+    // 按显示顺序排序
+    const sortedAnnotations = [...annotations].sort((a, b) => a.display_order - b.display_order);
+    
+    return `
+        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #ddd;">
+            <div style="font-weight: bold; margin-bottom: 10px; font-size: 14px;">注解:</div>
+            ${sortedAnnotations.map(ann => `
+                <div style="margin-bottom: 8px; line-height: 1.4; font-size: 13px;">
+                    <span style="color: #0066cc; font-weight: bold; margin-right: 6px;">${getCircledNumber(ann.display_order)}</span>
+                    <span>${ann.annotation_text || '（无注解内容）'}</span>
+                </div>
+            `).join('')}
         </div>
     `;
+}
+
+window.editNoteFromArea = async function (noteId, bookId, pageStart, pageEnd) {
+    const noteContainer = document.getElementById(`current-note-${bookId}`);
+    
+    // 从数据库加载已有注解
+    const existingAnnotations = await getNoteAnnotations(noteId);
+    
+    // 初始化noteAnnotations数组
+    if (!noteAnnotations[noteId]) {
+        noteAnnotations[noteId] = [];
+    }
+    
+    // 清空现有注解并重新添加
+    noteAnnotations[noteId] = [];
+    
+    if (existingAnnotations && existingAnnotations.length > 0) {
+        // 按display_order排序
+        const sortedAnnotations = [...existingAnnotations].sort((a, b) => a.display_order - b.display_order);
+        
+        sortedAnnotations.forEach(ann => {
+            noteAnnotations[noteId].push({
+                id: ann.id || Date.now(),
+                number: ann.display_order,
+                text: ann.original_text || '',
+                note: ann.annotation_text || ''
+            });
+        });
+    }
+
+    // 获取笔记内容
+    const notes = bookNotesCache[bookId] || [];
+    const note = notes.find(n => n.id === noteId);
+    
+    if (!note) {
+        alert('笔记未找到');
+        return;
+    }
+    
+    let contentToEdit = note.content;
+    // 移除带圈数字标记
+    contentToEdit = contentToEdit.replace(/[①-⑳⓪]/g, '');
+    
+    // 移除每段开头的全角空格
+    contentToEdit = contentToEdit.split('\n').map(para => {
+        const trimmed = para.trim();
+        if (trimmed === '') {
+            return '';
+        }
+        // 移除开头的全角空格
+        return trimmed.replace(/^　+/g, '');
+    }).join('\n');
 
 
-                // 更新当前索引显示
-                document.getElementById(`current-note-index-${bookId}`).textContent = currentIndex + 1;
-
-                // 更新左右箭头状态
-                updateNavigationButtons(bookId);
-            }
-
-            window.deleteNoteFromArea = async function (noteId, bookId) {
-                if (!confirm('确定要删除这条笔记吗？')) {
-                    return;
-                }
-
-                try {
-                    const { error } = await supabase
-                        .from('book_notes')
-                        .delete()
-                        .eq('id', noteId);
-
-                    if (error) throw error;
-
-                    // 重新加载笔记
-                    await loadAllNotes(bookId);
-
-                    // 更新计数
-                    await updateBookCounts();
-
-                    // 调整当前索引
-                    const notes = bookNotesCache[bookId] || [];
-                    if (notes.length === 0) {
-                        currentNoteIndex[bookId] = 0;
-                    } else if (currentNoteIndex[bookId] >= notes.length) {
-                        currentNoteIndex[bookId] = notes.length - 1;
-                    }
-
-                    // 重新显示笔记
-                    displayCurrentNote(bookId);
-
-                } catch (error) {
-                    console.error('删除笔记失败:', error);
-                    alert('删除失败，请重试');
-                }
-            }
-
-
-            // 新增：从展开区域编辑笔记
-            window.editNoteFromArea = function (noteId, bookId, pageStart, pageEnd) {
-                const noteContainer = document.getElementById(`current-note-${bookId}`);
-                const noteContentElement = document.getElementById(`area-note-content-${noteId}`);
-                const currentContent = noteContentElement.textContent;
-
-                // 替换为编辑表单
-                noteContainer.innerHTML = `
+    noteContainer.innerHTML = `
         <div style="margin-bottom: 10px;">
             <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                 <input type="number" id="area-edit-pageStart-${noteId}" value="${pageStart || ''}" placeholder="起始页" 
@@ -975,74 +1217,491 @@ font-size: 16px;
                 <input type="number" id="area-edit-pageEnd-${noteId}" value="${pageEnd || ''}" placeholder="结束页" 
                     style="width: 100px; padding: 5px; border: 2px solid black;">
             </div>
-            <textarea id="area-edit-content-${noteId}" style="width: 100%; min-height: 80px; padding: 10px; border: 2px solid black; font-family: inherit; font-size: 14px; resize: vertical;">${currentContent}</textarea>
+            <div style="margin-bottom: 10px;">
+                <button onclick="addAnnotationFromArea('${noteId}', '${bookId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">添加注解</button>
+                <span style="margin-left: 10px; font-size: 12px; color: #666;">选中文字后点击此按钮</span>
+            </div>
+            <div id="area-edit-content-${noteId}" contenteditable="true" style="width: 100%; min-height: 120px; padding: 10px; border: 2px solid black; font-family: inherit; font-size: 14px; overflow-y: auto; white-space: pre-wrap; line-height: 1.6;">${contentToEdit}</div>
+            <div id="area-annotations-${noteId}" style="margin-top: 15px; padding-top: 15px; border-top: 2px solid black;">
+                <!-- 注解列表将在这里显示 -->
+            </div>
         </div>
         <div style="display: flex; gap: 10px;">
-            <button onclick="saveEditNoteFromArea('${noteId}', '${bookId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">保存</button>
+            <button id="area-save-btn-${noteId}" onclick="saveEditNoteFromArea('${noteId}', '${bookId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">保存</button>
             <button onclick="cancelEditNoteFromArea('${bookId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">取消</button>
         </div>
     `;
+
+    // 渲染注解列表
+    renderAnnotationsFromArea(noteId);
+}
+
+window.cancelEditNoteFromArea = function(bookId) {
+    // 重新显示当前笔记
+    displayCurrentNote(bookId);
+}
+
+function insertAnnotationMarksInEditContent(noteId) {
+    const editContent = document.getElementById(`area-edit-content-${noteId}`);
+    const annotations = noteAnnotations[noteId] || [];
+    
+    if (annotations.length === 0) return;
+    
+    let content = editContent.textContent || editContent.innerText;
+    
+    // 为每个注解在内容中查找并标记（简化版：在末尾添加）
+    annotations.forEach(ann => {
+        // 尝试在文本中找到原文
+        const textIndex = content.indexOf(ann.text);
+        if (textIndex !== -1) {
+            // 在找到的文本后插入标记
+            const before = content.substring(0, textIndex + ann.text.length);
+            const after = content.substring(textIndex + ann.text.length);
+            content = before + getCircledNumber(ann.number) + after;
+        }
+    });
+    
+    editContent.innerHTML = content;
+}
+
+
+     
+
+            window.addAnnotationFromArea = function(noteId, bookId) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount || selection.isCollapsed) {
+        alert('请先选中需要注解的文字');
+        return;
+    }
+
+    const selectedText = selection.toString();
+    const range = selection.getRangeAt(0);
+    const editContent = document.getElementById(`area-edit-content-${noteId}`);
+    
+    // 确保选区在编辑区域内
+    if (!editContent.contains(range.commonAncestorContainer)) {
+        alert('请在笔记内容区域选择文字');
+        return;
+    }
+
+    // 获取当前所有注解，计算下一个序号
+    const currentAnnotations = noteAnnotations[noteId] || [];
+    const nextNumber = currentAnnotations.length + 1;
+
+    // 创建注解
+    const annotation = {
+        id: Date.now(),
+        number: nextNumber, // 这是显示顺序，不是创建时间
+        text: selectedText,
+        note: ''
+    };
+
+    // 在选中文字后插入带圈数字
+    const circledNumber = getCircledNumber(nextNumber);
+    const span = document.createElement('span');
+    span.style.color = '#0066cc';
+    span.style.fontSize = '0.85em';
+    span.style.verticalAlign = 'super';
+    span.textContent = circledNumber;
+    
+    range.collapse(false);
+    range.insertNode(span);
+
+    // 保存注解到数组
+    if (!noteAnnotations[noteId]) {
+        noteAnnotations[noteId] = [];
+    }
+    noteAnnotations[noteId].push(annotation);
+    
+    // 清除选区
+    selection.removeAllRanges();
+    
+    // 重新渲染注解列表
+    renderAnnotationsFromArea(noteId);
+}
+
+// 同样修改addAnnotation函数（用于modal中的编辑）
+window.addAnnotation = function(noteId) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount || selection.isCollapsed) {
+        alert('请先选中需要注解的文字');
+        return;
+    }
+
+    const selectedText = selection.toString();
+    const range = selection.getRangeAt(0);
+    const editContent = document.getElementById(`edit-content-${noteId}`);
+    
+    // 确保选区在编辑区域内
+    if (!editContent.contains(range.commonAncestorContainer)) {
+        alert('请在笔记内容区域选择文字');
+        return;
+    }
+
+    // 获取当前所有注解，计算下一个序号
+    const currentAnnotations = noteAnnotations[noteId] || [];
+    const nextNumber = currentAnnotations.length + 1;
+
+    // 创建注解
+    const annotation = {
+        id: Date.now(),
+        number: nextNumber,
+        text: selectedText,
+        note: ''
+    };
+
+
+    // 在选中文字后插入带圈数字
+    const circledNumber = getCircledNumber(nextNumber);
+    const span = document.createElement('span');
+    span.style.color = '#0066cc';
+    span.style.fontSize = '0.85em';
+    span.style.verticalAlign = 'super';
+    span.textContent = circledNumber;
+    
+    range.collapse(false);
+    range.insertNode(span);
+
+    // 保存注解
+    if (!noteAnnotations[noteId]) {
+        noteAnnotations[noteId] = [];
+    }
+    noteAnnotations[noteId].push(annotation);
+    
+    // 清除选区
+    selection.removeAllRanges();
+    
+    // 重新渲染注解列表
+    renderAnnotations(noteId);
+}
+
+// 渲染展开区域的注解列表
+// 渲染展开区域的注解列表 - 修复版
+function renderAnnotationsFromArea(noteId) {
+    const annotationsContainer = document.getElementById(`area-annotations-${noteId}`);
+    if (!annotationsContainer) return;
+
+    const annotations = noteAnnotations[noteId] || [];
+    
+    if (annotations.length === 0) {
+        annotationsContainer.innerHTML = '<div style="color: #999; font-size: 14px;">暂无注解</div>';
+        return;
+    }
+
+    annotationsContainer.innerHTML = annotations.map(ann => `
+        <div style="margin-bottom: 15px; padding: 10px; border: 2px solid black; background-color: white;">
+            <div style="margin-bottom: 5px;">
+                <span style="color: black; font-weight: bold;">${getCircledNumber(ann.number)}</span>
+                <span style="color: black; font-size: 14px;">"${ann.text}"</span>
+                <button onclick="deleteAnnotationFromArea('${noteId}', '${ann.id}')" style="float: right; padding: 0px 8px; border: 2px solid black; background: white; cursor: pointer; font-size: 12px;">删除</button>
+            </div>
+            <textarea id="area-annotation-note-${ann.id}" style="width: 100%; min-height: 60px; padding: 5px; border: 2px solid black; font-size: 13px;" placeholder="在此输入注解内容...">${ann.note}</textarea>
+        </div>
+    `).join('');
+
+    // 绑定textarea的change事件
+    annotations.forEach(ann => {
+        const textarea = document.getElementById(`area-annotation-note-${ann.id}`);
+        if (textarea) {
+            textarea.addEventListener('input', function() {
+                const annotation = noteAnnotations[noteId].find(a => a.id === ann.id);
+                if (annotation) {
+                    annotation.note = this.value;
+                }
+            });
+        }
+    });
+}// 从展开区域删除注解 - 修复版
+window.deleteAnnotationFromArea = function(noteId, annotationId) {
+    if (!confirm(`确定删除这条注解吗？`)) return;
+
+    const annotations = noteAnnotations[noteId] || [];
+    const deleteIndex = annotations.findIndex(a => a.id == annotationId);
+    if (deleteIndex === -1) return;
+
+    // 1. 从数组中删除注解
+    annotations.splice(deleteIndex, 1);
+
+    // 2. 重新编号所有剩余的注解
+    annotations.forEach((ann, idx) => {
+        ann.number = idx + 1;
+    });
+
+    // 3. 更新编辑区域中的标记
+    const editContent = document.getElementById(`area-edit-content-${noteId}`);
+    const modalEditContent = document.getElementById(`edit-content-${noteId}`);
+    
+    // 更新展开区域的内容
+    if (editContent) {
+        updateContentWithAnnotations(editContent, annotations);
+    }
+    
+    // 更新Modal中的内容（如果存在）
+    if (modalEditContent) {
+        updateContentWithAnnotations(modalEditContent, annotations);
+    }
+
+    // 4. 重新渲染注解列表
+    renderAnnotationsFromArea(noteId);
+    
+    // 5. 如果Modal中也显示了相同的笔记，更新Modal中的注解列表
+    const modalAnnotationsContainer = document.getElementById(`annotations-${noteId}`);
+    if (modalAnnotationsContainer) {
+        renderAnnotations(noteId);
+    }
+}
+
+
+// 辅助函数：更新内容中的注解标记
+function updateContentWithAnnotations(contentElement, annotations) {
+    if (!contentElement) return;
+    
+    // 获取当前文本内容（不含标记）
+    let textContent = contentElement.textContent || contentElement.innerText;
+    
+    // 移除所有现有的带圈数字标记
+    textContent = textContent.replace(/[①-⑳⓪]/g, '');
+    
+    // 清除当前内容
+    contentElement.innerHTML = '';
+    
+    // 如果有注解，插入新的标记
+    if (annotations && annotations.length > 0) {
+        // 创建文本节点并重新插入
+        const sortedAnnotations = [...annotations].sort((a, b) => a.number - b.number);
+        
+        // 创建一个文档片段来构建新内容
+        const fragment = document.createDocumentFragment();
+        
+        // 处理文本行
+        const lines = textContent.split('\n');
+        
+        lines.forEach((line, lineIndex) => {
+            if (lineIndex > 0) {
+                fragment.appendChild(document.createElement('br'));
             }
-
-            // 新增：保存从展开区域编辑的笔记
-            window.saveEditNoteFromArea = async function (noteId, bookId) {
-                const contentElement = document.getElementById(`area-edit-content-${noteId}`);
-                const pageStartElement = document.getElementById(`area-edit-pageStart-${noteId}`);
-                const pageEndElement = document.getElementById(`area-edit-pageEnd-${noteId}`);
-
-                const content = contentElement.value.trim();
-                const pageStart = pageStartElement.value;
-                const pageEnd = pageEndElement.value;
-
-                if (!content) {
-                    alert('请输入笔记内容');
-                    return;
+            
+            let processedLine = line;
+            let offset = 0;
+            
+            // 为每个注解在行中查找并标记
+            sortedAnnotations.forEach(ann => {
+                if (ann.text && processedLine.includes(ann.text)) {
+                    // 找到文本位置
+                    const textIndex = processedLine.indexOf(ann.text);
+                    if (textIndex !== -1) {
+                        // 添加注解文本前的部分
+                        if (textIndex > 0) {
+                            const beforeText = document.createTextNode(processedLine.substring(0, textIndex));
+                            fragment.appendChild(beforeText);
+                        }
+                        
+                        // 添加注解文本
+                        const annotationText = document.createTextNode(ann.text);
+                        fragment.appendChild(annotationText);
+                        
+                        // 添加带圈数字标记
+                        const markerSpan = document.createElement('span');
+                        markerSpan.style.color = '#0066cc';
+                        markerSpan.style.fontSize = '0.85em';
+                        markerSpan.style.verticalAlign = 'super';
+                        markerSpan.textContent = getCircledNumber(ann.number);
+                        fragment.appendChild(markerSpan);
+                        
+                        // 更新已处理的行内容
+                        processedLine = processedLine.substring(textIndex + ann.text.length);
+                    }
                 }
-
-                // 验证页码：必须至少填写起始页
-                if (!pageStart) {
-                    alert('请填写页码');
-                    return;
-                }
-
-                // 如果填写了结束页，验证结束页不能小于起始页
-                if (pageEnd && parseInt(pageEnd) < parseInt(pageStart)) {
-                    alert('结束页不能小于起始页');
-                    return;
-                }
-
-                try {
-                    const { error } = await supabase
-                        .from('book_notes')
-                        .update({
-                            content: content,
-                            page_start: parseInt(pageStart),
-                            page_end: pageEnd ? parseInt(pageEnd) : null,
-                            updated_at: new Date().toISOString()
-                        })
-                        .eq('id', noteId);
-
-                    if (error) throw error;
-
-                    // 重新加载笔记
-                    await loadAllNotes(bookId);
-                    await updateBookCounts();
-
-                    // 重新显示当前笔记
-                    displayCurrentNote(bookId);
-
-                } catch (error) {
-                    console.error('更新笔记失败:', error);
-                    alert('更新失败，请重试');
-                }
+            });
+            
+            // 添加剩余的行内容
+            if (processedLine.length > 0) {
+                const remainingText = document.createTextNode(processedLine);
+                fragment.appendChild(remainingText);
             }
-
-            // 新增：取消从展开区域编辑
-            window.cancelEditNoteFromArea = async function (bookId) {
-                // 重新显示当前笔记
-                displayCurrentNote(bookId);
+        });
+        
+        contentElement.appendChild(fragment);
+    } else {
+        // 没有注解，直接设置文本
+        // 保持原有的换行
+        const lines = textContent.split('\n');
+        lines.forEach((line, index) => {
+            if (index > 0) {
+                contentElement.appendChild(document.createElement('br'));
             }
+            contentElement.appendChild(document.createTextNode(line));
+        });
+    }
+}
+window.saveEditNoteFromArea = async function (noteId, bookId) {
+    const saveBtn = document.getElementById(`area-save-btn-${noteId}`);
+    const originalText = saveBtn.textContent;
+    
+    // 显示保存中状态
+    saveBtn.textContent = '保存中...';
+    saveBtn.disabled = true;
+    saveBtn.style.opacity = '0.7';
+    saveBtn.style.cursor = 'not-allowed';
 
+    try {
+        const contentElement = document.getElementById(`area-edit-content-${noteId}`);
+        const pageStartElement = document.getElementById(`area-edit-pageStart-${noteId}`);
+        const pageEndElement = document.getElementById(`area-edit-pageEnd-${noteId}`);
+
+        // 获取包含HTML的内容
+        let htmlContent = contentElement.innerHTML;
+        
+        // 移除旧的带圈数字标记
+        htmlContent = htmlContent.replace(/<span[^>]*>[①-⑳⓪]<\/span>/g, '');
+        htmlContent = htmlContent.replace(/[①-⑳⓪]/g, '');
+        
+  
+        
+        // 清理内容 - 移除多余的空格和制表符
+        htmlContent = htmlContent
+            .replace(/<div>/g, '\n')
+            .replace(/<\/div>/g, '')
+            .replace(/<br>/g, '\n')
+            .replace(/<br\s*\/?>/g, '\n')
+            .replace(/&nbsp;/g, ' ')
+            .replace(/<[^>]+>/g, '')
+            .trim();
+        
+            let content = htmlContent;
+
+        // 为每段添加两个全角空格 - 简化逻辑
+        content = content.split('\n').map(para => {
+            const trimmed = para;
+            if (trimmed === '') {
+                return '';
+            }
+            // 移除任何现有的全角空格，然后添加两个全角空格
+            const cleanPara = trimmed.replace(/^　+/g, '');
+            return '　　' + cleanPara;
+        }).join('\n');
+        
+        const pageStart = pageStartElement.value;
+        const pageEnd = pageEndElement.value;
+
+        if (!content || content.trim() === '') {
+            alert('请输入笔记内容');
+            throw new Error('内容为空');
+        }
+
+        // 验证页码
+        if (!pageStart) {
+            alert('请填写页码');
+            throw new Error('页码为空');
+        }
+
+        if (pageEnd && parseInt(pageEnd) < parseInt(pageStart)) {
+            alert('结束页不能小于起始页');
+            throw new Error('页码错误');
+        }
+
+        // 获取当前的注解数组
+        const annotations = noteAnnotations[noteId] || [];
+        
+        // 如果有注解，在内容中插入新的带圈数字标记
+        if (annotations.length > 0) {
+            // 按number排序
+            const sortedAnnotations = [...annotations].sort((a, b) => a.number - b.number);
+            
+            // 为每个注解查找文本并插入标记
+            sortedAnnotations.forEach(ann => {
+                if (ann.text && content.includes(ann.text)) {
+                    const circledNum = getCircledNumber(ann.number);
+                    // 只替换第一个匹配项
+                    const regex = new RegExp(ann.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+                    let count = 0;
+                    content = content.replace(regex, (match) => {
+                        count++;
+                        return count === 1 ? match + circledNum : match;
+                    });
+                }
+            });
+        }
+
+        // 更新笔记内容（包含标记）
+        const { error: noteError } = await supabase
+            .from('book_notes')
+            .update({
+                content: content,
+                page_start: parseInt(pageStart),
+                page_end: pageEnd ? parseInt(pageEnd) : null,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', noteId);
+
+        if (noteError) throw noteError;
+        
+        // 保存注解到数据库
+        if (annotations.length > 0) {
+            // 删除旧的注解
+            const { error: deleteError } = await supabase
+                .from('note_annotations')
+                .delete()
+                .eq('note_id', noteId);
+            
+            if (deleteError) throw deleteError;
+            
+            // 插入新的注解
+            const annotationsToInsert = annotations.map((ann, index) => ({
+                note_id: noteId,
+                original_text: ann.text,
+                annotation_text: ann.note || '',
+                display_order: ann.number,
+                created_at: new Date().toISOString()
+            }));
+            
+            const { error: insertError } = await supabase
+                .from('note_annotations')
+                .insert(annotationsToInsert);
+                
+            if (insertError) throw insertError;
+        } else {
+            // 如果没有注解，删除所有相关注解
+            await supabase
+                .from('note_annotations')
+                .delete()
+                .eq('note_id', noteId);
+        }
+        
+        // 清除缓存
+        delete bookNotesCache[bookId];
+        delete noteAnnotations[noteId];
+        
+        // 重新加载笔记
+        await loadAllNotes(bookId);
+        await updateBookCounts();
+
+        // 重新显示当前笔记
+        await displayCurrentNote(bookId);
+
+        // 恢复按钮状态
+        saveBtn.textContent = '保存成功!';
+        setTimeout(() => {
+            saveBtn.textContent = originalText;
+            saveBtn.disabled = false;
+            saveBtn.style.opacity = '1';
+            saveBtn.style.cursor = 'pointer';
+        }, 1000);
+
+    } catch (error) {
+        console.error('更新笔记失败:', error);
+        
+        // 恢复按钮状态
+        saveBtn.textContent = originalText;
+        saveBtn.disabled = false;
+        saveBtn.style.opacity = '1';
+        saveBtn.style.cursor = 'pointer';
+        
+        if (error.message !== '内容为空' && error.message !== '页码为空' && error.message !== '页码错误') {
+            alert('更新失败，请重试');
+        }
+    }
+}
             // 新增：更新导航按钮状态
             function updateNavigationButtons(bookId) {
                 const notes = bookNotesCache[bookId] || [];
@@ -1085,44 +1744,86 @@ font-size: 16px;
                 }
             }
 
+
+
             async function loadUserNotes(bookId) {
-                const notesList = document.getElementById('notesList');
-                notesList.innerHTML = '<div class="loading">Loading notes...</div>';
+    const notesList = document.getElementById('notesList');
+    notesList.innerHTML = '<div class="loading">Loading notes...</div>';
 
-                if (!currentUser) {
-                    notesList.innerHTML = '<div class="empty-notes">请先登录</div>';
-                    return;
-                }
+    if (!currentUser) {
+        notesList.innerHTML = '<div class="empty-notes">请先登录</div>';
+        return;
+    }
 
-                try {
-                    // 只查询当前用户的笔记
-                    const { data: notes, error } = await supabase
-                        .from('book_notes')
-                        .select('*')
-                        .eq('book_id', bookId)
-                        .eq('user_id', currentUser.id)
-                        .order('created_at', { ascending: false });
+    try {
+        // 只查询当前用户的笔记
+        const { data: notes, error } = await supabase
+            .from('book_notes')
+            .select('*')
+            .eq('book_id', bookId)
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false });
 
-                    if (error) throw error;
+        if (error) throw error;
 
-                    if (!notes || notes.length === 0) {
-                        notesList.innerHTML = '<div class="empty-notes">你还没有添加笔记</div>';
-                        return;
-                    }
+        if (!notes || notes.length === 0) {
+            notesList.innerHTML = '<div class="empty-notes">You have no notes yet</div>';
+            return;
+        }
 
-                    notesList.innerHTML = notes.map(note => {
-                        const createdDate = new Date(note.created_at).toLocaleDateString('zh-CN');
-
-                        let pageInfo = '';
-                        if (note.page_start && note.page_end) {
-                            pageInfo = `P${note.page_start}-${note.page_end} · `;
-                        } else if (note.page_start) {
-                            pageInfo = `P${note.page_start} · `;
+        // 为每条笔记获取注解
+        const notesWithAnnotations = await Promise.all(
+            notes.map(async (note) => {
+                const annotations = await getNoteAnnotations(note.id);
+                
+                let content = note.content;
+                
+                // 如果内容中没有标记但有注解，添加标记
+                if (annotations && annotations.length > 0 && !/[①-⑳⓪]/.test(content)) {
+                    const sortedAnnotations = [...annotations].sort((a, b) => a.display_order - b.display_order);
+                    
+                    sortedAnnotations.forEach(ann => {
+                        if (ann.original_text && content.includes(ann.original_text)) {
+                            const circledNum = getCircledNumber(ann.display_order);
+                            // 只替换第一个匹配项
+                            content = content.replace(ann.original_text, ann.original_text + circledNum);
                         }
+                    });
+                }
+                
+                return { ...note, content, annotations };
+            })
+        );
 
-                        return `
+
+
+        notesList.innerHTML = notesWithAnnotations.map(note => {
+            const createdDate = new Date(note.created_at).toLocaleDateString('zh-CN');
+
+            let pageInfo = '';
+            if (note.page_start && note.page_end) {
+                pageInfo = `P${note.page_start}-${note.page_end} · `;
+            } else if (note.page_start) {
+                pageInfo = `P${note.page_start} · `;
+            }
+
+            // 渲染注解部分
+            const annotationsHtml = note.annotations && note.annotations.length > 0 ? `
+                <div class="note-annotations" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+                    <div style="font-weight: bold; margin-bottom: 8px; font-size: 13px;">注解:</div>
+                    ${note.annotations.map(ann => `
+                        <div style="margin-bottom: 6px; line-height: 1.4; font-size: 12px;">
+                            <span style="color: #0066cc; font-weight: bold; margin-right: 4px;">${getCircledNumber(ann.display_order)}</span>
+                            <span>${ann.annotation_text || '（无注解内容）'}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : '';
+
+            return `
                 <div class="note-item" id="note-item-${note.id}">
                     <div class="note-content" id="note-content-${note.id}">${note.content}</div>
+                    ${annotationsHtml}
                     <div class="note-meta">
                         <span>${pageInfo}${createdDate}</span>
                         <span>
@@ -1132,109 +1833,397 @@ font-size: 16px;
                     </div>
                 </div>
             `;
-                    }).join('');
+        }).join('');
 
-                } catch (error) {
-                    console.error('加载笔记失败:', error);
-                    notesList.innerHTML = '<div class="empty-notes">加载笔记失败</div>';
-                }
-            }
-
+    } catch (error) {
+        console.error('加载笔记失败:', error);
+        notesList.innerHTML = '<div class="empty-notes">加载笔记失败</div>';
+    }
+}
 
             // 编辑笔记
             window.editNote = function (noteId, pageStart, pageEnd) {
-                const noteContentElement = document.getElementById(`note-content-${noteId}`);
-                const noteItemElement = document.getElementById(`note-item-${noteId}`);
-                const currentContent = noteContentElement.textContent;
+    const noteContentElement = document.getElementById(`note-content-${noteId}`);
+    const noteItemElement = document.getElementById(`note-item-${noteId}`);
+    const currentContent = noteContentElement.textContent;
+    
+    // 清空现有的注解缓存
+    if (!noteAnnotations[noteId]) {
+        noteAnnotations[noteId] = [];
+    } else {
+        noteAnnotations[noteId] = [];
+    }
 
-                // 替换为编辑表单
-                noteItemElement.innerHTML = `
+    // 从数据库加载已有注解
+    getNoteAnnotations(noteId).then(async (annotations) => {
+        if (annotations && annotations.length > 0) {
+            annotations.forEach(ann => {
+                noteAnnotations[noteId].push({
+                    id: ann.id || Date.now(),
+                    number: ann.display_order,
+                    text: ann.original_text || '',
+                    note: ann.annotation_text || ''
+                });
+            });
+        }
+
+        let editContent = currentContent;
+        editContent = editContent.replace(/[①-⑳⓪]/g, '');
+        
+        // 移除每段开头的全角空格
+        editContent = editContent.split('\n').map(para => {
+            const trimmed = para.trim();
+            if (trimmed === '') {
+                return '';
+            }
+            // 移除开头的全角空格
+            return trimmed.replace(/^　+/g, '');
+        }).join('\n');
+
+        noteItemElement.innerHTML = `
         <div style="margin-bottom: 10px;">
             <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                <input type="number" id="edit-pageStart-${noteId}" value="${pageStart || ''}" placeholder="起始页" 
+                <input type="number" id="edit-pageStart-${noteId}" value="${pageStart || ''}" placeholder="Start Page" 
                     style="width: 100px; padding: 5px; border: 2px solid black;"
                     oninput="this.style.borderColor='black'">
                 <span style="line-height: 30px;">-</span>
-                <input type="number" id="edit-pageEnd-${noteId}" value="${pageEnd || ''}" placeholder="结束页" 
+                <input type="number" id="edit-pageEnd-${noteId}" value="${pageEnd || ''}" placeholder="End Page" 
                     style="width: 100px; padding: 5px; border: 2px solid black;"
                     oninput="this.style.borderColor='black'">
             </div>
-            <textarea id="edit-content-${noteId}" style="width: 100%; min-height: 80px; padding: 10px; border: 2px solid black; font-family: inherit; font-size: 14px; resize: vertical;">${currentContent}</textarea>
+            <div style="margin-bottom: 10px;">
+                <button onclick="addAnnotation('${noteId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">添加注解</button>
+                <span style="margin-left: 10px; font-size: 12px; color: #666;">选中文字后点击此按钮</span>
+            </div>
+            <div id="edit-content-${noteId}" contenteditable="true" style="width: 100%; min-height: 120px; padding: 10px; border: 2px solid black; font-family: inherit; font-size: 14px; overflow-y: auto; white-space: pre-wrap;">${editContent}</div>  <!-- 关键修改：使用 editContent 而不是 currentContent -->
+            <div id="annotations-${noteId}" style="margin-top: 15px; padding-top: 15px; border-top: 2px solid black;">
+                <!-- 注解列表将在这里显示 -->
+            </div>
         </div>
         <div style="display: flex; gap: 10px;">
             <button onclick="saveEditNote('${noteId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">保存</button>
-            <button onclick="cancelEditNote('${noteId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">取消</button>
+            <button onclick="cancelEditNoteInModal('${noteId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">取消</button>
         </div>
     `;
+
+        // 渲染已有注解
+        renderAnnotations(noteId);
+        
+        // 在内容中插入注解标记
+        insertAnnotationMarksInModalContent(noteId, annotations);
+    }).catch(error => {
+        console.error('加载注解失败:', error);
+    });
+}
+
+window.cancelEditNoteInModal = function(noteId) {
+    // 重新加载笔记列表
+    loadUserNotes(currentBookId);
+}
+
+
+function insertAnnotationMarksInModalContent(noteId, annotations) {
+    if (!annotations || annotations.length === 0) return;
+    
+    const editContent = document.getElementById(`edit-content-${noteId}`);
+    let content = editContent.textContent || editContent.innerText;
+    
+    // 检查是否已经包含带圈数字标记
+    const hasExistingMarkers = /[①-⑳⓪]/.test(content);
+    
+    // 如果已经有标记，先移除所有标记
+    if (hasExistingMarkers) {
+        content = content.replace(/[①-⑳⓪]/g, '');
+    }
+    
+    // 按顺序插入标记
+    const sortedAnnotations = [...annotations].sort((a, b) => a.display_order - b.display_order);
+    
+    sortedAnnotations.forEach(ann => {
+        if (ann.original_text && content.includes(ann.original_text)) {
+            const circledNum = getCircledNumber(ann.display_order);
+            // 替换第一个匹配项，在原文后添加标记
+            content = content.replace(ann.original_text, ann.original_text + circledNum);
+        }
+    });
+    
+    editContent.innerHTML = content;
+}
+
+            // 添加注解
+            window.addAnnotation = function(noteId) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount || selection.isCollapsed) {
+        alert('请先选中需要注解的文字');
+        return;
+    }
+
+    const selectedText = selection.toString();
+    const range = selection.getRangeAt(0);
+    const editContent = document.getElementById(`edit-content-${noteId}`);
+    
+    // 确保选区在编辑区域内
+    if (!editContent.contains(range.commonAncestorContainer)) {
+        alert('请在笔记内容区域选择文字');
+        return;
+    }
+
+    // 获取当前所有注解，计算下一个序号
+    const currentAnnotations = noteAnnotations[noteId] || [];
+    const nextNumber = currentAnnotations.length + 1;
+
+    // 创建注解
+    const annotation = {
+        id: Date.now(),
+        number: nextNumber,
+        text: selectedText,
+        note: ''
+    };
+
+    // 在选中文字后插入带圈数字
+    const circledNumber = getCircledNumber(nextNumber);
+    const span = document.createElement('span');
+    span.style.color = '#0066cc';
+    span.style.fontSize = '0.85em';
+    span.style.verticalAlign = 'super';
+    span.textContent = circledNumber;
+    
+    range.collapse(false);
+    range.insertNode(span);
+
+    // 保存注解
+    if (!noteAnnotations[noteId]) {
+        noteAnnotations[noteId] = [];
+    }
+    noteAnnotations[noteId].push(annotation);
+    
+    // 清除选区
+    selection.removeAllRanges();
+    
+    // 重新渲染注解列表
+    renderAnnotations(noteId);
+}
+
+            
+            function getCircledNumber(num) {
+                const circledNumbers = ['⓪','①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩',
+                                       '⑪','⑫','⑬','⑭','⑮','⑯','⑰','⑱','⑲','⑳'];
+                if (num <= 20) {
+                    return circledNumbers[num];
+                }
+                return `(${num})`;
             }
 
-            // 保存编辑的笔记
-            window.saveEditNote = async function (noteId) {
-                const contentElement = document.getElementById(`edit-content-${noteId}`);
-                const pageStartElement = document.getElementById(`edit-pageStart-${noteId}`);
-                const pageEndElement = document.getElementById(`edit-pageEnd-${noteId}`);
+            // 渲染注解列表
+            function renderAnnotations(noteId) {
+    const annotationsContainer = document.getElementById(`annotations-${noteId}`);
+    if (!annotationsContainer) return;
 
-                const content = contentElement.value.trim();
-                const pageStart = pageStartElement.value;
-                const pageEnd = pageEndElement.value;
+    const annotations = noteAnnotations[noteId] || [];
+    
+    if (annotations.length === 0) {
+        annotationsContainer.innerHTML = '<div style="color: #999; font-size: 14px;">暂无注解</div>';
+        return;
+    }
 
-                // 重置边框颜色
-                pageStartElement.style.borderColor = 'black';
-                pageEndElement.style.borderColor = 'black';
+    annotationsContainer.innerHTML = annotations.map(ann => `
+        <div style="margin-bottom: 15px; padding: 10px; border: 2px solid black; background-color: white;">
+            <div style="margin-bottom: 5px;">
+                <span>${getCircledNumber(ann.number)}</span>
+                <span style="color: black; font-size: 14px;">"${ann.text}"</span>
+                <button onclick="deleteAnnotationFromArea('${noteId}', '${ann.id}')" style="float: right; padding: 0px 8px; border: 2px solid black; background: white; cursor: pointer; font-size: 12px;">删除</button>
+            </div>
+            <textarea id="annotation-note-${ann.id}" style="width: 100%; min-height: 60px; padding: 5px; border: 2px solid black; font-size: 13px;" placeholder="在此输入注解内容...">${ann.note}</textarea>
+        </div>
+    `).join('');
 
-                if (!content) {
-                    alert('请输入笔记内容');
-                    return;
+    // 绑定textarea的change事件
+    annotations.forEach(ann => {
+        const textarea = document.getElementById(`annotation-note-${ann.id}`);
+        if (textarea) {
+            textarea.addEventListener('input', function() {
+                const annotation = noteAnnotations[noteId].find(a => a.id === ann.id);
+                if (annotation) {
+                    annotation.note = this.value;
                 }
-
-                // 验证页码：必须至少填写起始页
-                if (!pageStart) {
-                    alert('请填写页码');
-                    return;
-                }
+            });
+        }
+    });
+}
 
 
-                // 如果填写了结束页，验证结束页不能小于起始页
-                if (pageEnd && parseInt(pageEnd) < parseInt(pageStart)) {
-                    alert('结束页不能小于起始页');
-                    return;
-                }
+        
+   
+// 保存编辑的笔记
+// 保存编辑的笔记
+window.saveEditNote = async function (noteId) {
+    const contentElement = document.getElementById(`edit-content-${noteId}`);
+    const pageStartElement = document.getElementById(`edit-pageStart-${noteId}`);
+    const pageEndElement = document.getElementById(`edit-pageEnd-${noteId}`);
 
-                try {
-                    const { error } = await supabase
-                        .from('book_notes')
-                        .update({
-                            content: content,
-                            page_start: parseInt(pageStart),
-                            page_end: pageEnd ? parseInt(pageEnd) : null,
-                            updated_at: new Date().toISOString()
-                        })
-                        .eq('id', noteId);
+    // 获取包含HTML的内容
+    let htmlContent = contentElement.innerHTML;
+    
+    // 移除旧的带圈数字标记（来自之前的状态）
+    htmlContent = htmlContent.replace(/<span[^>]*>[①-⑳⓪]<\/span>/g, '');
+    htmlContent = htmlContent.replace(/[①-⑳⓪]/g, '');
+    
 
-                    if (error) throw error;
-
-                    // 重新加载笔记列表
-                    await loadUserNotes(currentBookId);
-                    await updateBookCounts();
-
-                    // 如果笔记区域是展开的，刷新它
-                    const notesArea = document.getElementById(`notes-area-${currentBookId}`);
-                    if (notesArea && notesArea.classList.contains('show')) {
-                        await loadAllNotes(currentBookId);
-                        displayCurrentNote(currentBookId);
-                    }
-
-                } catch (error) {
-                    console.error('更新笔记失败:', error);
-                    alert('更新失败，请重试');
-                }
+ // 转换为纯文本
+ htmlContent = htmlContent
+        .replace(/<div>/g, '\n') // <div> 转换为换行
+        .replace(/<\/div>/g, '') // 移除 </div>
+        .replace(/<br>/g, '\n')  // <br> 转换为换行
+        .replace(/<br\s*\/?>/g, '\n') // 处理各种格式的<br>
+        .replace(/&nbsp;/g, ' ') // &nbsp; 转换为空格
+        .replace(/<[^>]+>/g, '') // 移除其他所有HTML标签
+        .trim();
+    
+    // 将内容分割为行
+    let content = htmlContent;
+    
+    // 为每段添加两个全角空格
+    content = content.split('\n').map(para => {
+        const trimmed = para.trim();
+        if (trimmed === '') {
+            return ''; // 保持空行
+        }
+        
+        let cleanPara = trimmed.replace(/^　+/g, '');
+        return '　　' + cleanPara;
+    }).join('\n');
+    
+    // 获取当前的注解数组
+    const annotations = noteAnnotations[noteId] || [];
+    
+    // 如果有注解，在内容中插入新的带圈数字标记
+    if (annotations.length > 0) {
+        // 按number排序
+        const sortedAnnotations = [...annotations].sort((a, b) => a.number - b.number);
+        
+        // 为每个注解查找文本并插入标记
+        sortedAnnotations.forEach(ann => {
+            if (ann.text && content.includes(ann.text)) {
+                const circledNum = getCircledNumber(ann.number);
+                // 只替换第一个匹配项
+                const regex = new RegExp(ann.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+                let count = 0;
+                content = content.replace(regex, (match) => {
+                    count++;
+                    return count === 1 ? match + circledNum : match;
+                });
             }
+        });
+    }
+    
+    const pageStart = pageStartElement.value;
+    const pageEnd = pageEndElement.value;
 
-            // 取消编辑
-            window.cancelEditNote = async function (noteId) {
-                // 重新加载笔记列表
-                await loadUserNotes(currentBookId);
+    // 重置边框颜色
+    pageStartElement.style.borderColor = 'black';
+    pageEndElement.style.borderColor = 'black';
+
+    if (!content || content.trim() === '') {
+        alert('请输入笔记内容');
+        return;
+    }
+
+    // 验证页码：必须至少填写起始页
+    if (!pageStart) {
+        alert('请填写页码');
+        return;
+    }
+
+    // 如果填写了结束页，验证结束页不能小于起始页
+    if (pageEnd && parseInt(pageEnd) < parseInt(pageStart)) {
+        alert('结束页不能小于起始页');
+        return;
+    }
+
+    try {
+        // 先更新笔记内容（包含重新编号后的标记）
+        const { error: noteError } = await supabase
+            .from('book_notes')
+            .update({
+                content: content, // 保存重新编号后的内容
+                page_start: parseInt(pageStart),
+                page_end: pageEnd ? parseInt(pageEnd) : null,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', noteId);
+
+        if (noteError) throw noteError;
+        
+        // 保存注解到数据库（使用重新编号后的序号）
+        if (annotations.length > 0) {
+            // 删除旧的注解
+            const { error: deleteError } = await supabase
+                .from('note_annotations')
+                .delete()
+                .eq('note_id', noteId);
+            
+            if (deleteError) throw deleteError;
+            
+            // 插入新的注解（按重新编号后的顺序）
+            const annotationsToInsert = annotations.map((ann) => ({
+                note_id: noteId,
+                original_text: ann.text,
+                annotation_text: ann.note || '',
+                display_order: ann.number, // 使用重新编号后的序号
+                created_at: new Date().toISOString()
+            }));
+            
+            const { error: insertError } = await supabase
+                .from('note_annotations')
+                .insert(annotationsToInsert);
+                
+            if (insertError) throw insertError;
+        } else {
+            // 如果没有注解，删除所有相关注解
+            await supabase
+                .from('note_annotations')
+                .delete()
+                .eq('note_id', noteId);
+        }
+        
+        // 清除缓存
+        if (bookNotesCache[currentBookId]) {
+            delete bookNotesCache[currentBookId];
+        }
+        
+        // 清除当前笔记的注解缓存
+        if (noteAnnotations[noteId]) {
+            delete noteAnnotations[noteId];
+        }
+
+        // 重新加载笔记列表
+        await loadUserNotes(currentBookId);
+        await updateBookCounts();
+
+        // 如果笔记区域是展开的，刷新它
+        const notesArea = document.getElementById(`notes-area-${currentBookId}`);
+        if (notesArea && notesArea.classList.contains('show')) {
+            // 重新加载所有笔记
+            await loadAllNotes(currentBookId);
+            
+            // 找到当前笔记的新索引
+            const notes = bookNotesCache[currentBookId] || [];
+            const currentIndex = notes.findIndex(note => note.id === noteId);
+            if (currentIndex !== -1) {
+                currentNoteIndex[currentBookId] = currentIndex;
             }
+            
+            // 重新显示当前笔记
+            await displayCurrentNote(currentBookId);
+        }
+
+        
+
+    } catch (error) {
+        console.error('更新笔记失败:', error);
+        alert('更新失败，请重试');
+    }
+}
 
 
             window.deleteNote = async function (noteId) {
@@ -1271,6 +2260,202 @@ font-size: 16px;
                 }
             }
 
+
+
+         // 打印笔记功能
+window.printNote = function(bookId, noteIndex) {
+    const notes = bookNotesCache[bookId] || [];
+    if (notes.length === 0 || noteIndex >= notes.length) {
+        alert('没有可打印的笔记');
+        return;
+    }
+
+    const note = notes[noteIndex];
+    const bookData = window.BOOKS_DATA[bookId];
+    const bookTitle = bookData ? bookData.title : '未知书籍';
+    const bookImgSrc = bookData ? bookData.imgSrc : '';
+    
+    // 获取注解
+    getNoteAnnotations(note.id).then(annotations => {
+        // 创建打印窗口
+        const printWindow = window.open('', '_blank');
+        
+        let pageInfo = '';
+        if (note.page_start && note.page_end) {
+            pageInfo = `P${note.page_start}-${note.page_end}`;
+        } else if (note.page_start) {
+            pageInfo = `P${note.page_start}`;
+        }
+
+        const annotationsHtml = renderAnnotationsForPrint(annotations);
+
+        const printContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>打印笔记 - ${bookTitle}</title>
+                <style>
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                        padding: 15px;
+                        max-width: 800px;
+                        margin: 0 auto;
+                    }
+                    .book-meta {
+                        font-size: 14px;
+                        margin-bottom: 15px;
+                        line-height: 1.6;
+                        text-align: center;
+                    }
+                    .book-title {
+                        font-size: 22px;
+                        font-weight: bold;
+                        margin-bottom: 10px;
+                        text-align: center;
+                    }
+                    .page-info {
+                        margin-top: -5px;
+                        font-size: 14px;
+                        text-align: center;
+                    }
+                    .header {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        margin-bottom: 20px;
+                        width: 100%;
+                    }
+                    .book-cover {
+                        width: 250px;          
+                        object-fit: cover;
+                        margin-bottom: 20px;
+                    }
+                    .book-info {
+                        text-align: center;
+                        width: 100%;
+                    }
+               
+                    .note-content {
+                        font-size: 13px;
+                        line-height: 1.6;
+                        white-space: pre-wrap;
+                        margin-bottom: 20px;
+                    }
+                    .annotations-section {
+                        margin-top: 30px;
+                        padding-top: 20px;
+                        border-top: 1px solid #ddd;
+                    }
+                    .annotations-title {
+                        font-weight: bold;
+                        margin-bottom: 10px;
+                        font-size: 14px;
+                    }
+                    .annotation-item {
+                        margin-bottom: 10px;
+                        line-height: 1.5;
+                         font-size: 13px;
+                    }
+                    .annotation-marker {
+                        color: black;
+                        font-weight: bold;
+                        margin-right: 8px;
+                    }
+                    .print-date {
+                        margin-top: 20px;
+                        font-size: 12px;
+                        text-align: center
+                    }
+                        .disclaimer{
+                        font-size: 11px;
+                         text-align: center;
+                        }
+                    @media print {
+                      @page {
+        margin: 0 !important;  /* 移除所有页边距 */
+        size: auto;
+    }
+                        body {
+                            align-items: center;
+                           
+                        }
+                        
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    ${bookImgSrc ? `
+                        <img class="book-cover" src="${bookImgSrc}" alt="${bookTitle}" onerror="this.style.display='none'">
+                    ` : ''}
+                    <div class="book-info">
+                        <div class="book-title">${bookTitle}</div>
+                        <div class="book-meta">
+                            ${bookData ? `
+                                ${bookData.author || ''}
+                                ${bookData.translator ? ' / ' + bookData.translator : ''}
+                                ${bookData.publisher ? ' / ' + bookData.publisher : ''}
+                                ${bookData.publishDate ? ' / ' + bookData.publishDate : ''}
+                            ` : ''}
+                        </div>
+                        ${pageInfo ? `<div class="page-info">${pageInfo}</div>` : ''}
+                    </div>
+                </div>
+                
+                <div class="note-content">${note.content}</div>
+                
+                ${annotationsHtml}
+                
+                <div class="print-date">
+                    CREATED AT: ${new Date(note.created_at).toLocaleString('zh-CN')}<br>
+                    PRINTED AT: ${new Date().toLocaleString('zh-CN')}
+                    
+                </div>
+                <div class="disclaimer">著作权归原作者所有，笔记仅供个人学习使用
+                    <br>
+                    Copyright belongs to the original author(s). These notes are for personal study use only.</div>
+                <script>
+                    window.onload = function() {
+                        setTimeout(function() {
+                            window.print();
+                            setTimeout(function() {
+                                window.close();
+                            }, 5000);
+                        }, 500);
+                    }
+                <\\/script>
+            <\\/body>
+            <\\/html>
+        `;
+
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+    });
+};
+
+// 渲染打印用的注解
+function renderAnnotationsForPrint(annotations) {
+    if (!annotations || annotations.length === 0) {
+        return '';
+    }
+
+    // 按显示顺序排序
+    const sortedAnnotations = [...annotations].sort((a, b) => a.display_order - b.display_order);
+    
+    return `
+        <div class="annotations-section">
+            <div class="annotations-title">注解:</div>
+            ${sortedAnnotations.map(ann => `
+                <div class="annotation-item">
+                    <span class="annotation-marker">${getCircledNumber(ann.display_order)}</span>
+                    <span class="annotation-text">${ann.annotation_text}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
 
             // 点击Modal外部关闭
             document.getElementById('noteModal').addEventListener('click', function (e) {
