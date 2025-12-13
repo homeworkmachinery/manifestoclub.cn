@@ -330,7 +330,7 @@
             flex-direction: column;
         }
 
-    }</style><link href="/css/styles.c6120c67c82cba3af7ca.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>game</h1><a data-page="print" class="back-btn">← BACK TO LIBRARY</a></div><div class="books" id="booksContainer"></div></div><div class="modal" id="noteModal"><div class="modal-content"><div class="modal-header"><h2 id="modalBookTitle">Book Notes</h2><button class="close-btn" onclick="closeNoteModal()">×</button></div><div class="note-form"><div style="display: flex; gap: 10px; margin-bottom: 10px;"><input type="number" id="pageStart" placeholder="Start Page" style="width: 100px; padding: 5px; border: 2px solid black;" oninput="this.style.borderColor='black'"> <span style="line-height: 30px;">-</span> <input type="number" id="pageEnd" placeholder="End Page" style="width: 100px; padding: 5px; border: 2px solid black;"></div><textarea id="noteContent" placeholder="Write your note here..."></textarea> <button onclick="saveNote()">Add Note</button></div><div class="notes-list" id="notesList"><div class="loading">Loading notes...</div></div></div></div><script>(function () {
+    }</style><link href="/css/styles.ffe12bf25f15d90e6cb1.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>game</h1><a data-page="print" class="back-btn">← BACK TO LIBRARY</a></div><div class="books" id="booksContainer"></div></div><div class="modal" id="noteModal"><div class="modal-content"><div class="modal-header"><h2 id="modalBookTitle">Book Notes</h2><button class="close-btn" onclick="closeNoteModal()">×</button></div><div class="note-form"><div style="display: flex; gap: 10px; margin-bottom: 10px;"><input type="number" id="pageStart" placeholder="Start Page" style="width: 100px; padding: 5px; border: 2px solid black;" oninput="this.style.borderColor='black'"> <span style="line-height: 30px;">-</span> <input type="number" id="pageEnd" placeholder="End Page" style="width: 100px; padding: 5px; border: 2px solid black;"></div><textarea id="noteContent" placeholder="Write your note here..."></textarea> <button onclick="saveNote()">Add Note</button></div><div class="notes-list" id="notesList"><div class="loading">Loading notes...</div></div></div></div><script>(function () {
             let bookNotesCache = {};
             let currentNoteIndex = {};
             let currentUser = null;
@@ -644,10 +644,10 @@
             window.toggleWant = async function (bookId) {
 
 
-                if (!currentUser) {
-                    alert('请先登录');
-                    return;
-                }
+             const user = await checkUserLogin();
+if (!user) {
+    return;
+}
 
                 try {
                     const { data: existingReading } = await supabase
@@ -684,11 +684,10 @@
 
 
             window.toggleReading = async function (bookId) {
-                if (!currentUser) {
-                    alert('请先登录');
-                    return;
-                }
-
+              const user = await checkUserLogin();
+if (!user) {
+    return;
+}
                 try {
                     // 检查是否已经想读
                     const { data: existingWant } = await supabase
@@ -726,10 +725,10 @@
             }
 
             window.saveNote = async function () {
-                if (!currentUser) {
-                    alert('请先登录');
-                    return;
-                }
+               const user = await checkUserLogin();
+if (!user) {
+    return;
+}
 
                 const noteContent = document.getElementById('noteContent');
                 const pageStart = document.getElementById('pageStart');
@@ -813,10 +812,10 @@
 
             // 打开笔记Modal
             window.openNoteModal = async function (bookId, bookTitle) {
-                if (!currentUser) {
-                    alert('请先登录');
-                    return;
-                }
+          const user = await checkUserLogin();
+if (!user) {
+    return;
+}
                 currentBookId = bookId;
 
                 const modal = document.getElementById('noteModal');
@@ -2464,4 +2463,4 @@ function renderAnnotationsForPrint(annotations) {
                 }
             });
 
-        })();</script><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.868e772543ced87a7e06.js"></script></body>
+        })();</script><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.d3423c745c98a06780f2.js"></script></body>

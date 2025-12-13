@@ -33,7 +33,7 @@
         align-items: center;
         width: calc(100% - 40px);
         position: fixed;
-   
+
         top: 100px;
 
     }
@@ -248,77 +248,116 @@
 
 
 
-.game-options {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.game-option {
-    padding: 5px;
-    border: 2px solid black;
-    background-color: white;
-    cursor: pointer;
-    text-align: center;
-}
-
-.game-option:hover {
-    background-color: black;
-    color: white;
-}
-
-.game-option.selected {
-    border-color: black;
-    background-color: black;
-    color: white;
-}
-
-.game-name {
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 4px;
-}
-
-.game-desc {
-    font-size: 11px;
-    opacity: 0.8;
-}
-
-
-
-/* 响应式设计 */
-@media(max-width:899px) {
     .game-options {
+        display: grid;
         grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 10px;
     }
-    .nav-header{
-        margin-top: -20px;
-        width: calc(100% - 20px);
-    }
-    .panel-left{
-        width: 100%;
-        margin-top: 55px;
-    }
-    .panel-right{
-        position: relative;
-        width: 100%;
-        right: 0px;
-        top: -10px;
-        padding:15px;
-    }
-.product-details{
-    width: 100%;
-        right: 0px;
-        top: 0px;
-        margin-top: 5px;
+
+    .game-option {
         padding: 5px;
-}
-}</style><link href="/css/styles.c6120c67c82cba3af7ca.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>PRODUCT DETAILS</h1><a data-page="merch" class="back-btn">← BACK TO SHOP</a></div><div class="panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-year" id="productYear">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info">✓ In Stock - Ready to Ship</div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button><div class="product-category"><div class="category-label">CATEGORY</div><span class="category-value" id="productCategory">Console</span></div></div><div class="product-details"><div class="details-content" id="productDetails"></div></div></div><script>(function () {
-            if (!window.currentPageParams) {
-        window.currentPageParams = {};
+        border: 2px solid black;
+        background-color: white;
+        cursor: pointer;
+        text-align: center;
     }
-    
+
+    .game-option:hover {
+        background-color: black;
+        color: white;
+    }
+
+    .game-option.selected {
+        border-color: black;
+        background-color: black;
+        color: white;
+    }
+
+    .game-name {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+
+    .game-desc {
+        font-size: 11px;
+        opacity: 0.8;
+    }
+
+
+
+    /* 响应式设计 */
+    @media(max-width:899px) {
+        .game-options {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .nav-header {
+            margin-top: -20px;
+            width: calc(100% - 20px);
+        }
+
+        .panel-left {
+            width: 100%;
+            margin-top: 55px;
+        }
+
+        .panel-right {
+            position: relative;
+            width: 100%;
+            right: 0px;
+            top: -10px;
+            padding: 15px;
+        }
+
+        .product-details {
+            width: 100%;
+            right: 0px;
+            top: 0px;
+            margin-top: 5px;
+            padding: 5px;
+        }
+    }</style><link href="/css/styles.ffe12bf25f15d90e6cb1.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>PRODUCT DETAILS</h1><a data-page="merch" class="back-btn">← BACK TO SHOP</a></div><div class="panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-year" id="productYear">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info">✓ In Stock - Ready to Ship</div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button><div class="product-category"><div class="category-label">CATEGORY</div><span class="category-value" id="productCategory">Console</span></div></div><div class="product-details"><div class="details-content" id="productDetails"></div></div></div><script>(function () {
+
+            async function getCurrentUser() {
+                // 优先使用 authManager
+                if (window.authManager && window.authManager.isAuthenticated()) {
+                    return window.authManager.getCurrentUser();
+                }
+
+                // 备用：使用 Supabase
+                try {
+                    const { data: { user } } = await supabase.auth.getUser();
+                    return user;
+                } catch (error) {
+                    console.error('获取用户失败:', error);
+                    return null;
+                }
+            }
+
+            // 检查用户登录状态
+            async function checkUserLogin() {
+                const user = await getCurrentUser();
+                if (!user) {
+                    alert('请先登录');
+                    const event = new CustomEvent('showAuthModal', {
+                        detail: {
+                            message: '请登录后操作',
+                            redirect: window.location.href
+                        }
+                    });
+                    window.dispatchEvent(event);
+                    return null;
+                }
+                return user;
+            }
+
+
+            if (!window.currentPageParams) {
+                window.currentPageParams = {};
+            }
+
             function cleanupContentPage() {
                 console.log('Cleaning up content page...');
                 // 清理全局变量
@@ -345,7 +384,7 @@
                 window.cleanupContentPage();
             }
 
-
+            const PRODUCT_CACHE = new Map();
             // 产品数据库
             const productDatabase = {
                 '1': {
@@ -442,52 +481,52 @@
                     category: 'Game Cartridge',
                     mainImage: '/images/merch/5.avif',
                     variants: {
-            'a': {
-                name: 'Asteroids Deluxe',
-                image: '/images/merch/details/5-a.png',
-                description: '行星游戏'
-            },
-            'b': {
-                name: 'SPACE DUEL', 
-                image: '/images/merch/details/5-b.png',
-                description: '太空大战'
-            },
-            'c': {
-                name: 'BERSERK',
-                image: '/images/merch/details/5-c.png',
-                description: '狂暴'
-            },
-            'd': {
-                name: 'FRENZY',
-                image: '/images/merch/details/5-d.png',
-                description: '狂乱'
-            },
-            'e': {
-                name: 'CRYSTAL QUEST',
-                image: '/images/merch/details/5-e.png',
-                description: '水晶之旅'
-            },
-            'f': {
-                name: 'DARK CHAMBERS',
-                image: '/images/merch/details/5-f.png',
-                description: '暗室'
-            },
-            'g': {
-                name: 'Tiger Heli',
-                image: '/images/merch/details/5-g.png',
-                description: '猛虎直升机'
-            },
-            'h': {
-                name: 'COUNTERMEASURE 2',
-                image: '/images/merch/details/5-h.png',
-                description: '对策2'
-            },
-            'i': {
-                name: 'SUPER CIRCUS',
-                image: '/images/merch/details/5-i.png',
-                description: '超级马戏团'
-            },
-        },
+                        'a': {
+                            name: 'Asteroids Deluxe',
+                            image: '/images/merch/details/5-a.png',
+                            description: '行星游戏'
+                        },
+                        'b': {
+                            name: 'SPACE DUEL',
+                            image: '/images/merch/details/5-b.png',
+                            description: '太空大战'
+                        },
+                        'c': {
+                            name: 'BERSERK',
+                            image: '/images/merch/details/5-c.png',
+                            description: '狂暴'
+                        },
+                        'd': {
+                            name: 'FRENZY',
+                            image: '/images/merch/details/5-d.png',
+                            description: '狂乱'
+                        },
+                        'e': {
+                            name: 'CRYSTAL QUEST',
+                            image: '/images/merch/details/5-e.png',
+                            description: '水晶之旅'
+                        },
+                        'f': {
+                            name: 'DARK CHAMBERS',
+                            image: '/images/merch/details/5-f.png',
+                            description: '暗室'
+                        },
+                        'g': {
+                            name: 'Tiger Heli',
+                            image: '/images/merch/details/5-g.png',
+                            description: '猛虎直升机'
+                        },
+                        'h': {
+                            name: 'COUNTERMEASURE 2',
+                            image: '/images/merch/details/5-h.png',
+                            description: '对策2'
+                        },
+                        'i': {
+                            name: 'SUPER CIRCUS',
+                            image: '/images/merch/details/5-i.png',
+                            description: '超级马戏团'
+                        },
+                    },
 
                     description: `
                     <img src="/images/merch/details/default-header.png">
@@ -515,146 +554,124 @@
                 }
             };
 
-            
+
             function renderGameSelector(product, productId) {
-    // 只为产品5添加游戏选择器
-    if (productId !== '5' || !product.variants) {
-        return;
-    }
-    
-    const existingSelector = document.querySelector('.game-options');
-    if (existingSelector) {
-        existingSelector.remove();
-        console.log('Removed existing game selector');
-    }
+                // 只为产品5添加游戏选择器
+                if (productId !== '5' || !product.variants) {
+                    return;
+                }
 
-    // 在价格和库存信息之间插入游戏选择器
-    const priceElement = document.querySelector('.product-price');
-    const stockInfo = document.querySelector('.stock-info');
-    
-    if (priceElement && stockInfo) {
-        const selectorHTML = `
-       
-                <div class="game-options">
-                    ${Object.entries(product.variants).map(([key, variant]) => `
-                        <div class="game-option" data-variant="${key}">
-                            <div class="game-name">${variant.name}</div>
-                            <div class="game-desc">${variant.description}</div>
-                        </div>
-                    `).join('')}
-                </div>
-          
+                const existingSelector = document.querySelector('.game-options');
+                if (existingSelector) {
+                    existingSelector.remove();
+                }
+
+                const stockInfo = document.querySelector('.stock-info');
+                if (stockInfo) {
+                    const selectorHTML = `
+            <div class="game-options">
+                ${Object.entries(product.variants).map(([key, variant]) => `
+                    <div class="game-option" data-variant="${key}">
+                        <div class="game-name">${variant.name}</div>
+                        <div class="game-desc">${variant.description}</div>
+                    </div>
+                `).join('')}
+            </div>
         `;
-        
-        // 插入选择器
-        stockInfo.insertAdjacentHTML('beforebegin', selectorHTML);
-        
-        // 绑定选择事件
-        bindGameSelectionEvents(product);
-    }
-}
 
-// 3. 添加游戏选择事件处理
-function bindGameSelectionEvents(product) {
-    const gameOptions = document.querySelectorAll('.game-option');
-
-    gameOptions.forEach(option => {
-        const newOption = option.cloneNode(true);
-        option.parentNode.replaceChild(newOption, option);
-    });
-    const refreshedOptions = document.querySelectorAll('.game-option');
-    const mainImage = document.getElementById('mainImage');
-
-
-
-    const selectedInfo = document.querySelector('.selected-game-info');
-    const selectedNameEl = document.getElementById('selectedGameName');
-    
-    refreshedOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            // 移除其他选中状态
-            gameOptions.forEach(opt => opt.classList.remove('selected'));
-            
-            // 添加选中状态
-            this.classList.add('selected');
-            
-            // 获取变体信息
-            const variantKey = this.dataset.variant;
-            const variant = product.variants[variantKey];
-            
-            // 更新主图
-            if (mainImage && variant.image) {
-                mainImage.src = variant.image;
-                mainImage.alt = variant.name;
+                    stockInfo.insertAdjacentHTML('beforebegin', selectorHTML);
+                    bindGameSelectionEvents(product);
+                }
             }
-            
-            // 显示选中信息
-            if (selectedInfo && selectedNameEl) {
-                selectedInfo.style.display = 'block';
-                selectedNameEl.textContent = variant.name;
+
+
+            // 3. 添加游戏选择事件处理
+            function bindGameSelectionEvents(product) {
+                const mainImage = document.getElementById('mainImage');
+                const gameOptions = document.querySelectorAll('.game-option');
+
+                // 创建事件处理器（避免闭包问题）
+                const handleGameClick = (e) => {
+                    const option = e.currentTarget;
+                    const variantKey = option.dataset.variant;
+                    const variant = product.variants[variantKey];
+
+                    if (!variant) return;
+
+                    // 更新选中状态
+                    gameOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+
+                    // 更新主图
+                    if (mainImage && variant.image) {
+                        mainImage.src = variant.image;
+                        mainImage.alt = variant.name;
+                    }
+
+                    // 保存选中的变体
+                    window.currentProduct.selectedVariant = {
+                        key: variantKey,
+                        ...variant
+                    };
+
+                    console.log('选中游戏:', variant.name);
+                };
+
+                // 绑定事件
+                gameOptions.forEach((option, index) => {
+                    option.addEventListener('click', handleGameClick);
+                    // 默认选中第一个
+                    if (index === 0) {
+                        option.click();
+                    }
+                });
             }
-            
-            // 存储选中的游戏到当前产品信息
-            window.currentProduct.selectedVariant = {
-                key: variantKey,
-                ...variant
-            };
-        });
-    });
-    
-    // 默认选中第一个
-    if (gameOptions.length > 0) {
-        gameOptions[0].click();
-    }
-}
 
+            // 加载产品信息
+            function loadProduct() {
+                console.log('Content page: Loading product information...');
 
-        // 加载产品信息
-function loadProduct() {
-    console.log('Content page: Loading product information...');
+                let productId = null;
 
-    let productId = null;
-    let productData = null;
+                // 优先从URL参数获取
+                if (window.currentPageParams?.id) {
+                    productId = window.currentPageParams.id;
+                } else {
+                    // 尝试从 sessionStorage 获取
+                    try {
+                        const pendingData = sessionStorage.getItem('pendingProduct');
+                        if (pendingData) {
+                            const data = JSON.parse(pendingData);
+                            productId = data.id;
+                            sessionStorage.removeItem('pendingProduct');
+                        }
+                    } catch (e) {
+                        console.error('解析 pending product 失败:', e);
+                    }
+                }
 
-    // 优先从URL参数获取产品ID
-    if (window.currentPageParams && window.currentPageParams.id) {
-        productId = window.currentPageParams.id;
-        console.log('Got product ID from URL params:', productId);
-    }
-    
-    // 如果URL没有参数,尝试从 sessionStorage 获取
-    if (!productId) {
-        try {
-            const pendingData = sessionStorage.getItem('pendingProduct');
-            console.log('SessionStorage pendingProduct:', pendingData);
+                if (!productId) {
+                    showError('No product ID found');
+                    return;
+                }
 
-            if (pendingData) {
-                productData = JSON.parse(pendingData);
-                productId = productData.id;
-                console.log('Got product from sessionStorage:', productId, productData);
+                // ✅ 优化：检查缓存
+                if (PRODUCT_CACHE.has(productId)) {
+                    console.log('📦 使用缓存的产品:', productId);
+                    updatePageContent(PRODUCT_CACHE.get(productId), productId);
+                    return;
+                }
 
-                // 清除已使用的数据
-                sessionStorage.removeItem('pendingProduct');
+                const product = productDatabase[productId];
+                if (!product) {
+                    showError('Product not found');
+                    return;
+                }
+
+                // 缓存产品
+                PRODUCT_CACHE.set(productId, product);
+                updatePageContent(product, productId);
             }
-        } catch (e) {
-            console.error('Failed to parse pending product:', e);
-        }
-    }
-
-    // 从数据库获取完整产品信息
-    const product = productDatabase[productId];
-
-    if (!product) {
-        console.error('Product not found in database:', productId);
-        showError();
-        return;
-    }
-
-    console.log('Loading product from database:', product.name);
-
-    // 更新页面内容
-    updatePageContent(product, productId);
-}
 
             // 更新页面内容
             function updatePageContent(product, productId) {
@@ -685,15 +702,15 @@ function loadProduct() {
                     }
                 }
 
-          
-           
+
+
 
                 // 存储当前产品信息供其他功能使用
                 window.currentProduct = {
                     ...product,
                     id: productId
                 };
-             
+
                 renderGameSelector(product, productId);
 
                 console.log('Product loaded successfully:', product.name);
@@ -710,48 +727,48 @@ function loadProduct() {
 
             // 初始化
             function initContentPage() {
-            console.log('Initializing content page...');
-            
-            // 立即加载产品
-            loadProduct();
-            setTimeout(() => {
-        try {
-            const usedProduct = sessionStorage.getItem('pendingProduct');
-            if (usedProduct) {
-                console.log('Cleaning up used sessionStorage data');
-                sessionStorage.removeItem('pendingProduct');
-                sessionStorage.removeItem('lastProductClick');
-            }
-        } catch (e) {
-            console.error('Error cleaning sessionStorage:', e);
-        }
-    }, 1000);
-            // 监听URL参数变化
-            window.paramsEventHandler = function(event) {
-                if (event.detail.page === 'merch-content') {
-                    console.log('URL parameters changed, reloading product:', event.detail.params);
-                    // 更新参数并重新加载
-                    window.currentPageParams = event.detail.params;
-                    loadProduct();
+                console.log('Initializing content page...');
+
+                // 立即加载产品
+                loadProduct();
+                setTimeout(() => {
+                    try {
+                        const usedProduct = sessionStorage.getItem('pendingProduct');
+                        if (usedProduct) {
+                            console.log('Cleaning up used sessionStorage data');
+                            sessionStorage.removeItem('pendingProduct');
+                            sessionStorage.removeItem('lastProductClick');
+                        }
+                    } catch (e) {
+                        console.error('Error cleaning sessionStorage:', e);
+                    }
+                }, 1000);
+                // 监听URL参数变化
+                window.paramsEventHandler = function (event) {
+                    if (event.detail.page === 'merch-content') {
+                        console.log('URL parameters changed, reloading product:', event.detail.params);
+                        // 更新参数并重新加载
+                        window.currentPageParams = event.detail.params;
+                        loadProduct();
+                    }
+                };
+                window.addEventListener('pageParamsLoaded', window.paramsEventHandler);
+
+
+
+                // 绑定返回按钮
+                const backBtn = document.querySelector('.back-btn');
+                if (backBtn) {
+                    backBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        // 使用路由导航返回商品列表页
+                        if (window.router && window.router.navigate) {
+                            window.router.navigate('merch');
+                        } else if (typeof window.loadPage === 'function') {
+                            window.loadPage('merch');
+                        }
+                    });
                 }
-            };
-            window.addEventListener('pageParamsLoaded', window.paramsEventHandler);
-
-
-             
-          // 绑定返回按钮
-const backBtn = document.querySelector('.back-btn');
-if (backBtn) {
-    backBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        // 使用路由导航返回商品列表页
-        if (window.router && window.router.navigate) {
-            window.router.navigate('merch');
-        } else if (typeof window.loadPage === 'function') {
-            window.loadPage('merch');
-        }
-    });
-}
 
                 // 绑定添加到购物车按钮
                 const addBtn = document.getElementById('addToCartBtn');
@@ -772,15 +789,10 @@ if (backBtn) {
                     console.log('Adding console product to cart:', product);
 
                     // 检查用户登录状态
-                    const { data: { user } } = await supabase.auth.getUser();
+                    const user = await checkUserLogin();
                     if (!user) {
-                        alert('请先登录');
-                        if (typeof window.loadPage === 'function') {
-                            window.loadPage('login');
-                        }
                         return;
                     }
-
                     // 准备商品数据
                     const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
 
@@ -826,33 +838,33 @@ if (backBtn) {
                             // 添加新产品到购物车
 
                             const selectedVariant = window.currentProduct.selectedVariant;
-    const variantSuffix = selectedVariant ? `-${selectedVariant.key}` : '';
-    const variantName = selectedVariant ? ` - ${selectedVariant.name}` : '';
-    
+                            const variantSuffix = selectedVariant ? `-${selectedVariant.key}` : '';
+                            const variantName = selectedVariant ? ` - ${selectedVariant.name}` : '';
 
-    const cartItemData = {
-        user_id: user.id,
-        draft_id: null,
-        type: `console-${product.id}${variantSuffix}`, // 包含变体信息的类型
-        quantity: 1,
-        sizes: { 'default': 1 },
-        price: priceNumber,
-        total_price: priceNumber,
-        item_data: {
-            productId: product.id,
-            productName: product.name + variantName, // 包含游戏名称
-            productYear: product.year,
-            productCategory: product.category,
-            productImage: selectedVariant?.image || product.mainImage || `/images/merch/${product.id}.jpg`,
-            productType: 'retro-console',
-            // 新增变体信息
-            variantKey: selectedVariant?.key,
-            variantName: selectedVariant?.name,
-            variantDescription: selectedVariant?.description
-        },
-        added_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-    };
+
+                            const cartItemData = {
+                                user_id: user.id,
+                                draft_id: null,
+                                type: `console-${product.id}${variantSuffix}`, // 包含变体信息的类型
+                                quantity: 1,
+                                sizes: { 'default': 1 },
+                                price: priceNumber,
+                                total_price: priceNumber,
+                                item_data: {
+                                    productId: product.id,
+                                    productName: product.name + variantName, // 包含游戏名称
+                                    productYear: product.year,
+                                    productCategory: product.category,
+                                    productImage: selectedVariant?.image || product.mainImage || `/images/merch/${product.id}.jpg`,
+                                    productType: 'retro-console',
+                                    // 新增变体信息
+                                    variantKey: selectedVariant?.key,
+                                    variantName: selectedVariant?.name,
+                                    variantDescription: selectedVariant?.description
+                                },
+                                added_at: new Date().toISOString(),
+                                updated_at: new Date().toISOString()
+                            };
 
                             // 尝试插入
                             const { data, error } = await supabase
@@ -956,4 +968,4 @@ if (backBtn) {
 
             // SPA导航后重新初始化
             window.addEventListener('contentPageLoaded', initContentPage);
-        })();</script><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.868e772543ced87a7e06.js"></script></body>
+        })();</script><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.d3423c745c98a06780f2.js"></script></body>

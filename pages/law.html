@@ -330,7 +330,7 @@
             flex-direction: column;
         }
 
-    }</style><link href="/css/styles.c6120c67c82cba3af7ca.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>LAW</h1><a data-page="print" class="back-btn">← BACK TO LIBRARY</a></div><div class="books" id="booksContainer"></div></div><div class="modal" id="noteModal"><div class="modal-content"><div class="modal-header"><h2 id="modalBookTitle">Book Notes</h2><button class="close-btn" onclick="closeNoteModal()">×</button></div><div class="note-form"><div style="display: flex; gap: 10px; margin-bottom: 10px;"><input type="number" id="pageStart" placeholder="Start Page" style="width: 100px; padding: 5px; border: 2px solid black;" oninput="this.style.borderColor='black'"> <span style="line-height: 30px;">-</span> <input type="number" id="pageEnd" placeholder="End Page" style="width: 100px; padding: 5px; border: 2px solid black;"></div><textarea id="noteContent" placeholder="Write your note here..."></textarea> <button onclick="saveNote()">Add Note</button></div><div class="notes-list" id="notesList"><div class="loading">Loading notes...</div></div></div></div><script>(function () {
+    }</style><link href="/css/styles.ffe12bf25f15d90e6cb1.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>LAW</h1><a data-page="print" class="back-btn">← BACK TO LIBRARY</a></div><div class="books" id="booksContainer"></div></div><div class="modal" id="noteModal"><div class="modal-content"><div class="modal-header"><h2 id="modalBookTitle">Book Notes</h2><button class="close-btn" onclick="closeNoteModal()">×</button></div><div class="note-form"><div style="display: flex; gap: 10px; margin-bottom: 10px;"><input type="number" id="pageStart" placeholder="Start Page" style="width: 100px; padding: 5px; border: 2px solid black;" oninput="this.style.borderColor='black'"> <span style="line-height: 30px;">-</span> <input type="number" id="pageEnd" placeholder="End Page" style="width: 100px; padding: 5px; border: 2px solid black;"></div><textarea id="noteContent" placeholder="Write your note here..."></textarea> <button onclick="saveNote()">Add Note</button></div><div class="notes-list" id="notesList"><div class="loading">Loading notes...</div></div></div></div><script>(function () {
             let bookNotesCache = {};
             let currentNoteIndex = {};
             let currentUser = null;
@@ -369,17 +369,18 @@
         `).join('');
             }
 
-            async function waitForDependencies() {
-                return new Promise((resolve) => {
-                    const checkDependencies = setInterval(() => {
-                        if (typeof supabase !== 'undefined' && window.BOOKS_DATA) {
-                            clearInterval(checkDependencies);
-                            resolve();
-                        }
-                    }, 100);
-                });
-            }
-
+     async function waitForDependencies() {
+  return new Promise((resolve) => {
+    const checkDependencies = setInterval(() => {
+      // 等待 authManager、supabase 和 BOOKS_DATA
+      if (window.authManager && window.supabase && window.BOOKS_DATA) {
+        clearInterval(checkDependencies);
+        console.log('✅ 所有依赖项已加载');
+        resolve();
+      }
+    }, 100);
+  });
+}
 
             async function initLaw() {
                 console.log('开始初始化Law页面');
@@ -389,6 +390,12 @@
 
                 // 渲染书籍列表
                 renderBooks();
+
+  // 关键：强制恢复 Supabase session
+  console.log('🔄 强制恢复 Supabase session');
+  if (window.restoreSupabaseSession) {
+    await window.restoreSupabaseSession();
+  }
 
                 await checkUser();
                 initializeBookButtons(); // 初始化书籍按钮和笔记区域
@@ -516,11 +523,88 @@
 
 
             // 检查用户登录状态
-            async function checkUser() {
-                const { data: { user } } = await supabase.auth.getUser();
-                currentUser = user;
-                console.log('当前用户:', currentUser ? currentUser.id : '未登录');
+        // 修改后的 checkUser 函数
+async function checkUser() {
+  console.log('🔍 检查用户状态');
+  
+  // 等待 authManager 和 Supabase 初始化
+  if (!window.authManager || !window.supabase) {
+    console.log('⏳ 等待依赖项加载...');
+    await waitForDependencies();
+  }
+  
+  // 第一步：优先从 authManager 获取
+  if (window.authManager) {
+    const authUser = window.authManager.getCurrentUser();
+    const isAuthenticated = window.authManager.isAuthenticated();
+    
+    if (authUser && isAuthenticated) {
+      console.log('✅ 用户已通过 AuthManager 认证:', authUser.email);
+      
+      // 确保 Supabase session 已恢复
+      if (window.restoreSupabaseSession) {
+        console.log('🔄 同步 Supabase session');
+        const restored = await window.restoreSupabaseSession();
+        if (!restored) {
+          console.warn('⚠️ Supabase session 恢复失败，但继续使用 AuthManager 用户');
+        }
+      }
+      
+      currentUser = authUser;
+      return currentUser;
+    } else if (authUser && !isAuthenticated) {
+      console.log('⚠️ 用户存在但 token 可能过期');
+      // 尝试刷新
+      const refreshed = await window.authManager.refreshToken();
+      if (refreshed) {
+        console.log('🔄 Token 刷新成功');
+        return await checkUser();
+      } else {
+        console.log('❌ Token 刷新失败，清除用户');
+        window.authManager.logout();
+        currentUser = null;
+        return null;
+      }
+    }
+  }
+  
+  // 第二步：如果 authManager 没有用户，检查 Supabase
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    
+    if (error) {
+      console.log('❌ Supabase 获取用户失败:', error.message);
+      currentUser = null;
+    } else if (user) {
+      console.log('✅ 从 Supabase 获取到用户:', user.email);
+      
+      // 如果从 Supabase 获取到用户，同步到 authManager
+      if (window.authManager && !window.authManager.user) {
+        console.log('🔄 将 Supabase 用户同步到 AuthManager');
+        // 这里需要获取完整的 session 数据
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData.session) {
+          window.authManager.onLoginSuccess({
+            data: {
+              user: user,
+              session: sessionData.session
             }
+          });
+        }
+      }
+      
+      currentUser = user;
+    } else {
+      console.log('👤 用户未登录');
+      currentUser = null;
+    }
+  } catch (error) {
+    console.error('检查用户时出错:', error);
+    currentUser = null;
+  }
+  
+  return currentUser;
+}
 
             async function updateBookCounts() {
                 const books = document.querySelectorAll('.book');
@@ -644,10 +728,10 @@
             window.toggleWant = async function (bookId) {
 
 
-                if (!currentUser) {
-                    alert('请先登录');
-                    return;
-                }
+               const user = await checkUserLogin();
+if (!user) {
+    return;
+}
 
                 try {
                     const { data: existingReading } = await supabase
@@ -684,10 +768,10 @@
 
 
             window.toggleReading = async function (bookId) {
-                if (!currentUser) {
-                    alert('请先登录');
-                    return;
-                }
+              const user = await checkUserLogin();
+if (!user) {
+    return;
+}
 
                 try {
                     // 检查是否已经想读
@@ -726,10 +810,10 @@
             }
 
             window.saveNote = async function () {
-                if (!currentUser) {
-                    alert('请先登录');
-                    return;
-                }
+              const user = await checkUserLogin();
+if (!user) {
+    return;
+}
 
                 const noteContent = document.getElementById('noteContent');
                 const pageStart = document.getElementById('pageStart');
@@ -813,10 +897,10 @@
 
             // 打开笔记Modal
             window.openNoteModal = async function (bookId, bookTitle) {
-                if (!currentUser) {
-                    alert('请先登录');
-                    return;
-                }
+              const user = await checkUserLogin();
+if (!user) {
+    return;
+}
                 currentBookId = bookId;
 
                 const modal = document.getElementById('noteModal');
@@ -2464,4 +2548,4 @@ function renderAnnotationsForPrint(annotations) {
                 }
             });
 
-        })();</script><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.868e772543ced87a7e06.js"></script></body>
+        })();</script><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.d3423c745c98a06780f2.js"></script></body>
