@@ -369,17 +369,18 @@
         `).join('');
             }
 
-            async function waitForDependencies() {
-                return new Promise((resolve) => {
-                    const checkDependencies = setInterval(() => {
-                        if (typeof supabase !== 'undefined' && window.BOOKS_DATA) {
-                            clearInterval(checkDependencies);
-                            resolve();
-                        }
-                    }, 100);
-                });
-            }
-
+     async function waitForDependencies() {
+  return new Promise((resolve) => {
+    const checkDependencies = setInterval(() => {
+      // 等待 authManager、supabase 和 BOOKS_DATA
+      if (window.authManager && window.supabase && window.BOOKS_DATA) {
+        clearInterval(checkDependencies);
+        console.log('✅ 所有依赖项已加载');
+        resolve();
+      }
+    }, 100);
+  });
+}
 
             async function initdesign() {
                 console.log('开始初始化design页面');
@@ -389,6 +390,12 @@
 
                 // 渲染书籍列表
                 renderBooks();
+
+  // 关键：强制恢复 Supabase session
+  console.log('🔄 强制恢复 Supabase session');
+  if (window.restoreSupabaseSession) {
+    await window.restoreSupabaseSession();
+  }
 
                 await checkUser();
                 initializeBookButtons(); // 初始化书籍按钮和笔记区域
@@ -516,11 +523,88 @@
 
 
             // 检查用户登录状态
-            async function checkUser() {
-                const { data: { user } } = await supabase.auth.getUser();
-                currentUser = user;
-                console.log('当前用户:', currentUser ? currentUser.id : '未登录');
+        // 修改后的 checkUser 函数
+async function checkUser() {
+  console.log('🔍 检查用户状态');
+  
+  // 等待 authManager 和 Supabase 初始化
+  if (!window.authManager || !window.supabase) {
+    console.log('⏳ 等待依赖项加载...');
+    await waitForDependencies();
+  }
+  
+  // 第一步：优先从 authManager 获取
+  if (window.authManager) {
+    const authUser = window.authManager.getCurrentUser();
+    const isAuthenticated = window.authManager.isAuthenticated();
+    
+    if (authUser && isAuthenticated) {
+      console.log('✅ 用户已通过 AuthManager 认证:', authUser.email);
+      
+      // 确保 Supabase session 已恢复
+      if (window.restoreSupabaseSession) {
+        console.log('🔄 同步 Supabase session');
+        const restored = await window.restoreSupabaseSession();
+        if (!restored) {
+          console.warn('⚠️ Supabase session 恢复失败，但继续使用 AuthManager 用户');
+        }
+      }
+      
+      currentUser = authUser;
+      return currentUser;
+    } else if (authUser && !isAuthenticated) {
+      console.log('⚠️ 用户存在但 token 可能过期');
+      // 尝试刷新
+      const refreshed = await window.authManager.refreshToken();
+      if (refreshed) {
+        console.log('🔄 Token 刷新成功');
+        return await checkUser();
+      } else {
+        console.log('❌ Token 刷新失败，清除用户');
+        window.authManager.logout();
+        currentUser = null;
+        return null;
+      }
+    }
+  }
+  
+  // 第二步：如果 authManager 没有用户，检查 Supabase
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    
+    if (error) {
+      console.log('❌ Supabase 获取用户失败:', error.message);
+      currentUser = null;
+    } else if (user) {
+      console.log('✅ 从 Supabase 获取到用户:', user.email);
+      
+      // 如果从 Supabase 获取到用户，同步到 authManager
+      if (window.authManager && !window.authManager.user) {
+        console.log('🔄 将 Supabase 用户同步到 AuthManager');
+        // 这里需要获取完整的 session 数据
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData.session) {
+          window.authManager.onLoginSuccess({
+            data: {
+              user: user,
+              session: sessionData.session
             }
+          });
+        }
+      }
+      
+      currentUser = user;
+    } else {
+      console.log('👤 用户未登录');
+      currentUser = null;
+    }
+  } catch (error) {
+    console.error('检查用户时出错:', error);
+    currentUser = null;
+  }
+  
+  return currentUser;
+}
 
             async function updateBookCounts() {
                 const books = document.querySelectorAll('.book');
@@ -684,7 +768,7 @@ if (!user) {
 
 
             window.toggleReading = async function (bookId) {
-                const user = await checkUserLogin();
+              const user = await checkUserLogin();
 if (!user) {
     return;
 }
@@ -726,10 +810,11 @@ if (!user) {
             }
 
             window.saveNote = async function () {
-             const user = await checkUserLogin();
+              const user = await checkUserLogin();
 if (!user) {
     return;
 }
+
                 const noteContent = document.getElementById('noteContent');
                 const pageStart = document.getElementById('pageStart');
                 const pageEnd = document.getElementById('pageEnd');
@@ -812,7 +897,7 @@ if (!user) {
 
             // 打开笔记Modal
             window.openNoteModal = async function (bookId, bookTitle) {
-                const user = await checkUserLogin();
+              const user = await checkUserLogin();
 if (!user) {
     return;
 }
@@ -982,9 +1067,8 @@ async function displayCurrentNote(bookId) {
         const ownerButtons = isOwner ? `
             <span class="note-delete" onclick="editNoteFromArea('${freshNote.id}', '${bookId}', ${freshNote.page_start}, ${freshNote.page_end})" style="cursor: pointer; margin-left: 15px;">编辑</span>
             <span class="note-delete" onclick="deleteNote('${freshNote.id}', '${bookId}')" style="cursor: pointer; margin-left: 10px;">删除</span>
-            <span class="note-print" onclick="printNote('${bookId}', ${currentIndex})" style="cursor: pointer; margin-left: 10px;">打印</span>
         ` : '';
-
+const printButton = `<span class="note-print" onclick="printNote('${bookId}', ${currentIndex})" style="cursor: pointer; margin-left: 10px;">打印</span>`;
        
         // 渲染内容
         let contentWithAnnotations = freshNote.content;
@@ -1004,7 +1088,7 @@ async function displayCurrentNote(bookId) {
 
         noteContainer.innerHTML = `
         <div class="current-note-content" style="line-height: 1.6; margin-bottom: 15px; white-space: pre-wrap;">${contentWithAnnotations}</div>
-        ${annotationsHtml}<div class="current-note-meta"><span>${pageInfo ? pageInfo + ' · ' : ''}${userName} · ${createdDate}</span>${ownerButtons}</div>
+        ${annotationsHtml}<div class="current-note-meta"><span>${pageInfo ? pageInfo + ' · ' : ''}${userName} · ${createdDate}</span>${ownerButtons}${printButton}</div>
         `;
 
     } catch (error) {
@@ -1375,7 +1459,6 @@ window.addAnnotation = function(noteId) {
 }
 
 // 渲染展开区域的注解列表
-// 渲染展开区域的注解列表 - 修复版
 function renderAnnotationsFromArea(noteId) {
     const annotationsContainer = document.getElementById(`area-annotations-${noteId}`);
     if (!annotationsContainer) return;

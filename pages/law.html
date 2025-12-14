@@ -1067,9 +1067,8 @@ async function displayCurrentNote(bookId) {
         const ownerButtons = isOwner ? `
             <span class="note-delete" onclick="editNoteFromArea('${freshNote.id}', '${bookId}', ${freshNote.page_start}, ${freshNote.page_end})" style="cursor: pointer; margin-left: 15px;">编辑</span>
             <span class="note-delete" onclick="deleteNote('${freshNote.id}', '${bookId}')" style="cursor: pointer; margin-left: 10px;">删除</span>
-            <span class="note-print" onclick="printNote('${bookId}', ${currentIndex})" style="cursor: pointer; margin-left: 10px;">打印</span>
         ` : '';
-
+const printButton = `<span class="note-print" onclick="printNote('${bookId}', ${currentIndex})" style="cursor: pointer; margin-left: 10px;">打印</span>`;
        
         // 渲染内容
         let contentWithAnnotations = freshNote.content;
@@ -1089,7 +1088,7 @@ async function displayCurrentNote(bookId) {
 
         noteContainer.innerHTML = `
         <div class="current-note-content" style="line-height: 1.6; margin-bottom: 15px; white-space: pre-wrap;">${contentWithAnnotations}</div>
-        ${annotationsHtml}<div class="current-note-meta"><span>${pageInfo ? pageInfo + ' · ' : ''}${userName} · ${createdDate}</span>${ownerButtons}</div>
+        ${annotationsHtml}<div class="current-note-meta"><span>${pageInfo ? pageInfo + ' · ' : ''}${userName} · ${createdDate}</span>${ownerButtons}${printButton}</div>
         `;
 
     } catch (error) {
@@ -1460,7 +1459,6 @@ window.addAnnotation = function(noteId) {
 }
 
 // 渲染展开区域的注解列表
-// 渲染展开区域的注解列表 - 修复版
 function renderAnnotationsFromArea(noteId) {
     const annotationsContainer = document.getElementById(`area-annotations-${noteId}`);
     if (!annotationsContainer) return;
