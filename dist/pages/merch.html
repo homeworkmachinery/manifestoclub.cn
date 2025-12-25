@@ -1,0 +1,306 @@
+<style data-page="merch">* {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    .machines,
+    .blanks-items,
+    .software-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        list-style-type: none;
+    }
+
+    .blanks-items{
+        margin-bottom: 20px;
+    }
+
+    .machines li,
+    .blanks-items li,
+    .software-items li {
+        position: relative;
+        border: 2px solid black;
+        overflow: hidden;
+        cursor: pointer;
+        background: white;
+        aspect-ratio: 1 / 1;
+    }
+
+
+
+    .machines img, .software-items img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        background-color: black;
+        color: white;
+        opacity: 0;
+
+    }
+
+    .machines li:hover .overlay {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .software-items li:hover .overlay {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .title {
+        font-size: 18px;
+
+    }
+
+    .price {
+        font-size: 15px;
+        color: black;
+    }
+
+    /* 添加更多商品项的演示样式 */
+    .placeholder-img {
+        width: 100%;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 24px;
+    }
+
+    .retro-console, .software {
+        border: 2px black solid;
+        padding: 5px;
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .software {
+        margin-top: 20px;
+    }
+    .blanks {
+        border: 2px black solid;
+        padding: 5px;
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .taobao {
+        margin-top: 20px;
+        border: 2px black solid;
+        padding: 5px;
+    }
+
+.cross{
+    right: 10px;
+    top: -15px;
+    position: absolute;
+    font-size: 70px;
+}
+
+    @media(max-width:899px) {
+
+        .retro-console {
+
+            margin-bottom: 10px;
+        }
+
+        .taobao {
+            margin-top: 10px;
+        }
+
+        .machines, .software-items {
+            display: grid;
+            grid-template-columns: repeat(2,  1fr);
+            
+            gap: 10px;
+            list-style-type: none;
+        }
+
+.software{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.blanks{
+    margin-bottom: 10px;
+}
+
+    }</style><link href="/css/styles.ffe12bf25f15d90e6cb1.css" rel="stylesheet"><body><div class="blanks"><h1>BLANKS</h1><p>Start with blanks and craft unique merch with my customizing system</p></div><div class="retro-console"><h1>RETRO CONSOLES</h1><p>The legends are back (And they’re sealed in-box)</p></div><div class="section"><ul class="machines"><li class="product-item" data-id="1" data-name="The Spectrum Console" data-year="1982-2014" data-price="¥1450"><img src="images/merch/1.jpg" alt="The Spectrum Console"><div class="overlay"><span class="title">The Spectrum Console<br>1982-2024</span> <span style="right: 0; position: absolute;">¥1450</span></div></li><li class="product-item" data-id="2" data-name="Atari 2600+ Console & Joystick" data-year="1977-2013" data-price="¥1580"><img src="images/merch/2.jpg" alt="Atari 2600+ Console & Joystick"><div class="overlay"><span class="title">Atari 2600+ Console & Joystick<br>1977-2023</span> <span style="right: 0; position: absolute;">¥1580</span></div></li><li class="product-item" data-id="6" data-name="THEC64 Console & Joystick" data-year="1982-2018" data-price="¥730"><img src="images/merch/6.png" alt="THEC64 Console & Joystick"><div class="overlay"><span class="title">THEC64 MINI Console & Joystick<br>1982-2018</span> <span style="right: 0; position: absolute;">¥730</span></div></li><li class="product-item" data-id="3" data-name="Atari 7800+ Console & Gamepad" data-year="1986-2014" data-price="¥1450"><img src="images/merch/3.jpg" alt="Atari 7800+ Console & Gamepad"><div class="overlay"><span class="title">Atari 7800+ Console & Gamepad<br>1986-2024</span> <span style="right: 0; position: absolute;">¥1450</span></div></li><li class="product-item" data-id="4"><img src="images/merch/4.avif"><div class="overlay"><span class="title">Atari THE400 MINI Console & CXStick<br>1979-2024</span> <span style="right: 0; position: absolute;">¥899</span></div></li></ul></div><div class="software"><h1>SOFTWARES</h1><p>Game cartridges, discs and more</p></div><div class="section"><ul class="software-items"><li class="product-item" data-id="5" data-name="Atari 7800 Game Cartridges" data-year="1980-2025" data-price="¥480"><img src="images/merch/5.avif" alt="Atari Game Cartridges"><div class="overlay"><span class="title">Atari 2600+/7800+ Game Cartridges<br>1980-2025</span> <span style="right: 0; position: absolute;">¥480</span></div></li></ul></div><div class="taobao"><p>You can also visit <a href="https://shop334779825.taobao.com/" target="_blank" style="text-decoration: underline;">Taobao</a> for your convenient purchase services</p></div><script>(function() {
+        console.log('[Merch] Page script starting at:', new Date().toISOString());
+        
+        // 使用唯一的命名空间避免冲突
+        const NAMESPACE = 'merchPage_' + Date.now();
+        
+        // 清理函数
+        function cleanupMerchPage() {
+            console.log('[Merch] Cleaning up...');
+            
+            // 移除所有可能的事件监听器
+            const containers = document.querySelectorAll('.machines, .software-items, #machinesContainer');
+            containers.forEach(container => {
+                // 克隆节点以移除所有事件监听器
+                const newContainer = container.cloneNode(true);
+                container.parentNode.replaceChild(newContainer, container);
+            });
+            
+            // 清理全局变量
+            if (window[NAMESPACE]) {
+                delete window[NAMESPACE];
+            }
+            delete window.cleanupMerchPage;
+        }
+        
+        // 立即注册清理函数
+        window.cleanupMerchPage = cleanupMerchPage;
+        
+        // 先清理
+        const existingCleanup = Object.keys(window).find(key => 
+            key.startsWith('merchPage_') && key !== NAMESPACE
+        );
+        if (existingCleanup) {
+            delete window[existingCleanup];
+        }
+        
+        // 处理产品点击 - 使用防抖
+        let isProcessing = false;
+       
+       
+        function handleProductClick(e) {
+    // 防止重复处理
+    if (isProcessing) {
+        console.log('[Merch] Click ignored - already processing');
+        return;
+    }
+    
+    const productItem = e.target.closest('.product-item, li[data-id]');
+    if (!productItem) {
+        return;
+    }
+    
+    // 立即阻止事件传播
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    
+    isProcessing = true;
+
+    // 获取产品数据
+    const productData = {
+        id: productItem.getAttribute('data-id'),
+        name: productItem.getAttribute('data-name'),
+        year: productItem.getAttribute('data-year'),
+        price: productItem.getAttribute('data-price'),
+        timestamp: Date.now()
+    };
+    
+    console.log('[Merch] Product clicked:', productData);
+    
+    // 使用更可靠的存储方式
+    try {
+        // 先清除旧数据
+        sessionStorage.removeItem('pendingProduct');
+        sessionStorage.removeItem('lastProductClick');
+        
+        // 存储新数据
+        sessionStorage.setItem('pendingProduct', JSON.stringify(productData));
+        sessionStorage.setItem('lastProductClick', productData.timestamp.toString());
+        
+        // 验证存储
+        const stored = sessionStorage.getItem('pendingProduct');
+        const storedTime = sessionStorage.getItem('lastProductClick');
+        console.log('[Merch] Stored product:', stored);
+        console.log('[Merch] Stored timestamp:', storedTime);
+        
+        // 使用 Promise 确保存储完成后再导航
+        Promise.resolve().then(() => {
+            // 再次验证数据
+            const finalCheck = sessionStorage.getItem('pendingProduct');
+            if (finalCheck === stored) {
+                console.log('[Merch] Storage verified, navigating...');
+                
+                // 清理当前页面
+                if (window.cleanupMerchPage) {
+                    window.cleanupMerchPage();
+                }
+                
+                // 使用路由导航到详情页,传入商品ID作为参数
+                if (window.router && window.router.navigate) {
+                    window.router.navigate('merch-content', { id: productData.id });
+                } else if (typeof window.loadPage === 'function') {
+                    window.loadPage('merch-content', { id: productData.id });
+                } else {
+                    console.error('[Merch] Navigation methods not found');
+                    isProcessing = false;
+                }
+            } else {
+                console.error('[Merch] Storage verification failed');
+                isProcessing = false;
+            }
+        });
+        
+    } catch (error) {
+        console.error('[Merch] Storage error:', error);
+        isProcessing = false;
+    }
+}
+        
+        // 初始化
+        function initMerchPage() {
+            console.log('[Merch] Initializing...');
+            
+            // 使用 setTimeout 确保 DOM 完全就绪
+            setTimeout(() => {
+        // 获取所有产品容器
+        const machinesContainer = document.querySelector('.machines');
+        const softwareContainer = document.querySelector('.software-items');
+        
+        if (!machinesContainer) {
+            console.error('[Merch] Machines container not found');
+        }
+        
+        if (!softwareContainer) {
+            console.error('[Merch] Software container not found');
+        }
+        
+        // 存储处理器引用
+        window[NAMESPACE] = { handleProductClick };
+        
+        // 为两个容器都添加事件监听
+        if (machinesContainer) {
+            machinesContainer.addEventListener('click', handleProductClick, true);
+            console.log('[Merch] Event listener attached to machines');
+        }
+        
+        if (softwareContainer) {
+            softwareContainer.addEventListener('click', handleProductClick, true);
+            console.log('[Merch] Event listener attached to software');
+        }
+        
+        // 重置处理标志
+        isProcessing = false;
+    }, 100);
+}
+        
+        // 确保 DOM 加载完成后初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initMerchPage);
+        } else {
+            initMerchPage();
+        }
+        
+        // 调试信息
+        console.log('[Merch] Script complete');
+    })();</script><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.c2d8f09f689b7d1a8cab.js"></script></body>

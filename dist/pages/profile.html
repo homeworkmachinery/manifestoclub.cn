@@ -1,0 +1,321 @@
+<head><link href="/css/styles.ffe12bf25f15d90e6cb1.css" rel="stylesheet"></head><style data-page="profile">* {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    button {
+
+        -webkit-tap-highlight-color: transparent ;
+        background-color: white ;
+        color:black  ;
+        outline: none ;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .container {
+        display: flex;
+        height: 90vh;
+        overflow: hidden;
+    
+    }
+
+    .left-panel {
+        flex: 0 0 calc(25% + 29px);
+        padding-right: 20px;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+     
+    }
+
+    .right-panel {
+        flex: 0 0 calc(75% - 29px);
+        border: 2px black solid;
+        padding: 15px;
+        overflow-y: auto;
+        box-sizing: border-box;
+        height: calc(100% - 40px);
+    }
+
+    .menu-item {
+        border: 2px solid black;
+        margin-bottom: 10px;
+        cursor: pointer;
+
+
+        text-align: center;
+    }
+
+
+
+    .menu-item.active {
+        background-color: black;
+        color: white;
+    }
+
+    .content-section {
+        display: none;
+
+    }
+
+    .content-section.active {
+        display: block;
+    }
+
+    .content-section h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .content-section p {
+        line-height: 1.5;
+        color: black;
+        margin-bottom: 10px;
+    }
+
+    .draft-item button:hover {
+        background-color: black !important;
+        color: white !important;
+        cursor: pointer;
+    }
+
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .gallery-item {
+        height: 120px;
+        background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+        border: 1px solid #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: #666;
+    }
+
+    .member-info {
+        background: #f8f9fa;
+        padding: 15px;
+        margin-bottom: 10px;
+    }
+
+    .draft-item {
+        background: white;
+        padding: 10px;
+        border: 2px solid black;
+        margin-bottom: 15px;
+    }
+
+    .order-item {
+        background: #d4edda;
+        padding: 12px;
+        border-left: 4px solid #28a745;
+        margin-bottom: 10px;
+    }
+
+    .setting-item {
+        background: #f8f9fa;
+        padding: 15px;
+        border: 1px solid #dee2e6;
+        margin-bottom: 10px;
+    }
+
+    .member-code-container {
+  
+    
+        text-align: center;
+        font-size: 16px;
+   
+        
+    }
+
+    #member-barcode-complete {
+        width: 100%;
+        /* 宽度占满容器 */
+        height: auto;
+        /* 高度自适应 */
+        max-width: 100%;
+        /* 确保不超出容器 */
+        object-fit: contain;
+        /* 保持宽高比 */
+        display: block;
+
+    }
+
+    .modal-buttons button:hover {
+        background-color: black !important;
+        color: white !important;
+        cursor: pointer;
+    }
+
+    .status {
+    text-align: right;
+}
+
+.status-badge {
+    color: white; /* 默认文字颜色 */
+    padding: 5px 10px;
+    font-size: 15px;
+    font-weight: bold;
+    display: inline-block;
+}
+ .note-edit-btn:hover {
+        text-decoration: underline;
+    }
+    .note-delete-btn:hover {
+        text-decoration: underline;
+    }
+    /* 响应式设计 */
+    @media(max-width:899px) {
+
+
+        .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .status {
+        text-align: left;
+        margin-top: 5px;
+    }
+
+
+
+        .container {
+            display: flex;
+            flex-direction: column;
+         }
+
+        .left-panel {
+           
+            position: fixed;
+        display: grid;
+        box-sizing: border-box;
+        grid-template-columns: repeat(4,  1fr);
+        width: 100%;
+        height: 20px;
+        gap: 10px;
+    }
+
+.member-code-container{
+    display: none;
+}
+
+        .right-panel {
+            position: fixed;
+            margin-top: 35px;
+            width: calc(100% - 20px);
+            border: 2px black solid;
+            padding: 10px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            height: calc(100% - 130px);
+        }
+      .load-draft-btn{
+        
+   
+        width:400px;
+       
+        margin-left:20px;
+        box-sizing: border-box;
+      }
+                
+      .delete-draft-btn{
+      
+        box-sizing: border-box;
+        margin-left:20px;
+        margin-top:15px;
+        width:400px;
+      }            
+      .button-container{
+        margin-bottom: -15px;
+      }
+
+
+
+
+      
+    }
+
+    @media (max-width: 899px) {
+        .preview-container {
+          flex-direction: row;
+          gap: 15px;
+        }
+         .preview-tshirt {
+          width: 140px !important;
+          height: 180px !important;
+          min-width: unset !important;
+        }
+        .modal-buttons {
+          flex-direction: row;
+          gap: 10px;
+          align-items: center;
+        }
+        .modal-buttons button {
+          width: 100% !important;
+          max-width: 250px;
+        }
+        .size-selection-horizontal {
+          gap: 20px;
+         
+        }
+        .quantity-input {
+          width: 35px !important;
+          height: 28px !important;
+          font-size: 14px;
+        }
+
+        .modal-content-svg {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    max-height: 95vh !important;
+  }
+
+  .order-header {
+    flex-direction: column; /* 从左右布局改成上下布局 */
+    align-items: flex-start; /* 左对齐 */
+  }
+
+  .order-header .status {
+    margin-top: 5px;  /* 给 status 加点间距 */
+    text-align: left; /* 左对齐 */
+  }
+      }
+
+      /* @media (min-width: 899px) {
+        .left-panel {
+           
+           position: fixed;
+       display: grid;
+       box-sizing: border-box;
+       grid-template-columns: repeat(3,  1fr);
+       width: 100%;
+       height: 20px;
+       gap: 10px;
+   }
+
+
+
+       .right-panel {
+           position: fixed;
+           margin-top: 35px;
+           width: calc(100% - 20px);
+           border: 2px black solid;
+           padding: 10px;
+           overflow-y: auto;
+           box-sizing: border-box;
+           height: calc(100% - 130px);
+       }
+
+
+
+      } */</style><div class="container"><div class="left-panel"><div class="menu-item active" data-target="library">LIBRARY</div><div class="menu-item" data-target="draft">DRAFT</div><div class="menu-item" data-target="order">ORDER</div><div class="menu-item" data-target="setting">SETTING</div><div class="member-code-container"><img id="member-barcode-complete" alt="Member Code and Barcode" style="display: none;"></div></div><div class="right-panel"><div class="content-section" id="library"></div><div class="content-section" id="draft"></div><div class="content-section" id="order"></div><div class="content-section" id="setting"></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.c2d8f09f689b7d1a8cab.js"></script><script defer="defer" src="/js/page-profile.ce6258add7867c397893.js"></script>

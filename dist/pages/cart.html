@@ -1,0 +1,327 @@
+<head><link href="/css/styles.ffe12bf25f15d90e6cb1.css" rel="stylesheet"></head><style data-page="cart">* {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    button {
+       
+        -webkit-tap-highlight-color: transparent ;
+        background-color: white ;
+        color:black  ;
+        outline: none ;
+    }
+    .cart-header {
+        margin-bottom: 20px;
+
+        width: 65%;
+    }
+
+    #cartContent {
+        width: 65%;
+    }
+
+    .cart-header h1 {
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .cart-empty {
+        text-align: center;
+        padding: 100px 20px;
+        color: #666;
+    }
+
+    .cart-empty h2 {
+        margin-bottom: 20px;
+    }
+
+    .cart-empty button {
+        padding: 10px 30px;
+        border: 2px solid black;
+        background: white;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .cart-items {
+        margin-bottom: 20px;
+    }
+
+    .cart-item {
+        display: flex;
+        gap: 20px;
+        padding: 15px;
+        border: 2px solid black;
+        margin-bottom: 20px;
+        background: white;
+        position: relative;
+    }
+
+    .cart-item-image {
+        width: 150px;
+        height: 150px;
+        border: 2px solid black;
+        flex-shrink: 0;
+    }
+
+    .cart-item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .cart-item-details {
+        flex: 1;
+    }
+
+    .cart-item-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .cart-item-type {
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    .cart-item-sizes {
+        margin-bottom: 35px;
+
+
+    }
+
+    .size-quantity-group {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        /* 靠右 */
+        margin-bottom: 10px;
+        /* 垂直间距 */
+        position: relative;
+        /* 避免重叠 */
+
+
+
+    }
+
+    .size-label {
+        margin-right: 10px;
+
+    }
+
+    .quantity-controls {
+        display: flex;
+        align-items: center;
+        border: 2px solid black;
+
+
+    }
+
+    .quantity-btn {
+        width: 30px;
+        height: 30px;
+        border: none;
+        background: white;
+        cursor: pointer;
+        font-size: 18px;
+    }
+
+    .quantity-btn:hover {
+        background-color: black;
+        color: white;
+    }
+
+    .quantity-btn-left {
+        border-right: black 2px solid;
+    }
+
+    .quantity-btn-right {
+        border-left: black 2px solid;
+    }
+
+
+
+    .quantity-value {
+        width: 40px;
+        text-align: center;
+        border: none;
+        background-color: white;
+        border-left: 1px solid black;
+        border-right: 1px solid black;
+    }
+
+    .cart-item-price {
+        text-align: right;
+        min-width: 150px;
+    }
+
+    .price-label {
+        color: #666;
+        font-size: 14px;
+    }
+
+    .price-value {
+        font-size: 20px;
+        font-weight: bold;
+        margin-top: 5px;
+    }
+
+    .cart-item-remove {
+        padding: 5px 10px;
+        border: 2px solid black;
+        background: white;
+        cursor: pointer;
+        right: 10px;
+        bottom: 10px;
+        position: absolute;
+    }
+
+    .cart-item-remove:hover {
+        background: black;
+        color: white;
+    }
+
+    .cart-summary {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        border: 2px solid black;
+        padding: 20px;
+        width: calc((50% / 6) * 4 - 13px);
+        margin-left: auto;
+        background-color: white;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .summary-total {
+        border-top: 2px solid black;
+        padding-top: 10px;
+        margin-top: 10px;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .cart-actions {
+        display: flex;
+        gap: 20px;
+        margin-top: 20px;
+        left: 0px;
+    }
+
+    .cart-btn {
+        padding: 10px;
+        border: 2px solid black;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+        background-color: black;
+        color: white;
+
+    }
+
+
+    .preview-image {
+        width: 120px !important;
+        height: 150px !important;
+        min-width: 120px !important;
+        min-height: 150px !important;
+        max-width: 120px !important;
+        max-height: 150px !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: white;
+    }
+    
+    .preview-image img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+     
+    }
+    
+    /* 防止图片在加载时显示原始尺寸 */
+    /* .cart-item-previews {
+        display: flex;
+        gap: 10px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 10px 0;
+    }
+    
+    .preview-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-shrink: 0;
+    } */
+
+
+    @media(max-width:899px) {
+     
+        #cartContent {
+        width: 100%;
+        margin-top: -10px;
+    }
+
+    .cart-summary {
+        position: static;
+        top: auto;       
+        right: auto; 
+        border: 2px solid black;
+        padding: 20px;
+        width: 100%;
+       
+      
+    }
+
+    .cart-container{
+        position: relative;
+    }
+    .cart-items {
+        margin-bottom: 10px;
+    }
+
+    .cart-item {
+        display: flex;
+        gap: 20px;
+        padding: 15px;
+        border: 2px solid black;
+        margin-bottom: 10px;
+        background: white;
+        position: relative;
+    }
+    .checkout-form-container{
+        margin-bottom: 20px;
+    }
+    .payment-display-container{
+        margin-bottom: 10px;
+    }
+    }
+
+
+/* 数量控制器测试样式 */
+.cart-item[data-product-type="single"] .cart-item-quantity {
+    display: flex;
+    justify-content: flex-end; /* 整个容器内容靠右 */
+    align-items: center;
+}
+
+.cart-item[data-product-type="single"] .quantity-controls {
+    display: inline-flex !important; /* 使用 inline-flex 让它只占用需要的宽度 */
+    align-items: center;
+    border: 2px solid black;
+    background: white;
+    width: auto; /* 不要拉伸 */
+    flex-shrink: 0; /* 防止被压缩 */
+}</style><div class="cart-container"><div class="cart-header"><h1>SHOPPING CART</h1></div><div id="cartContent"></div><div class="cart-summary" id="cartSummary"></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.c2d8f09f689b7d1a8cab.js"></script><script defer="defer" src="/js/page-cart.f8ab7828a1b151ddc023.js"></script>
