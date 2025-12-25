@@ -2,11 +2,8 @@
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "env": {
-    "NODE_ENV": "production"
-  },
   "functions": {
-    "server/api/index.js": {
+    "api/index.js": {
       "maxDuration": 30,
       "memory": 1024
     }
@@ -14,11 +11,15 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "server/api/index.js"
+      "dest": "api/index.js"
+    },
+    {
+      "src": "/(.*)\\.(js|css|png|jpg|jpeg|gif|svg|ico|webp)$",
+      "dest": "/$1.$2"
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "index.html"
     }
   ]
 }
