@@ -7,6 +7,10 @@
       "memory": 1024
     }
   },
+  "ignoreFunctionFolders": [
+    "api/routes",
+    "api/lib"
+  ],
   "routes": [
     {
       "src": "/api/(.*)",
