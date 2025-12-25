@@ -4,9 +4,10 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "node server.js",
+     "dev": "node server.js",
     "vercel-dev": "vercel dev",
-    "deploy": "vercel --prod"
+    "deploy": "vercel --prod",
+    "build": "echo 'No build step required for API server'"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
