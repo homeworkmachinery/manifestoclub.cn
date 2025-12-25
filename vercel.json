@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": {
     "api/index.js": {
@@ -7,10 +8,6 @@
       "memory": 1024
     }
   },
-  "ignoreFunctionFolders": [
-    "api/routes",
-    "api/lib"
-  ],
   "routes": [
     {
       "src": "/api/(.*)",
