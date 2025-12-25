@@ -1,22 +1,12 @@
 {
-  "name": "bookstore-backend",
-  "version": "1.0.0",
+  "name": "server",
   "type": "module",
-  "private": true,
+  "main": "api/index.js",
   "scripts": {
-     "dev": "node server.js",
-    "vercel-dev": "vercel dev",
-    "deploy": "vercel --prod",
-    "build": "echo 'No build step required for API server'"
+    "start": "node api/index.js"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.0",
-    "pg": "^8.11.3"
-  },
-  "devDependencies": {
-    "@vercel/node": "^3.0.0"
-  },
-  "engines": {
-    "node": ">=18"
+    "@supabase/supabase-js": "^2.86.2",
+    "pg": "^8.16.3"
   }
 }

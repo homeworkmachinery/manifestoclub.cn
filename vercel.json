@@ -2,6 +2,9 @@
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "env": {
+    "NODE_ENV": "production"
+  },
   "functions": {
     "server/api/index.js": {
       "maxDuration": 30,
@@ -15,7 +18,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "index.html"
+      "dest": "/index.html"
     }
   ]
 }
