@@ -1,12 +1,12 @@
 // server/api/index.js
 // 这个文件会调用你所有的 routes/ 模块
 
-import { handleAuthRoute } from '../routes/auth.js';
-import { handleCartRoute } from '../routes/cart.js';
-import { handleProfileRoute } from '../routes/profile.js';
-import { handleDraftsRoute } from '../routes/drafts.js';
-import { handleOrdersRoute } from '../routes/orders.js';
-import { handleLibraryRoute } from '../routes/library.js';
+import { handleAuthRoute } from './routes/auth.js';
+import { handleCartRoute } from './routes/cart.js';
+import { handleProfileRoute } from './routes/profile.js';
+import { handleDraftsRoute } from './routes/drafts.js';
+import { handleOrdersRoute } from './routes/orders.js';
+import { handleLibraryRoute } from './routes/library.js';
 // import { handleBooksRoute } from '../routes/books.js';
 
 // 设置 CORS 的辅助函数
