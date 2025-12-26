@@ -4,3 +4,8 @@ node_modules/
 test-db.js
 .DS_Store
 deply.sh
+server.js
+deply.sh
+pooler.js
+cors.js
+database.js
