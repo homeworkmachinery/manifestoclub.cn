@@ -11,23 +11,6 @@ function sendJson(res, statusCode, data) {
   res.end(JSON.stringify(data, null, 2));
 }
 
-function readBody(req) {
-  return new Promise((resolve, reject) => {
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    req.on('end', () => {
-      try {
-        resolve(body ? JSON.parse(body) : {});
-      } catch (e) {
-        reject(e);
-      }
-    });
-    req.on('error', reject);
-  });
-}
-
 async function verifyToken(token) {
   try {
     if (!token) {
@@ -57,7 +40,7 @@ async function handleLogin(req, res) {
 
   try {
    
-    const { emailOrManifesto, password } = body;
+    const { emailOrManifesto, password } = req.body;
 
     if (!emailOrManifesto || !password) {
       return sendJson(res, 400, { error: 'Email/Manifesto and password are required' });
@@ -142,7 +125,7 @@ async function handleSignup(req, res) {
 
   try {
  
-    const { email, password, manifesto, barcode } = body;
+    const { email, password, manifesto, barcode } = req.body;
 
     if (!email || !password || !manifesto || !barcode) {
       return sendJson(res, 400, { error: 'Missing required fields' });
@@ -208,7 +191,7 @@ async function handlePasswordReset(req, res) {
   }
 
   try {
-    const { email } = body;
+    const { email } = req.body;
 
     if (!email) {
       return sendJson(res, 400, { error: 'Email is required' });
@@ -274,7 +257,7 @@ async function handleUpdatePassword(req, res) {
     }
 
  
-    const { password } = body;
+    const { password } = req.body;
 
     if (!password || password.length < 8) {
       return sendJson(res, 400, { error: 'Password must be at least 8 characters' });

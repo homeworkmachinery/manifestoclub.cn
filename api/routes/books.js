@@ -35,7 +35,7 @@ export async function handleBooksRoute(pathname, req, res) {
   if (pathname === '/api/books/counts' && method === 'POST') {
     try {
    
-      const { bookIds } = body;
+      const { bookIds } = req.body;
       
       if (!bookIds || !Array.isArray(bookIds)) {
         return sendJson(res, 400, { error: '缺少或无效的 bookIds 参数' });
@@ -86,7 +86,7 @@ export async function handleBooksRoute(pathname, req, res) {
       }
       
        
-      const { bookIds } = body;
+      const { bookIds } = req.body;
       
       if (!bookIds || !Array.isArray(bookIds)) {
         return sendJson(res, 400, { error: '缺少或无效的 bookIds 参数' });
@@ -134,7 +134,7 @@ export async function handleBooksRoute(pathname, req, res) {
   if (pathname === '/api/books/notes/batch' && method === 'POST') {
     try {
        
-      const { bookIds } = body;
+      const { bookIds } = req.body;
       
       if (!bookIds || !Array.isArray(bookIds)) {
         return sendJson(res, 400, { error: '缺少或无效的 bookIds 参数' });
