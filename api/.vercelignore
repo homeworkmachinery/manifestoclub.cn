@@ -1,0 +1,9 @@
+# api/.vercelignore
+routes/
+lib/
+config/
+node_modules/
+.env.local
+test-db.js
+.DS_Store
+deply.sh
