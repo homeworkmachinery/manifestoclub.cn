@@ -17,8 +17,16 @@
       "dest": "/$1.$2"
     },
     {
+      "src": "/pages/(.*)\\.html$",
+      "dest": "/pages/$1.html"
+    },
+    {
+      "src": "/(.+)\\.html$",
+      "dest": "/$1.html"
+    },
+    {
       "src": "/(.*)",
-      "dest": "index.html"
+      "dest": "/index.html"
     }
   ]
 }
