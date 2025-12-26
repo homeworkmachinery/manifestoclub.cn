@@ -1,11 +1,11 @@
 # api/.vercelignore
 node_modules/
 .env.local
-test-db.js
-.DS_Store
-deply.sh
-server.js
-deply.sh
-pooler.js
-cors.js
-database.js
+api/test-db.js
+api/.DS_Store
+api/deply.sh
+api/server.js
+api/deply.sh
+api/lib/pooler.js
+api/lib/cors.js
+api/config/database.js
