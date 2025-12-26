@@ -5,22 +5,6 @@ function sendJson(res, statusCode, data) {
   res.end(JSON.stringify(data, null, 2));
 }
 
-function readBody(req) {
-  return new Promise((resolve, reject) => {
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    req.on('end', () => {
-      try {
-        resolve(body ? JSON.parse(body) : {});
-      } catch (e) {
-        reject(e);
-      }
-    });
-    req.on('error', reject);
-  });
-}
 
 async function verifyToken(token) {
   try {
@@ -265,7 +249,7 @@ export async function handleOrdersRoute(pathname, req, res) {
             
             const orderId = pathname.split('/')[3];
              
-            const { tracking_number, courier, status } = body;
+            const { tracking_number, courier, status } = req.body;
             
             if (!tracking_number || !courier) {
                 return sendJson(res, 400, { error: '缺少追踪号码或快递公司' });
@@ -337,7 +321,7 @@ export async function handleOrdersRoute(pathname, req, res) {
                 payment_method,
                 shipping_address,
                 manifesto
-            } = body;
+            } = req.body;
             
             if (!order_id || !items || !Array.isArray(items) || items.length === 0) {
                 return sendJson(res, 400, { error: '缺少订单ID或商品信息' });

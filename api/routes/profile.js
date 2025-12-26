@@ -6,22 +6,7 @@ function sendJson(res, statusCode, data) {
   res.end(JSON.stringify(data, null, 2));
 }
 
-function readBody(req) {
-  return new Promise((resolve, reject) => {
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    req.on('end', () => {
-      try {
-        resolve(body ? JSON.parse(body) : {});
-      } catch (e) {
-        reject(e);
-      }
-    });
-    req.on('error', reject);
-  });
-}
+
 
 async function verifyToken(token) {
   try {
@@ -105,7 +90,7 @@ export async function handleProfileRoute(pathname, req, res) {
       }
       
        
-      const { manifesto } = body;
+      const { manifesto } = req.body;
       
       if (!manifesto || typeof manifesto !== 'string') {
         return sendJson(res, 400, { error: '无效的宣言内容' });
@@ -180,16 +165,16 @@ export async function handleProfileRoute(pathname, req, res) {
       
        
       const newAddress = {
-        fullName: body.fullName,
-        phone: body.phone,
-        email: body.email,
-        address1: body.address1,
-        address2: body.address2 || '',
-        city: body.city,
-        state: body.state,
-        zipCode: body.zipCode,
-        country: body.country,
-        isDefault: body.isDefault || false
+        fullName: req.body.fullName,
+        phone: req.body.phone,
+        email: req.body.email,
+        address1: req.body.address1,
+        address2: req.body.address2 || '',
+        city: req.body.city,
+        state: req.body.state,
+        zipCode: req.body.zipCode,
+        country: req.body.country,
+        isDefault: req.body.isDefault || false
       };
       
       // 验证必填字段
@@ -254,16 +239,16 @@ export async function handleProfileRoute(pathname, req, res) {
       const index = parseInt(pathname.split('/').pop());
        
       const updatedAddress = {
-        fullName: body.fullName,
-        phone: body.phone,
-        email: body.email,
-        address1: body.address1,
-        address2: body.address2 || '',
-        city: body.city,
-        state: body.state,
-        zipCode: body.zipCode,
-        country: body.country,
-        isDefault: body.isDefault || false
+        fullName: req.body.fullName,
+        phone: req.body.phone,
+        email: req.body.email,
+        address1: req.body.address1,
+        address2: req.body.address2 || '',
+        city: req.body.city,
+        state: req.body.state,
+        zipCode: req.body.zipCode,
+        country: req.body.country,
+        isDefault: req.body.isDefault || false
       };
       
       // 获取当前地址列表

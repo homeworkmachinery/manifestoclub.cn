@@ -11,22 +11,6 @@ function sendJson(res, statusCode, data) {
   res.end(JSON.stringify(data, null, 2));
 }
 
-function readBody(req) {
-  return new Promise((resolve, reject) => {
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    req.on('end', () => {
-      try {
-        resolve(body ? JSON.parse(body) : {});
-      } catch (e) {
-        reject(e);
-      }
-    });
-    req.on('error', reject);
-  });
-}
 
 async function verifyToken(token) {
   try {
@@ -67,7 +51,7 @@ export async function handleCartRoute(pathname, req, res) {
 
       const userId = auth.user.id;
        
-      const { draftId, sizeQuantities } = body;
+      const { draftId, sizeQuantities } = req.body;
 
       if (!draftId || !sizeQuantities) {
         return sendJson(res, 400, { error: '缺少必要参数' });
@@ -373,7 +357,7 @@ export async function handleCartRoute(pathname, req, res) {
 
       const userId = auth.user.id;
        
-      const { newSizes } = body;
+      const { newSizes } = req.body;
 
       if (!newSizes) {
         return sendJson(res, 400, { error: '缺少 newSizes 参数' });
@@ -503,7 +487,7 @@ export async function handleCartRoute(pathname, req, res) {
       }
 
       const userId = auth.user.id;
-      const orderData = await readBody(req);
+  
 
       if (orderData.user_id !== userId) {
         return sendJson(res, 403, { error: '用户 ID 不匹配' });
@@ -515,7 +499,7 @@ export async function handleCartRoute(pathname, req, res) {
 
       const { data: order, error } = await supabase
         .from('orders')
-        .insert([orderData])
+        .insert(req.body)
         .select()
         .single();
 

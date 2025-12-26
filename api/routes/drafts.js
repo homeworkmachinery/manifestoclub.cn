@@ -6,22 +6,7 @@ function sendJson(res, statusCode, data) {
   res.end(JSON.stringify(data, null, 2));
 }
 
-function readBody(req) {
-  return new Promise((resolve, reject) => {
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    req.on('end', () => {
-      try {
-        resolve(body ? JSON.parse(body) : {});
-      } catch (e) {
-        reject(e);
-      }
-    });
-    req.on('error', reject);
-  });
-}
+
 
 async function verifyToken(token) {
   try {
@@ -324,7 +309,7 @@ export async function handleDraftsRoute(pathname, req, res) {
             }
             
              
-            const { type, title, data, front_preview_image, back_preview_image, sizes } = body;
+            const { type, title, data, front_preview_image, back_preview_image, sizes } = req.body;
             
             if (!type || !title) {
                 return sendJson(res, 400, { error: '缺少草稿类型或标题' });
@@ -392,11 +377,11 @@ export async function handleDraftsRoute(pathname, req, res) {
             };
             
             // 只更新提供的字段
-            if (body.title !== undefined) updateData.title = body.title;
-            if (body.data !== undefined) updateData.data = body.data;
-            if (body.front_preview_image !== undefined) updateData.front_preview_image = body.front_preview_image;
-            if (body.back_preview_image !== undefined) updateData.back_preview_image = body.back_preview_image;
-            if (body.sizes !== undefined) updateData.sizes = body.sizes;
+            if (req.body.title !== undefined) updateData.title = req.body.title;
+            if (req.body.data !== undefined) updateData.data = req.body.data;
+            if (req.body.front_preview_image !== undefined) updateData.front_preview_image = req.body.front_preview_image;
+            if (req.body.back_preview_image !== undefined) updateData.back_preview_image = req.body.back_preview_image;
+            if (req.body.sizes !== undefined) updateData.sizes = req.body.sizes;
             
             // 更新草稿
             const { error: updateError } = await supabase
@@ -430,7 +415,7 @@ export async function handleDraftsRoute(pathname, req, res) {
             
             const draftId = pathname.split('/')[3]; // 注意：pathname是 /api/drafts/:id/update-sizes
              
-            const { sizeQuantities } = body;
+            const { sizeQuantities } = req.body;
             
             if (!sizeQuantities || typeof sizeQuantities !== 'object') {
                 return sendJson(res, 400, { error: '无效的尺码数据' });

@@ -5,20 +5,6 @@ function sendJson(res, statusCode, data) {
   res.end(JSON.stringify(data, null, 2));
 }
 
-function readBody(req) {
-  return new Promise((resolve, reject) => {
-    let body = '';
-    req.on('data', chunk => { body += chunk.toString(); });
-    req.on('end', () => {
-      try {
-        resolve(body ? JSON.parse(body) : {});
-      } catch (e) {
-        reject(e);
-      }
-    });
-    req.on('error', reject);
-  });
-}
 
 async function verifyToken(token) {
   try {
@@ -225,9 +211,9 @@ export async function handleLibraryRoute(pathname, req, res) {
             
             // 准备更新数据
             const updateData = {
-                content: body.content,
-                page_start: parseInt(body.page_start) || null,
-                page_end: body.page_end ? parseInt(body.page_end) : null,
+                content: req.body.content,
+                page_start: parseInt(req.body.page_start) || null,
+                page_end: req.body.page_end ? parseInt(req.body.page_end) : null,
                 updated_at: new Date().toISOString()
             };
             
@@ -312,7 +298,7 @@ export async function handleLibraryRoute(pathname, req, res) {
             }
             
              
-            const { book_id } = body;
+            const { book_id } = req.body;
             
             if (!book_id) {
                 return sendJson(res, 400, { error: '缺少书籍ID' });
@@ -396,7 +382,7 @@ export async function handleLibraryRoute(pathname, req, res) {
             }
             
              
-            const { book_id } = body;
+            const { book_id } = req.body;
             
             if (!book_id) {
                 return sendJson(res, 400, { error: '缺少书籍ID' });
@@ -480,7 +466,7 @@ export async function handleLibraryRoute(pathname, req, res) {
             }
             
              
-            const { book_id, content, page_start, page_end } = body;
+            const { book_id, content, page_start, page_end } = req.body;
             
             if (!book_id || !content) {
                 return sendJson(res, 400, { error: '缺少书籍ID或笔记内容' });
