@@ -1,2 +1,20 @@
-dist/
-
+# .vercelignore
+node_modules/
+.git/
+.env.local
+.DS_Store
+*.log
+src/
+pages/
+js/
+css/
+images/
+webpack.config.js
+package.json
+server.js
+database.js
+supabase.js
+test-db.js
+README.md
+.gitignore
+index.html
