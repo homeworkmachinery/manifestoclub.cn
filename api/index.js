@@ -7,7 +7,6 @@ import { handleProfileRoute } from './routes/profile.js';
 import { handleDraftsRoute } from './routes/drafts.js';
 import { handleOrdersRoute } from './routes/orders.js';
 import { handleLibraryRoute } from './routes/library.js';
-// import { handleBooksRoute } from '../routes/books.js';
 
 // 设置 CORS 的辅助函数
 function setCorsHeaders(res) {
@@ -18,7 +17,7 @@ function setCorsHeaders(res) {
   res.setHeader('Access-Control-Max-Age', '86400');
 }
 
-// 读取请求体（复用你 server.js 中的逻辑）
+// ✅ 读取请求体 - 只在最顶层读取一次
 async function readBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';
@@ -58,24 +57,28 @@ export default async function handler(req, res) {
     console.log('解析路径:', pathname);
     console.log('查询参数:', query);
     
+    // ✅ 关键修复：提前读取请求体
+    let body = {};
+    if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
+      try {
+        body = await readBody(req);
+        console.log('请求体:', body);
+      } catch (error) {
+        console.log('读取请求体失败:', error);
+        return res.status(400).json({ error: 'Invalid JSON in request body' });
+      }
+    }
+    
     // 创建适配的 request 对象（模拟你 server.js 中的 req）
     const adaptedReq = {
       method: req.method,
       url: req.url,
       headers: req.headers,
       query: query,
-      body: null
+      body: body,  // ✅ 使用已读取的 body
+      // ✅ 重要：提供 on 方法的模拟，避免路由中再次调用 readBody
+      on: () => {} 
     };
-    
-    // 如果有请求体，读取它
-    if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
-      try {
-        adaptedReq.body = await readBody(req);
-        console.log('请求体:', adaptedReq.body);
-      } catch (error) {
-        console.log('读取请求体失败:', error);
-      }
-    }
     
     // 创建适配的 response 对象
     const adaptedRes = {
@@ -114,13 +117,6 @@ export default async function handler(req, res) {
       const result = await handleProfileRoute(pathname, adaptedReq, adaptedRes);
       if (result !== null) return;
     }
-    
-    // 3. Books 路由
-    // if (pathname.startsWith('/api/books/')) {
-    //   console.log('路由到 handleBooksRoute');
-    //   const result = await handleBooksRoute(pathname, adaptedReq, adaptedRes);
-    //   if (result !== null) return;
-    // }
     
     // 4. Library 路由
     if (pathname === '/api/library' || pathname.startsWith('/api/library/')) {
@@ -161,31 +157,6 @@ export default async function handler(req, res) {
       });
     }
     
-    // 9. 测试数据库
-    if (pathname === '/api/test-db' && req.method === 'GET') {
-      console.log('处理数据库测试');
-      // 这里可以直接调用你的数据库逻辑
-      try {
-        const { getPool } = await import('../lib/pooler.js');
-        const pool = getPool();
-        const client = await pool.connect();
-        const result = await client.query('SELECT NOW()');
-        client.release();
-        
-        return res.status(200).json({
-          status: 'success',
-          message: '数据库连接成功',
-          time: result.rows[0].now
-        });
-      } catch (error) {
-        return res.status(500).json({
-          status: 'error',
-          message: '数据库连接失败',
-          error: error.message
-        });
-      }
-    }
-    
     // 404 - 没有匹配的路由
     console.log('❌ 未找到路由:', pathname);
     return res.status(404).json({
@@ -193,11 +164,9 @@ export default async function handler(req, res) {
       path: pathname,
       availableRoutes: [
         '/api/health',
-        '/api/test-db',
         '/api/auth/*',
         '/api/cart/*',
         '/api/profile/*',
-        // '/api/books/*',
         '/api/drafts/*',
         '/api/orders/*',
         '/api/library/*'

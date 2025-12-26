@@ -104,7 +104,7 @@ export async function handleProfileRoute(pathname, req, res) {
         return sendJson(res, 401, { error: 'Token 无效或已过期' });
       }
       
-      const body = await readBody(req);
+       
       const { manifesto } = body;
       
       if (!manifesto || typeof manifesto !== 'string') {
@@ -178,7 +178,7 @@ export async function handleProfileRoute(pathname, req, res) {
         return sendJson(res, 401, { error: 'Token 无效或已过期' });
       }
       
-      const body = await readBody(req);
+       
       const newAddress = {
         fullName: body.fullName,
         phone: body.phone,
@@ -252,7 +252,7 @@ export async function handleProfileRoute(pathname, req, res) {
       }
       
       const index = parseInt(pathname.split('/').pop());
-      const body = await readBody(req);
+       
       const updatedAddress = {
         fullName: body.fullName,
         phone: body.phone,

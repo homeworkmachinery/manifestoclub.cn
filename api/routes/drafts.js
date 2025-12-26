@@ -323,7 +323,7 @@ export async function handleDraftsRoute(pathname, req, res) {
                 return sendJson(res, 401, { error: 'Token 无效或已过期' });
             }
             
-            const body = await readBody(req);
+             
             const { type, title, data, front_preview_image, back_preview_image, sizes } = body;
             
             if (!type || !title) {
@@ -372,7 +372,7 @@ export async function handleDraftsRoute(pathname, req, res) {
             }
             
             const draftId = pathname.split('/').pop();
-            const body = await readBody(req);
+             
             
             // 验证草稿是否存在且属于该用户
             const { data: existingDraft } = await supabase
@@ -429,7 +429,7 @@ export async function handleDraftsRoute(pathname, req, res) {
             }
             
             const draftId = pathname.split('/')[3]; // 注意：pathname是 /api/drafts/:id/update-sizes
-            const body = await readBody(req);
+             
             const { sizeQuantities } = body;
             
             if (!sizeQuantities || typeof sizeQuantities !== 'object') {

@@ -56,7 +56,7 @@ async function handleLogin(req, res) {
   }
 
   try {
-    const body = await readBody(req);
+   
     const { emailOrManifesto, password } = body;
 
     if (!emailOrManifesto || !password) {
@@ -141,7 +141,7 @@ async function handleSignup(req, res) {
   }
 
   try {
-    const body = await readBody(req);
+ 
     const { email, password, manifesto, barcode } = body;
 
     if (!email || !password || !manifesto || !barcode) {
@@ -208,7 +208,6 @@ async function handlePasswordReset(req, res) {
   }
 
   try {
-    const body = await readBody(req);
     const { email } = body;
 
     if (!email) {
@@ -274,7 +273,7 @@ async function handleUpdatePassword(req, res) {
       return sendJson(res, 401, { error: auth.error });
     }
 
-    const body = await readBody(req);
+ 
     const { password } = body;
 
     if (!password || password.length < 8) {

@@ -209,7 +209,7 @@ export async function handleLibraryRoute(pathname, req, res) {
             }
             
             const noteId = pathname.split('/').pop();
-            const body = await readBody(req);
+             
             
             // 验证笔记是否存在且属于该用户
             const { data: existingNote } = await supabase
@@ -311,7 +311,7 @@ export async function handleLibraryRoute(pathname, req, res) {
                 return sendJson(res, 401, { error: 'Token 无效或已过期' });
             }
             
-            const body = await readBody(req);
+             
             const { book_id } = body;
             
             if (!book_id) {
@@ -395,7 +395,7 @@ export async function handleLibraryRoute(pathname, req, res) {
                 return sendJson(res, 401, { error: 'Token 无效或已过期' });
             }
             
-            const body = await readBody(req);
+             
             const { book_id } = body;
             
             if (!book_id) {
@@ -479,7 +479,7 @@ export async function handleLibraryRoute(pathname, req, res) {
                 return sendJson(res, 401, { error: 'Token 无效或已过期' });
             }
             
-            const body = await readBody(req);
+             
             const { book_id, content, page_start, page_end } = body;
             
             if (!book_id || !content) {

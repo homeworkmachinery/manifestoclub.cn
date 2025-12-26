@@ -66,7 +66,7 @@ export async function handleCartRoute(pathname, req, res) {
       }
 
       const userId = auth.user.id;
-      const body = await readBody(req);
+       
       const { draftId, sizeQuantities } = body;
 
       if (!draftId || !sizeQuantities) {
@@ -372,7 +372,7 @@ export async function handleCartRoute(pathname, req, res) {
       }
 
       const userId = auth.user.id;
-      const body = await readBody(req);
+       
       const { newSizes } = body;
 
       if (!newSizes) {

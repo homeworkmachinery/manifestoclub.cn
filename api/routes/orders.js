@@ -264,7 +264,7 @@ export async function handleOrdersRoute(pathname, req, res) {
             }
             
             const orderId = pathname.split('/')[3];
-            const body = await readBody(req);
+             
             const { tracking_number, courier, status } = body;
             
             if (!tracking_number || !courier) {
@@ -327,7 +327,7 @@ export async function handleOrdersRoute(pathname, req, res) {
                 return sendJson(res, 401, { error: 'Token 无效或已过期' });
             }
             
-            const body = await readBody(req);
+             
             const { 
                 order_id,
                 items,

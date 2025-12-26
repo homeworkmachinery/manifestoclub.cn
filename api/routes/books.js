@@ -50,7 +50,7 @@ export async function handleBooksRoute(pathname, req, res) {
   // 1. 获取书籍计数（批量）
   if (pathname === '/api/books/counts' && method === 'POST') {
     try {
-      const body = await readBody(req);
+   
       const { bookIds } = body;
       
       if (!bookIds || !Array.isArray(bookIds)) {
@@ -101,7 +101,7 @@ export async function handleBooksRoute(pathname, req, res) {
         return sendJson(res, 401, { error: '未授权：缺少 token' });
       }
       
-      const body = await readBody(req);
+       
       const { bookIds } = body;
       
       if (!bookIds || !Array.isArray(bookIds)) {
@@ -149,7 +149,7 @@ export async function handleBooksRoute(pathname, req, res) {
   // 3. 获取书籍笔记（批量）
   if (pathname === '/api/books/notes/batch' && method === 'POST') {
     try {
-      const body = await readBody(req);
+       
       const { bookIds } = body;
       
       if (!bookIds || !Array.isArray(bookIds)) {
