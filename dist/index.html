@@ -1,4 +1,105 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"><title>宣言俱乐部</title><link rel="icon" href="/images/000.ico" type="image/x-icon"><link rel="shortcut icon" href="/images/000.ico" type="image/x-icon"><script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script><style>/* @font-face {
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"><title>宣言俱乐部</title><link rel="icon" href="/images/000.ico" type="image/x-icon"><link rel="shortcut icon" href="/images/000.ico" type="image/x-icon"><script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script><script>(function() {
+            // 保存原始的 console 方法
+            const originalConsoleError = console.error;
+            const originalConsoleWarn = console.warn;
+
+            // ✅ 拦截 console.error
+            console.error = function(...args) {
+                const message = args[0]?.toString?.() || JSON.stringify(args[0]);
+                
+                // 需要忽略的错误模式
+                const ignoredPatterns = [
+                    'Library container not found',
+                    'Book container not found',
+                    'Machines container not found',
+                    'Software container not found',
+                    'page-cd.js',
+                    'page-print.js',
+                    'page-event.js',
+                    'page-merch.js',
+                    'page-about.js',
+                    'page-law.js',
+                    '无法加载页面脚本',
+                    'Element .* not found',
+                ];
+
+                // 检查是否应该忽略
+                if (ignoredPatterns.some(pattern => {
+                    try {
+                        return new RegExp(pattern).test(message);
+                    } catch (e) {
+                        return message.includes(pattern);
+                    }
+                })) {
+                    return; // 静默，不输出
+                }
+
+                // 其他错误正常输出
+                originalConsoleError.apply(console, args);
+            };
+
+            // ✅ 拦截 console.warn
+            console.warn = function(...args) {
+                const message = args[0]?.toString?.() || JSON.stringify(args[0]);
+                
+                // 需要忽略的警告模式
+                const ignoredPatterns = [
+                    'Library container not found',
+                    'Book container not found',
+                    'Machines container not found',
+                    'Software container not found',
+                    '无法加载页面脚本',
+                    'page-cd.js',
+                    'page-print.js',
+                    'page-event.js',
+                    'page-merch.js',
+                    'page-about.js',
+                    'page-law.js',
+                ];
+
+                // 检查是否应该忽略
+                if (ignoredPatterns.some(pattern => message.includes(pattern))) {
+                    return; // 静默，不输出
+                }
+
+                // 其他警告正常输出
+                originalConsoleWarn.apply(console, args);
+            };
+
+            // ✅ 拦截全局错误事件
+            window.addEventListener('error', (event) => {
+                const message = event.message || event.filename || '';
+                
+                const ignoredPatterns = [
+                    'Library container not found',
+                    'Book container not found',
+                    'Machines container not found',
+                    'Software container not found',
+                ];
+
+                if (ignoredPatterns.some(pattern => message.includes(pattern))) {
+                    event.preventDefault();
+                    return true;
+                }
+            }, true);
+
+            // ✅ 拦截未处理的 Promise 拒绝
+            window.addEventListener('unhandledrejection', (event) => {
+                const message = event.reason?.message || event.reason || '';
+                
+                const ignoredPatterns = [
+                    'Library container not found',
+                    'Book container not found',
+                    'Machines container not found',
+                    'Software container not found',
+                ];
+
+                if (ignoredPatterns.some(pattern => message.includes(pattern))) {
+                    event.preventDefault();
+                    return true;
+                }
+            });
+        })();</script><style>/* @font-face {
         font-family: "Mono";
         font-style: normal;
         font-weight: 400;
@@ -76,4 +177,4 @@
                 margin-right: 10px;
             }
 
-        }</style><link href="/css/styles.ffe12bf25f15d90e6cb1.css" rel="stylesheet"></head><body><header class="header"><div class="header__inner"><div class="header__logo"><div class="header__logo-inner"><a href="" data-page="home"><img src="/images/000.jpg" alt="ManifestoClub"></a></div></div><aside class="header__radio"><div class="radio"><div class="radio__upper"><div id="play" class="radio__play"><input type="checkbox" id="playpause" name="check"> <label for="playpause"></label></div><div class="radio__live"></div><div class="header__mob-toggle"><img src="/images/000.jpg"></div></div><div class="radio__lower"><span>PLAYLIST</span> <span>CHAT</span></div></div></aside><nav class="header__nav"><ul><li><a href="#cd" data-page="cd">CD/LP</a></li><li><a href="/merch" data-page="merch">MERCH</a></li><li><a href="/print" data-page="print">PRINT</a></li><li><a href="/event" data-page="event">Event</a></li><li><a href="/about" data-page="about">About</a></li><li><span id="login-trigger">Login</span></li></ul></nav></div><div class="mobile-nav" id="mobileNav"><nav class="header__nav--mobile"><ul><li><a href="/" data-page="home">HOME</a></li><li><a href="#cd" data-page="cd">CD/LP</a></li><li><a href="/merch" data-page="merch">MERCH</a></li><li><a href="/print" data-page="print">PRINT</a></li><li><a href="/event" data-page="event">EVENT</a></li><li><a href="/gallery" data-page="gallery">GALLERY</a></li><li><a href="/about" data-page="about">ABOUT</a></li><li><span>LOGIN</span></li></ul></nav></div><div class="cart" data-page="cart" id="cartIcon" style="display: none;">CART(<span id="cartBadge">0</span>)</div></header><main class="main--banner"><section class="page" id="dynamic-content"></section></main><div class="languages"><span>EN</span><span>中</span></div><div id="auth-modal" class="auth-modal"><div class="auth-modal-container"><div class="auth-modal-header" style="display: block;"><div id="barcode-container"><svg id="barcode"></svg></div></div><div id="login-form"><div class="login-wrapper"><input type="email" id="login-email" class="auth-form-input" placeholder="EMAIL/MANIFESTO"><p id="login-error" class="error-message" style="display: none;"></p></div><div class="password-input-wrapper"><input type="password" id="login-password" class="auth-form-input" placeholder="PASSWORD"> <span class="forgot-password-link">Forgot password?</span></div><p class="auth-form-btn" id="login-button">LOGIN</p><p class="auth-form-toggle signup">NOT AN USER YET?<span> SIGN UP</span></p></div><div id="signup-form"><div class="manifesto-wrapper"><input type="manifesto" id="manifesto" class="auth-form-input" placeholder="MANIFESTO" maxlength="30"><div class="check-manifesto check-icon"></div><p id="manifesto-error" class="error-message" style="display: none;"></p></div><div class="email-wrapper"><input type="email" id="signup-email" class="auth-form-input" placeholder="EMAIL"><div class="check-email check-icon"></div><p id="email-error" class="error-message" style="display: none;"></p></div><div class="password-wrapper"><input type="password" id="signup-password" class="auth-form-input" placeholder="PASSWORD"><div class="check-password check-icon"></div><p id="password-error" class="error-message" style="display: none;"></p></div><p class="auth-form-btn" id="signup-button">SIGN UP</p><p class="auth-form-toggle signup">ALREADY AN USER? <span>LOGIN</span></p></div><div id="password-reset-form" style="display:none;"><div class="reset-wrapper"><input type="email" id="reset-email" class="auth-form-input" placeholder="EMAIL"><p id="reset-error" class="error-message" style="display: none;"></p></div><p class="auth-form-btn" id="reset-link">SEND RESET LINK</p><p class="auth-form-toggle login">BACK TO LOGIN</p></div><div id="update-password-form" style="display:none;"><input type="email" id="reset-email-display" class="auth-form-input" placeholder="EMAIL" readonly="readonly" onfocus="this.blur()" style="background-color: #f5f5f5; cursor: default;"><div class="reset-password-wrapper"><input type="password" id="new-password" class="auth-form-input" placeholder="NEW PASSWORD"><div class="check-new-password check-icon"></div><p id="update-password-error" class="error-message" style="display: none;"></p></div><div class="confirm-password-wrapper"><input type="password" class="auth-form-input" id="confirm-password" placeholder="CONFIRM PASSWORD"><div class="check-confirm-password check-icon"></div><p id="confirm-password-error" class="error-message" style="display: none;"></p></div><p class="auth-form-btn" id="update-password">UPDATE PASSWORD</p></div><div id="signup-success-form" style="display:none;"><p>Registration Successful!</p><p>Your member code:</p><span id="manifesto-code"></span><div id="barcode-container"><svg id="barcode-success"></svg></div><p>We've sent a verification email to <span id="success-email"></span></p><div class="success-actions"><p class="auth-form-toggle" id="verify-button">Verify Later</p><p class="auth-form-btn" id="resend-button">Resend Verification Email</p></div></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.51652b746e85b749e43f.js"></script><script defer="defer" src="/js/page-index.77af81a6783134edc1d0.js"></script></body><script></script></html>
+        }</style><link href="/css/styles.ffe12bf25f15d90e6cb1.css" rel="stylesheet"></head><body><header class="header"><div class="header__inner"><div class="header__logo"><div class="header__logo-inner"><a href="" data-page="home"><img src="/images/000.jpg" alt="ManifestoClub"></a></div></div><aside class="header__radio"><div class="radio"><div class="radio__upper"><div id="play" class="radio__play"><input type="checkbox" id="playpause" name="check"> <label for="playpause"></label></div><div class="radio__live"></div><div class="header__mob-toggle"><img src="/images/000.jpg"></div></div><div class="radio__lower"><span>PLAYLIST</span> <span>CHAT</span></div></div></aside><nav class="header__nav"><ul><li><a href="#cd" data-page="cd">CD/LP</a></li><li><a href="/merch" data-page="merch">MERCH</a></li><li><a href="/print" data-page="print">PRINT</a></li><li><a href="/event" data-page="event">Event</a></li><li><a href="/about" data-page="about">About</a></li><li><span id="login-trigger">Login</span></li></ul></nav></div><div class="mobile-nav" id="mobileNav"><nav class="header__nav--mobile"><ul><li><a href="/" data-page="home">HOME</a></li><li><a href="#cd" data-page="cd">CD/LP</a></li><li><a href="/merch" data-page="merch">MERCH</a></li><li><a href="/print" data-page="print">PRINT</a></li><li><a href="/event" data-page="event">EVENT</a></li><li><a href="/gallery" data-page="gallery">GALLERY</a></li><li><a href="/about" data-page="about">ABOUT</a></li><li><span>LOGIN</span></li></ul></nav></div><div class="cart" data-page="cart" id="cartIcon" style="display: none;">CART(<span id="cartBadge">0</span>)</div></header><main class="main--banner"><section class="page" id="dynamic-content"></section></main><div class="languages"><span>EN</span><span>中</span></div><div id="auth-modal" class="auth-modal"><div class="auth-modal-container"><div class="auth-modal-header" style="display: block;"><div id="barcode-container"><svg id="barcode"></svg></div></div><div id="login-form"><div class="login-wrapper"><input type="email" id="login-email" class="auth-form-input" placeholder="EMAIL/MANIFESTO"><p id="login-error" class="error-message" style="display: none;"></p></div><div class="password-input-wrapper"><input type="password" id="login-password" class="auth-form-input" placeholder="PASSWORD"> <span class="forgot-password-link">Forgot password?</span></div><p class="auth-form-btn" id="login-button">LOGIN</p><p class="auth-form-toggle signup">NOT AN USER YET?<span> SIGN UP</span></p></div><div id="signup-form"><div class="manifesto-wrapper"><input type="manifesto" id="manifesto" class="auth-form-input" placeholder="MANIFESTO" maxlength="30"><div class="check-manifesto check-icon"></div><p id="manifesto-error" class="error-message" style="display: none;"></p></div><div class="email-wrapper"><input type="email" id="signup-email" class="auth-form-input" placeholder="EMAIL"><div class="check-email check-icon"></div><p id="email-error" class="error-message" style="display: none;"></p></div><div class="password-wrapper"><input type="password" id="signup-password" class="auth-form-input" placeholder="PASSWORD"><div class="check-password check-icon"></div><p id="password-error" class="error-message" style="display: none;"></p></div><p class="auth-form-btn" id="signup-button">SIGN UP</p><p class="auth-form-toggle signup">ALREADY AN USER? <span>LOGIN</span></p></div><div id="password-reset-form" style="display:none;"><div class="reset-wrapper"><input type="email" id="reset-email" class="auth-form-input" placeholder="EMAIL"><p id="reset-error" class="error-message" style="display: none;"></p></div><p class="auth-form-btn" id="reset-link">SEND RESET LINK</p><p class="auth-form-toggle login">BACK TO LOGIN</p></div><div id="update-password-form" style="display:none;"><input type="email" id="reset-email-display" class="auth-form-input" placeholder="EMAIL" readonly="readonly" onfocus="this.blur()" style="background-color: #f5f5f5; cursor: default;"><div class="reset-password-wrapper"><input type="password" id="new-password" class="auth-form-input" placeholder="NEW PASSWORD"><div class="check-new-password check-icon"></div><p id="update-password-error" class="error-message" style="display: none;"></p></div><div class="confirm-password-wrapper"><input type="password" class="auth-form-input" id="confirm-password" placeholder="CONFIRM PASSWORD"><div class="check-confirm-password check-icon"></div><p id="confirm-password-error" class="error-message" style="display: none;"></p></div><p class="auth-form-btn" id="update-password">UPDATE PASSWORD</p></div><div id="signup-success-form" style="display:none;"><p>Registration Successful!</p><p>Your member code:</p><span id="manifesto-code"></span><div id="barcode-container"><svg id="barcode-success"></svg></div><p>We've sent a verification email to <span id="success-email"></span></p><div class="success-actions"><p class="auth-form-toggle" id="verify-button">Verify Later</p><p class="auth-form-btn" id="resend-button">Resend Verification Email</p></div></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.265538c80bc4d7ce7212.js"></script><script defer="defer" src="/js/page-index.31ce162eee8cb35a4b99.js"></script></body><script></script></html>
