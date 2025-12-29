@@ -6,8 +6,28 @@ function sendJson(res, statusCode, data) {
   res.end(JSON.stringify(data, null, 2));
 }
 
-
-
+async function readBody(req) {
+  // 如果 req.body 已经有内容（Vercel 环境），直接返回
+  if (req.body && Object.keys(req.body).length > 0) {
+    return req.body;
+  }
+  
+  // 本地开发环境：从流中读取
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        resolve(body ? JSON.parse(body) : {});
+      } catch (e) {
+        resolve({}); // 解析失败返回空对象
+      }
+    });
+    req.on('error', reject);
+  });
+}
 async function verifyToken(token) {
   try {
     if (!token) {
@@ -89,8 +109,8 @@ export async function handleProfileRoute(pathname, req, res) {
         return sendJson(res, 401, { error: 'Token 无效或已过期' });
       }
       
-       
-      const { manifesto } = req.body;
+      const body = await readBody(req);
+      const { manifesto } = body;
       
       if (!manifesto || typeof manifesto !== 'string') {
         return sendJson(res, 400, { error: '无效的宣言内容' });
@@ -163,18 +183,18 @@ export async function handleProfileRoute(pathname, req, res) {
         return sendJson(res, 401, { error: 'Token 无效或已过期' });
       }
       
-       
+      const body = await readBody(req);
       const newAddress = {
-        fullName: req.body.fullName,
-        phone: req.body.phone,
-        email: req.body.email,
-        address1: req.body.address1,
-        address2: req.body.address2 || '',
-        city: req.body.city,
-        state: req.body.state,
-        zipCode: req.body.zipCode,
-        country: req.body.country,
-        isDefault: req.body.isDefault || false
+        fullName: body.fullName,
+        phone: body.phone,
+        email: body.email,
+        address1: body.address1,
+        address2: body.address2 || '',
+        city: body.city,
+        state: body.state,
+        zipCode: body.zipCode,
+        country: body.country,
+        isDefault: body.isDefault || false
       };
       
       // 验证必填字段
@@ -237,18 +257,18 @@ export async function handleProfileRoute(pathname, req, res) {
       }
       
       const index = parseInt(pathname.split('/').pop());
-       
+      const body = await readBody(req);
       const updatedAddress = {
-        fullName: req.body.fullName,
-        phone: req.body.phone,
-        email: req.body.email,
-        address1: req.body.address1,
-        address2: req.body.address2 || '',
-        city: req.body.city,
-        state: req.body.state,
-        zipCode: req.body.zipCode,
-        country: req.body.country,
-        isDefault: req.body.isDefault || false
+        fullName: body.fullName,
+        phone: body.phone,
+        email: body.email,
+        address1: body.address1,
+        address2: body.address2 || '',
+        city: body.city,
+        state: body.state,
+        zipCode: body.zipCode,
+        country: body.country,
+        isDefault: body.isDefault || false
       };
       
       // 获取当前地址列表

@@ -778,153 +778,207 @@
             }
 
             // 添加到购物车处理函数
-            async function handleAddToCart() {
-                try {
-                    if (!window.currentProduct) {
-                        alert('产品信息未加载');
+  async function handleAddToCart() {
+    try {
+        if (!window.currentProduct) {
+            alert('产品信息未加载');
+            return;
+        }
+
+        const product = window.currentProduct;
+        console.log('Adding console product to cart:', product.name);
+
+        // 检查用户登录状态
+        const user = await checkUserLogin();
+        if (!user) {
+            return;
+        }
+
+        // 准备商品数据（✅ 完全保持原始逻辑）
+        const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
+
+        // 准备变体信息
+        const selectedVariant = window.currentProduct.selectedVariant;
+        const variantSuffix = selectedVariant ? `-${selectedVariant.key}` : '';
+        const variantName = selectedVariant ? ` - ${selectedVariant.name}` : '';
+
+        // ✅ 构造完整的 cartItemData（和原始代码一模一样）
+        const cartItemData = {
+            user_id: user.id,  // 后端会覆盖为当前用户
+            draft_id: null,
+            type: `console-${product.id}${variantSuffix}`,
+            quantity: 1,
+            sizes: { 'default': 1 },
+            price: priceNumber,
+            total_price: priceNumber,
+            item_data: {
+                productId: product.id,
+                productName: product.name + variantName,
+                productYear: product.year,
+                productCategory: product.category,
+                productImage: selectedVariant?.image || product.mainImage || `/images/merch/${product.id}.jpg`,
+                productType: 'retro-console',
+                variantKey: selectedVariant?.key,
+                variantName: selectedVariant?.name,
+                variantDescription: selectedVariant?.description
+            },
+            added_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+
+        console.log('📤 发送到后端的完整数据:', JSON.stringify(cartItemData, null, 2));
+
+        // 调用后端 API
+        const API_BASE_URL = window.location.hostname === 'localhost'
+            ? 'http://localhost:3001'
+            : '';
+
+        // 获取 token
+        let token;
+        if (window.authManager && window.authManager.getToken) {
+            token = window.authManager.getToken();
+        }
+
+        if (!token && window.supabase) {
+            const { data: { session } } = await supabase.auth.getSession();
+            token = session?.access_token;
+        }
+
+        if (!token) {
+            alert('未登录，请先登录');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/cart/add`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    cartItemData  // ✅ 直接传递完整的 cartItemData
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: '未知错误' }));
+                console.error('❌ API 错误:', errorData);
+                alert('添加失败：' + (errorData.error || '未知错误'));
+                return;
+            }
+
+            const result = await response.json();
+            console.log('✅ API 响应:', result);
+
+            // 更新购物车徽章
+            if (window.CartManager && window.CartManager.updateCartBadge) {
+                await window.CartManager.updateCartBadge();
+            }
+
+            // 显示成功消息
+            showSuccessMessage(result.action === 'updated' ? '数量已更新' : '已添加到购物车');
+
+        } catch (error) {
+            console.error('❌ API 调用失败:', error);
+
+            // 备用方案：直接使用 Supabase（和原始代码一样）
+            if (confirm('API 调用失败。是否使用备用方案？')) {
+                console.log('使用备用方案：直接调用 Supabase...');
+
+                // 先检查购物车中是否已有此产品
+                const { data: existingItems, error: fetchError } = await supabase
+                    .from('cart_items')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .eq('type', cartItemData.type);
+
+                if (fetchError) {
+                    console.error('Error checking existing items:', fetchError);
+                    alert('查询购物车失败');
+                    return;
+                }
+
+                if (existingItems && existingItems.length > 0) {
+                    // 产品已存在，更新数量
+                    const existingItem = existingItems[0];
+                    const currentQty = existingItem.quantity || 1;
+                    const newQty = currentQty + 1;
+
+                    const { data, error } = await supabase
+                        .from('cart_items')
+                        .update({
+                            quantity: newQty,
+                            total_price: priceNumber * newQty,
+                            sizes: { 'default': newQty },
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', existingItem.id)
+                        .select()
+                        .single();
+
+                    if (error) {
+                        console.error('Update error:', error);
+                        alert('更新失败');
                         return;
                     }
 
-                    const product = window.currentProduct;
-                    console.log('Adding console product to cart:', product);
+                    console.log('Updated existing item:', data);
+                    showSuccessMessage('数量已更新');
 
-                    // 检查用户登录状态
-                    const user = await checkUserLogin();
-                    if (!user) {
-                        return;
-                    }
-                    // 准备商品数据
-                    const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
+                } else {
+                    // 添加新产品到购物车
+                    const { data, error } = await supabase
+                        .from('cart_items')
+                        .insert(cartItemData)
+                        .select()
+                        .single();
 
-                    try {
-                        // 先检查购物车中是否已有此产品
-                        const { data: existingItems, error: fetchError } = await supabase
-                            .from('cart_items')
-                            .select('*')
-                            .eq('user_id', user.id)
-                            .eq('type', `console-${product.id}`);
+                    if (error) {
+                        console.error('Insert error:', error);
 
-                        if (fetchError) {
-                            console.error('Error checking existing items:', fetchError);
-                        }
+                        // 如果 item_data 字段不存在，尝试不包含它
+                        if (error.message && error.message.includes('item_data')) {
+                            console.log('Retrying without item_data field...');
+                            delete cartItemData.item_data;
 
-                        if (existingItems && existingItems.length > 0) {
-                            // 产品已存在，更新数量
-                            const existingItem = existingItems[0];
-                            const currentQty = existingItem.quantity || 1;
-                            const newQty = currentQty + 1;
-
-                            const { data, error } = await supabase
-                                .from('cart_items')
-                                .update({
-                                    quantity: newQty,
-                                    total_price: priceNumber * newQty,
-                                    sizes: { 'default': newQty }, // 更新 sizes 字段
-                                    updated_at: new Date().toISOString()
-                                })
-                                .eq('id', existingItem.id)
-                                .select()
-                                .single();
-
-                            if (error) {
-                                console.error('Update error:', error);
-                                throw error;
-                            }
-
-                            console.log('Updated existing item:', data);
-                            showSuccessMessage('数量已更新');
-
-                        } else {
-                            // 添加新产品到购物车
-
-                            const selectedVariant = window.currentProduct.selectedVariant;
-                            const variantSuffix = selectedVariant ? `-${selectedVariant.key}` : '';
-                            const variantName = selectedVariant ? ` - ${selectedVariant.name}` : '';
-
-
-                            const cartItemData = {
-                                user_id: user.id,
-                                draft_id: null,
-                                type: `console-${product.id}${variantSuffix}`, // 包含变体信息的类型
-                                quantity: 1,
-                                sizes: { 'default': 1 },
-                                price: priceNumber,
-                                total_price: priceNumber,
-                                item_data: {
-                                    productId: product.id,
-                                    productName: product.name + variantName, // 包含游戏名称
-                                    productYear: product.year,
-                                    productCategory: product.category,
-                                    productImage: selectedVariant?.image || product.mainImage || `/images/merch/${product.id}.jpg`,
-                                    productType: 'retro-console',
-                                    // 新增变体信息
-                                    variantKey: selectedVariant?.key,
-                                    variantName: selectedVariant?.name,
-                                    variantDescription: selectedVariant?.description
-                                },
-                                added_at: new Date().toISOString(),
-                                updated_at: new Date().toISOString()
-                            };
-
-                            // 尝试插入
-                            const { data, error } = await supabase
+                            const { data: retryData, error: retryError } = await supabase
                                 .from('cart_items')
                                 .insert(cartItemData)
                                 .select()
                                 .single();
 
-                            if (error) {
-                                console.error('Insert error:', error);
-
-                                // 如果 item_data 字段不存在，尝试不包含它
-                                if (error.message && error.message.includes('item_data')) {
-                                    console.log('Retrying without item_data field...');
-
-                                    delete cartItemData.item_data;
-
-                                    const { data: retryData, error: retryError } = await supabase
-                                        .from('cart_items')
-                                        .insert(cartItemData)
-                                        .select()
-                                        .single();
-
-                                    if (retryError) {
-                                        throw retryError;
-                                    }
-
-                                    console.log('Added to cart (without item_data):', retryData);
-
-                                    // 将产品信息存储到 localStorage 作为补充
-                                    storeProductInfoLocally(product.id, product);
-                                } else {
-                                    throw error;
-                                }
-                            } else {
-                                console.log('Added to cart:', data);
+                            if (retryError) {
+                                alert('添加失败：' + retryError.message);
+                                return;
                             }
 
-                            showSuccessMessage('Added to cart');
+                            console.log('Added to cart (without item_data):', retryData);
+                            storeProductInfoLocally(product.id, product);
+                        } else {
+                            alert('添加失败：' + error.message);
+                            return;
                         }
-
-                        // 更新购物车徽章
-                        if (window.CartManager && window.CartManager.updateCartBadge) {
-                            await window.CartManager.updateCartBadge();
-                        }
-
-                    } catch (error) {
-                        console.error('Database operation failed:', error);
-
-                        // 备用方案：本地存储
-                        if (confirm('添加到购物车失败。是否使用临时购物车？')) {
-                            useLocalStorageCart(product);
-                        }
+                    } else {
+                        console.log('Added to cart:', data);
                     }
 
-                } catch (error) {
-                    console.error('Add to cart failed:', error);
-                    alert('操作失败，请重试');
+                    showSuccessMessage('已添加到购物车');
+                }
+
+                // 更新购物车徽章
+                if (window.CartManager && window.CartManager.updateCartBadge) {
+                    await window.CartManager.updateCartBadge();
                 }
             }
+        }
+
+    } catch (error) {
+        console.error('Add to cart failed:', error);
+        alert('操作失败，请重试');
+    }
+}
+
 
 
             // 显示成功消息

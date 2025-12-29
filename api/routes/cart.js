@@ -1,5 +1,5 @@
 /**
- * routes/cart.js - 购物车相关 API 路由
+ * routes/cart.js - 购物车相关 API 路由（✅ 兼容版：支持新旧两种格式）
  */
 
 import { getSupabaseClient } from '../config/supabase.js';
@@ -11,6 +11,26 @@ function sendJson(res, statusCode, data) {
   res.end(JSON.stringify(data, null, 2));
 }
 
+async function readBody(req) {
+  if (req.body && Object.keys(req.body).length > 0) {
+    return req.body;
+  }
+
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        resolve(body ? JSON.parse(body) : {});
+      } catch (e) {
+        resolve({});
+      }
+    });
+    req.on('error', reject);
+  });
+}
 
 async function verifyToken(token) {
   try {
@@ -37,7 +57,7 @@ async function verifyToken(token) {
 export async function handleCartRoute(pathname, req, res) {
   const token = req.headers.authorization?.replace('Bearer ', '');
 
-  // 1. 添加到购物车
+  // 1. 添加到购物车（✅ 兼容版：支持新旧两种格式）
   if (pathname === '/api/cart/add' && req.method === 'POST') {
     if (!token) {
       return sendJson(res, 401, { error: '未授权：缺少 token' });
@@ -50,83 +70,130 @@ export async function handleCartRoute(pathname, req, res) {
       }
 
       const userId = auth.user.id;
-       
-      const { draftId, sizeQuantities } = req.body;
+      const body = await readBody(req);
 
-      if (!draftId || !sizeQuantities) {
-        return sendJson(res, 400, { error: '缺少必要参数' });
+      console.log('📦 收到的请求数据:', JSON.stringify(body, null, 2));
+
+      let cartItemData = null;
+
+      // ✅ 方式1：新格式 - 直接传 cartItemData
+      if (body.cartItemData) {
+        cartItemData = { ...body.cartItemData };
+        console.log('✅ 使用新格式：cartItemData');
       }
+      // ✅ 方式2：旧格式 - draftId + sizeQuantities
+      else if (body.draftId && body.sizeQuantities) {
+        console.log('✅ 使用旧格式：draftId + sizeQuantities');
 
-      console.log(`🛒 用户 ${userId} 添加商品: ${draftId}`);
+        const { draftId, sizeQuantities, productInfo, unitPrice } = body;
+        let itemType = null;
+        let searchKey = null;
+        let itemData = {};
+        let finalPrice = 29.99;
 
-      let itemType = null;
-      let searchKey = null;
-      let itemData = {};
+        // 处理不同类型的商品
+        if (draftId.startsWith('blank-')) {
+          const color = draftId.replace('blank-', '');
+          itemType = 'blank-tshirt';
+          searchKey = `blank-tshirt-${color}`;
+          itemData = { type: 'blank-tshirt', color };
+          finalPrice = 69;
 
-      if (draftId.startsWith('blank-')) {
-        const color = draftId.replace('blank-', '');
-        itemType = 'blank-tshirt';
-        searchKey = `blank-tshirt-${color}`;
-        itemData = { type: 'blank-tshirt', color };
-      } else if (draftId.startsWith('console-')) {
-        itemType = 'console-product';
-        searchKey = draftId;
-        itemData = { type: draftId };
+        } else if (draftId.startsWith('console-')) {
+          itemType = 'console-product';
+          searchKey = draftId;
+
+          if (productInfo) {
+            itemData = {
+              type: draftId,
+              productName: productInfo.productName,
+              productImage: productInfo.productImage,
+              productYear: productInfo.productYear,
+              productCategory: productInfo.productCategory,
+              productType: productInfo.productType || 'retro-console',
+              variantKey: productInfo.variantKey,
+              variantName: productInfo.variantName,
+              variantDescription: productInfo.variantDescription
+            };
+          }
+
+          if (unitPrice && typeof unitPrice === 'number') {
+            finalPrice = unitPrice;
+          }
+
+        } else {
+          itemType = 'custom-design';
+          searchKey = `draft-${draftId}`;
+          itemData = { type: 'custom-design' };
+
+          if (unitPrice && typeof unitPrice === 'number') {
+            finalPrice = unitPrice;
+          }
+        }
+
+        const totalQuantity = Object.values(sizeQuantities).reduce((a, b) => a + b, 0);
+
+        // 构造完整的 cartItemData
+        cartItemData = {
+          user_id: userId,
+          type: searchKey,
+          price: finalPrice,
+          quantity: totalQuantity,
+          total_price: finalPrice * totalQuantity,
+          sizes: sizeQuantities,
+          draft_id: itemType === 'custom-design' ? draftId : null,
+          item_data: itemData,
+          added_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+
       } else {
-        itemType = 'custom-design';
-        searchKey = `draft-${draftId}`;
-        itemData = { type: 'custom-design' };
+        return sendJson(res, 400, { error: '缺少必要参数：需要 cartItemData 或 (draftId + sizeQuantities)' });
       }
 
-      const totalQuantity = Object.values(sizeQuantities).reduce((a, b) => a + b, 0);
-      
-      if (totalQuantity === 0) {
-        return sendJson(res, 400, { error: '请选择尺码和数量' });
-      }
+      // ✅ 确保 user_id 正确
+      cartItemData.user_id = userId;
 
-      const unitPrice = 29.99;
-      const totalPrice = unitPrice * totalQuantity;
+      console.log(`🛒 用户 ${userId} 添加商品:`, cartItemData.type);
+      console.log('📋 最终 cartItemData:', JSON.stringify(cartItemData, null, 2));
 
       const supabase = getSupabaseClient();
       let existingItem = null;
-      
-      if (itemType === 'custom-design') {
-        const { data: items } = await supabase
-          .from('cart_items')
-          .select('*')
-          .eq('user_id', userId)
-          .eq('draft_id', draftId);
-        
-        existingItem = items?.[0] || null;
-      } else {
-        const { data: items } = await supabase
-          .from('cart_items')
-          .select('*')
-          .eq('user_id', userId)
-          .eq('type', searchKey);
-        
-        existingItem = items?.[0] || null;
+
+      // 检查是否已存在相同 type 的商品
+      const { data: existingItems } = await supabase
+        .from('cart_items')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('type', cartItemData.type)
+        .limit(1);
+
+      if (existingItems && existingItems.length > 0) {
+        existingItem = existingItems[0];
       }
 
       let result;
 
       if (existingItem) {
+        // ✅ 更新现有商品
         console.log('✅ 更新现有商品:', existingItem.id);
-        
+
+        const currentQty = existingItem.quantity || 0;
+        const newQty = currentQty + (cartItemData.quantity || 1);
+
+        // 合并 sizes
         const mergedSizes = { ...existingItem.sizes };
-        for (const [size, qty] of Object.entries(sizeQuantities)) {
+        for (const [size, qty] of Object.entries(cartItemData.sizes || { 'default': 1 })) {
           mergedSizes[size] = (mergedSizes[size] || 0) + qty;
         }
-        
-        const newTotalQuantity = Object.values(mergedSizes).reduce((a, b) => a + b, 0);
-        const newTotalPrice = unitPrice * newTotalQuantity;
 
         const { data, error } = await supabase
           .from('cart_items')
           .update({
+            quantity: newQty,
             sizes: mergedSizes,
-            quantity: newTotalQuantity,
-            total_price: newTotalPrice,
+            total_price: cartItemData.price * newQty,
+            item_data: cartItemData.item_data,
             updated_at: new Date().toISOString()
           })
           .eq('id', existingItem.id)
@@ -143,41 +210,58 @@ export async function handleCartRoute(pathname, req, res) {
           success: true,
           action: 'updated',
           itemId: data.id,
-          quantity: newTotalQuantity,
-          totalPrice: newTotalPrice
+          quantity: newQty
         };
       } else {
+        // ✅ 添加新商品
         console.log('➕ 添加新商品到购物车');
-        
+
         const { data, error } = await supabase
           .from('cart_items')
-          .insert([{
-            user_id: userId,
-            type: searchKey,
-            price: unitPrice,
-            quantity: totalQuantity,
-            total_price: totalPrice,
-            sizes: sizeQuantities,
-            draft_id: itemType === 'custom-design' ? draftId : null,
-            item_data: itemData,
-            added_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          }])
+          .insert([cartItemData])
           .select()
           .single();
 
         if (error) {
           console.error('插入失败:', error);
-          return sendJson(res, 400, { error: '添加失败: ' + error.message });
-        }
 
-        result = {
-          success: true,
-          action: 'added',
-          itemId: data.id,
-          quantity: totalQuantity,
-          totalPrice: totalPrice
-        };
+          // 如果 item_data 字段有问题，尝试不带该字段插入
+          if (error.message && error.message.includes('item_data')) {
+            console.log('⚠️ item_data 字段问题，尝试不带 item_data 插入...');
+            const cartItemDataNoItemData = { ...cartItemData };
+            delete cartItemDataNoItemData.item_data;
+
+            const { data: retryData, error: retryError } = await supabase
+              .from('cart_items')
+              .insert([cartItemDataNoItemData])
+              .select()
+              .single();
+
+            if (retryError) {
+              console.error('重试插入失败:', retryError);
+              return sendJson(res, 400, { error: '添加失败: ' + retryError.message });
+            }
+
+            console.log('✅ 插入成功（无 item_data）:', retryData);
+            result = {
+              success: true,
+              action: 'added',
+              itemId: retryData.id,
+              quantity: retryData.quantity
+            };
+          } else {
+            console.error('插入失败:', error);
+            return sendJson(res, 400, { error: '添加失败: ' + error.message });
+          }
+        } else {
+          console.log('✅ 插入成功:', data);
+          result = {
+            success: true,
+            action: 'added',
+            itemId: data.id,
+            quantity: data.quantity
+          };
+        }
       }
 
       return sendJson(res, 200, result);
@@ -187,6 +271,10 @@ export async function handleCartRoute(pathname, req, res) {
       return sendJson(res, 500, { error: '服务器错误: ' + error.message });
     }
   }
+
+  // ============================================
+  // 其他路由保持不变
+  // ============================================
 
   // 2. 获取购物车数量
   if (pathname === '/api/cart/count' && req.method === 'GET') {
@@ -290,8 +378,8 @@ export async function handleCartRoute(pathname, req, res) {
   // 5. 删除购物车项目
   if (pathname.startsWith('/api/cart/items/') && req.method === 'DELETE') {
     const cartItemId = pathname.split('/')[4];
-    console.log('删除购物车项目 ID:', cartItemId, '路径:', pathname);
-    
+    console.log('删除购物车项目 ID:', cartItemId);
+
     if (!token) {
       return sendJson(res, 401, { error: '未授权：缺少 token' });
     }
@@ -326,16 +414,16 @@ export async function handleCartRoute(pathname, req, res) {
         return sendJson(res, 400, { error: error.message });
       }
 
-      return sendJson(res, 200, { 
+      return sendJson(res, 200, {
         success: true,
         message: '删除成功',
-        itemId: cartItemId 
+        itemId: cartItemId
       });
 
     } catch (error) {
       console.error('删除购物车失败:', error);
-      return sendJson(res, 500, { 
-        error: error.message || '删除失败' 
+      return sendJson(res, 500, {
+        error: error.message || '删除失败'
       });
     }
   }
@@ -343,8 +431,8 @@ export async function handleCartRoute(pathname, req, res) {
   // 6. 更新购物车项目数量
   if (pathname.startsWith('/api/cart/items/') && req.method === 'PATCH') {
     const cartItemId = pathname.split('/')[4];
-    console.log('更新购物车项目 ID:', cartItemId, '路径:', pathname);
-    
+    console.log('更新购物车项目 ID:', cartItemId);
+
     if (!token) {
       return sendJson(res, 401, { error: '未授权：缺少 token' });
     }
@@ -356,8 +444,8 @@ export async function handleCartRoute(pathname, req, res) {
       }
 
       const userId = auth.user.id;
-       
-      const { newSizes } = req.body;
+      const body = await readBody(req);
+      const { newSizes } = body;
 
       if (!newSizes) {
         return sendJson(res, 400, { error: '缺少 newSizes 参数' });
@@ -390,21 +478,14 @@ export async function handleCartRoute(pathname, req, res) {
           return sendJson(res, 400, { error: error.message });
         }
 
-        return sendJson(res, 200, { 
-          success: true, 
+        return sendJson(res, 200, {
+          success: true,
           action: 'removed',
-          itemId: cartItemId 
+          itemId: cartItemId
         });
       }
 
-      const { data: item } = await supabase
-        .from('cart_items')
-        .select('price')
-        .eq('id', cartItemId)
-        .eq('user_id', userId)
-        .single();
-
-      const totalPrice = (item?.price || 29.99) * totalQuantity;
+      const totalPrice = (existingItem?.price || 29.99) * totalQuantity;
 
       const { data, error } = await supabase
         .from('cart_items')
@@ -424,17 +505,17 @@ export async function handleCartRoute(pathname, req, res) {
         return sendJson(res, 400, { error: '更新失败: ' + error.message });
       }
 
-      return sendJson(res, 200, { 
-        success: true, 
+      return sendJson(res, 200, {
+        success: true,
         data,
         totalQuantity,
-        totalPrice 
+        totalPrice
       });
 
     } catch (error) {
       console.error('更新购物车失败:', error);
-      return sendJson(res, 500, { 
-        error: error.message || '更新失败' 
+      return sendJson(res, 500, {
+        error: error.message || '更新失败'
       });
     }
   }
@@ -487,7 +568,7 @@ export async function handleCartRoute(pathname, req, res) {
       }
 
       const userId = auth.user.id;
-  
+      const orderData = await readBody(req);
 
       if (orderData.user_id !== userId) {
         return sendJson(res, 403, { error: '用户 ID 不匹配' });
@@ -499,13 +580,13 @@ export async function handleCartRoute(pathname, req, res) {
 
       const { data: order, error } = await supabase
         .from('orders')
-        .insert(req.body)
+        .insert([orderData])
         .select()
         .single();
 
       if (error) {
         console.error('❌ 订单插入错误:', error);
-        return sendJson(res, 400, { 
+        return sendJson(res, 400, {
           error: '创建订单失败: ' + error.message,
           code: error.code
         });

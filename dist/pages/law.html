@@ -390,7 +390,7 @@
 
                 // 渲染书籍列表
                 renderBooks();
-
+initializeBookButtons();
   // 关键：强制恢复 Supabase session
   console.log('🔄 强制恢复 Supabase session');
   if (window.restoreSupabaseSession) {
@@ -398,7 +398,7 @@
   }
 
                 await checkUser();
-                initializeBookButtons(); // 初始化书籍按钮和笔记区域
+                 // 初始化书籍按钮和笔记区域
                 await updateBookCounts(); // 更新计数
 
                 // ========== 新增：检查是否需要滚动到特定书籍 ==========

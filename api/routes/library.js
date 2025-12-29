@@ -5,7 +5,28 @@ function sendJson(res, statusCode, data) {
   res.end(JSON.stringify(data, null, 2));
 }
 
-
+async function readBody(req) {
+  // 如果 req.body 已经有内容（Vercel 环境），直接返回
+  if (req.body && Object.keys(req.body).length > 0) {
+    return req.body;
+  }
+  
+  // 本地开发环境：从流中读取
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        resolve(body ? JSON.parse(body) : {});
+      } catch (e) {
+        resolve({}); // 解析失败返回空对象
+      }
+    });
+    req.on('error', reject);
+  });
+}
 async function verifyToken(token) {
   try {
     if (!token) {
@@ -195,7 +216,7 @@ export async function handleLibraryRoute(pathname, req, res) {
             }
             
             const noteId = pathname.split('/').pop();
-             
+            const body = await readBody(req);
             
             // 验证笔记是否存在且属于该用户
             const { data: existingNote } = await supabase
@@ -211,9 +232,9 @@ export async function handleLibraryRoute(pathname, req, res) {
             
             // 准备更新数据
             const updateData = {
-                content: req.body.content,
-                page_start: parseInt(req.body.page_start) || null,
-                page_end: req.body.page_end ? parseInt(req.body.page_end) : null,
+                content: body.content,
+                page_start: parseInt(body.page_start) || null,
+                page_end: body.page_end ? parseInt(body.page_end) : null,
                 updated_at: new Date().toISOString()
             };
             
@@ -297,8 +318,8 @@ export async function handleLibraryRoute(pathname, req, res) {
                 return sendJson(res, 401, { error: 'Token 无效或已过期' });
             }
             
-             
-            const { book_id } = req.body;
+            const body = await readBody(req);
+            const { book_id } = body;
             
             if (!book_id) {
                 return sendJson(res, 400, { error: '缺少书籍ID' });
@@ -381,8 +402,8 @@ export async function handleLibraryRoute(pathname, req, res) {
                 return sendJson(res, 401, { error: 'Token 无效或已过期' });
             }
             
-             
-            const { book_id } = req.body;
+            const body = await readBody(req);
+            const { book_id } = body;
             
             if (!book_id) {
                 return sendJson(res, 400, { error: '缺少书籍ID' });
@@ -465,8 +486,8 @@ export async function handleLibraryRoute(pathname, req, res) {
                 return sendJson(res, 401, { error: 'Token 无效或已过期' });
             }
             
-             
-            const { book_id, content, page_start, page_end } = req.body;
+            const body = await readBody(req);
+            const { book_id, content, page_start, page_end } = body;
             
             if (!book_id || !content) {
                 return sendJson(res, 400, { error: '缺少书籍ID或笔记内容' });

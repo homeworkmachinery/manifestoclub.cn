@@ -6,8 +6,28 @@ function sendJson(res, statusCode, data) {
   res.end(JSON.stringify(data, null, 2));
 }
 
-
-
+async function readBody(req) {
+  // 如果 req.body 已经有内容（Vercel 环境），直接返回
+  if (req.body && Object.keys(req.body).length > 0) {
+    return req.body;
+  }
+  
+  // 本地开发环境：从流中读取
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        resolve(body ? JSON.parse(body) : {});
+      } catch (e) {
+        resolve({}); // 解析失败返回空对象
+      }
+    });
+    req.on('error', reject);
+  });
+}
 async function verifyToken(token) {
   try {
     if (!token) {
@@ -308,8 +328,8 @@ export async function handleDraftsRoute(pathname, req, res) {
                 return sendJson(res, 401, { error: 'Token 无效或已过期' });
             }
             
-             
-            const { type, title, data, front_preview_image, back_preview_image, sizes } = req.body;
+            const body = await readBody(req);
+            const { type, title, data, front_preview_image, back_preview_image, sizes } = body;
             
             if (!type || !title) {
                 return sendJson(res, 400, { error: '缺少草稿类型或标题' });
@@ -357,7 +377,7 @@ export async function handleDraftsRoute(pathname, req, res) {
             }
             
             const draftId = pathname.split('/').pop();
-             
+            const body = await readBody(req);
             
             // 验证草稿是否存在且属于该用户
             const { data: existingDraft } = await supabase
@@ -377,11 +397,11 @@ export async function handleDraftsRoute(pathname, req, res) {
             };
             
             // 只更新提供的字段
-            if (req.body.title !== undefined) updateData.title = req.body.title;
-            if (req.body.data !== undefined) updateData.data = req.body.data;
-            if (req.body.front_preview_image !== undefined) updateData.front_preview_image = req.body.front_preview_image;
-            if (req.body.back_preview_image !== undefined) updateData.back_preview_image = req.body.back_preview_image;
-            if (req.body.sizes !== undefined) updateData.sizes = req.body.sizes;
+            if (body.title !== undefined) updateData.title = body.title;
+            if (body.data !== undefined) updateData.data = body.data;
+            if (body.front_preview_image !== undefined) updateData.front_preview_image = body.front_preview_image;
+            if (body.back_preview_image !== undefined) updateData.back_preview_image = body.back_preview_image;
+            if (body.sizes !== undefined) updateData.sizes = body.sizes;
             
             // 更新草稿
             const { error: updateError } = await supabase
@@ -414,8 +434,8 @@ export async function handleDraftsRoute(pathname, req, res) {
             }
             
             const draftId = pathname.split('/')[3]; // 注意：pathname是 /api/drafts/:id/update-sizes
-             
-            const { sizeQuantities } = req.body;
+            const body = await readBody(req);
+            const { sizeQuantities } = body;
             
             if (!sizeQuantities || typeof sizeQuantities !== 'object') {
                 return sendJson(res, 400, { error: '无效的尺码数据' });

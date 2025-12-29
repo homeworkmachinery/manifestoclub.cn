@@ -5,6 +5,28 @@ function sendJson(res, statusCode, data) {
   res.end(JSON.stringify(data, null, 2));
 }
 
+async function readBody(req) {
+  // 如果 req.body 已经有内容（Vercel 环境），直接返回
+  if (req.body && Object.keys(req.body).length > 0) {
+    return req.body;
+  }
+  
+  // 本地开发环境：从流中读取
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        resolve(body ? JSON.parse(body) : {});
+      } catch (e) {
+        resolve({}); // 解析失败返回空对象
+      }
+    });
+    req.on('error', reject);
+  });
+}
 
 async function verifyToken(token) {
   try {
@@ -129,7 +151,7 @@ export async function handleOrdersRoute(pathname, req, res) {
         
         // PATCH /api/orders/:id/cancel - 取消订单
         else if (pathname.match(/^\/api\/orders\/[^\/]+\/cancel$/) && req.method === 'PATCH') {
-            console.log('🔵 取消订单请求:', pathname);
+                console.log('🔵 取消订单请求:', pathname);
             
             const token = req.headers.authorization?.replace('Bearer ', '');
             console.log('🔵 Token:', token ? '已提供' : '未提供');
@@ -139,6 +161,7 @@ export async function handleOrdersRoute(pathname, req, res) {
                 return sendJson(res, 401, { error: '未授权：缺少 token' });
             }
             
+            // 🔧 修复：验证token的有效性
             const supabase = getSupabaseClient();
             const { data: { user }, error: userError } = await supabase.auth.getUser(token);
             
@@ -153,13 +176,13 @@ export async function handleOrdersRoute(pathname, req, res) {
             console.log('🔵 尝试取消订单:', orderId);
             
             try {
-                // 验证订单是否存在且属于该用户
+                // 🔧 修复：先验证订单是否存在且属于该用户
                 console.log('🔵 查询订单是否存在...');
                 const { data: existingOrder, error: queryError } = await supabase
                     .from('orders')
                     .select('order_id, status, user_id, created_at')
                     .eq('order_id', orderId)
-                    .eq('user_id', user.id)
+                    .eq('user_id', user.id) // 确保订单属于当前用户
                     .single();
                 
                 if (queryError) {
@@ -169,7 +192,7 @@ export async function handleOrdersRoute(pathname, req, res) {
                     if (queryError.code === 'PGRST116') {
                         return sendJson(res, 404, { 
                             error: '订单不存在或无权限取消',
-                            details: '找不到该订单'
+                            details: '找不到该订单或您无权限访问此订单'
                         });
                     }
                     
@@ -188,6 +211,8 @@ export async function handleOrdersRoute(pathname, req, res) {
                 }
                 
                 console.log('🔵 订单状态:', existingOrder.status);
+                console.log('🔵 订单用户ID:', existingOrder.user_id);
+                console.log('🔵 当前用户ID:', user.id);
                 
                 // 检查订单状态是否可以取消
                 const cancelableStatuses = ['awaiting_verification', 'verified'];
@@ -200,12 +225,16 @@ export async function handleOrdersRoute(pathname, req, res) {
                     });
                 }
                 
-                // 更新订单状态为已取消 - 不更新 updated_at
+                // 🔧 修复：更新订单状态为已取消，同时更新时间戳
                 console.log('🔵 正在取消订单...');
                 const { error: updateError } = await supabase
                     .from('orders')
-                    .update({ status: 'cancelled' })
-                    .eq('order_id', orderId);
+                    .update({ 
+                        status: 'cancelled',
+                        cancelled_at: new Date().toISOString() // 添加取消时间戳
+                    })
+                    .eq('order_id', orderId)
+                    .eq('user_id', user.id); // 双重检查权限
                 
                 if (updateError) {
                     console.error('❌ 取消订单失败:', updateError);
@@ -219,7 +248,8 @@ export async function handleOrdersRoute(pathname, req, res) {
                 return sendJson(res, 200, { 
                     success: true, 
                     orderId,
-                    message: '订单已成功取消'
+                    message: '订单已成功取消',
+                    cancelledAt: new Date().toISOString()
                 });
                 
             } catch (error) {
@@ -230,6 +260,7 @@ export async function handleOrdersRoute(pathname, req, res) {
                 });
             }
         }
+        
         
         // PATCH /api/orders/:id/tracking - 更新订单追踪信息
         else if (pathname.match(/^\/api\/orders\/[^\/]+\/tracking$/) && req.method === 'PATCH') {
@@ -248,8 +279,8 @@ export async function handleOrdersRoute(pathname, req, res) {
             }
             
             const orderId = pathname.split('/')[3];
-             
-            const { tracking_number, courier, status } = req.body;
+            const body = await readBody(req);
+            const { tracking_number, courier, status } = body;
             
             if (!tracking_number || !courier) {
                 return sendJson(res, 400, { error: '缺少追踪号码或快递公司' });
@@ -311,7 +342,7 @@ export async function handleOrdersRoute(pathname, req, res) {
                 return sendJson(res, 401, { error: 'Token 无效或已过期' });
             }
             
-             
+            const body = await readBody(req);
             const { 
                 order_id,
                 items,
@@ -321,7 +352,7 @@ export async function handleOrdersRoute(pathname, req, res) {
                 payment_method,
                 shipping_address,
                 manifesto
-            } = req.body;
+            } = body;
             
             if (!order_id || !items || !Array.isArray(items) || items.length === 0) {
                 return sendJson(res, 400, { error: '缺少订单ID或商品信息' });

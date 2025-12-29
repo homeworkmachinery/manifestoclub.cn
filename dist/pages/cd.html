@@ -32,4 +32,30 @@ width: calc(100% - 20px);
 
 
 }
-}</style><div class="container"><div class="left-panel"><div class="menu-item active" data-target="draft">CD/LP ARCHIVE</div><div class="menu-item" data-target="map">SOUND MAP</div><div class="menu-item" data-target="order">RADIO REVIEW</div></div><div class="right-panel"><div class="content-section" id="cd"></div><div class="content-section" id="radio"></div></div></div><div class="cd">-</div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.265538c80bc4d7ce7212.js"></script>
+}</style><div class="container"><div class="left-panel"><div class="menu-item active" data-target="cd">CD/LP ARCHIVE</div><div class="menu-item" data-target="map">SOUND MAP</div><div class="menu-item" data-target="order">RADIO REVIEW</div></div><div class="right-panel"><div class="content-section" id="cd"></div><div class="content-section" id="map"></div><div class="content-section" id="radio"></div></div></div><div class="cd">-</div><script>// 菜单点击事件处理
+        document.querySelectorAll('.menu-item').forEach(menuItem => {
+            menuItem.addEventListener('click', function(e) {
+                const target = e.target.getAttribute('data-target');
+                
+                if (!target) return;
+
+                // 移除所有菜单项的 active 类
+                document.querySelectorAll('.menu-item').forEach(menu => {
+                    menu.classList.remove('active');
+                });
+
+                // 添加当前点击项的 active 类（背景变黑，文字变白）
+                e.target.classList.add('active');
+
+                // 隐藏所有内容区域
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+
+                // 显示对应的内容区域
+                const targetSection = document.getElementById(target);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                }
+            });
+        });</script><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.265538c80bc4d7ce7212.js"></script>

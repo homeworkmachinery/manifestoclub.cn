@@ -11,6 +11,28 @@ function sendJson(res, statusCode, data) {
   res.end(JSON.stringify(data, null, 2));
 }
 
+async function readBody(req) {
+  // 如果 req.body 已经有内容（Vercel 环境），直接返回
+  if (req.body && Object.keys(req.body).length > 0) {
+    return req.body;
+  }
+  
+  // 本地开发环境：从流中读取
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        resolve(body ? JSON.parse(body) : {});
+      } catch (e) {
+        resolve({}); // 解析失败返回空对象
+      }
+    });
+    req.on('error', reject);
+  });
+}
 async function verifyToken(token) {
   try {
     if (!token) {
@@ -39,8 +61,8 @@ async function handleLogin(req, res) {
   }
 
   try {
-   
-    const { emailOrManifesto, password } = req.body;
+    const body = await readBody(req);
+    const { emailOrManifesto, password } = body;
 
     if (!emailOrManifesto || !password) {
       return sendJson(res, 400, { error: 'Email/Manifesto and password are required' });
@@ -124,8 +146,8 @@ async function handleSignup(req, res) {
   }
 
   try {
- 
-    const { email, password, manifesto, barcode } = req.body;
+    const body = await readBody(req);
+    const { email, password, manifesto, barcode } = body;
 
     if (!email || !password || !manifesto || !barcode) {
       return sendJson(res, 400, { error: 'Missing required fields' });
@@ -191,7 +213,8 @@ async function handlePasswordReset(req, res) {
   }
 
   try {
-    const { email } = req.body;
+    const body = await readBody(req);
+    const { email } = body;
 
     if (!email) {
       return sendJson(res, 400, { error: 'Email is required' });
@@ -256,8 +279,8 @@ async function handleUpdatePassword(req, res) {
       return sendJson(res, 401, { error: auth.error });
     }
 
- 
-    const { password } = req.body;
+    const body = await readBody(req);
+    const { password } = body;
 
     if (!password || password.length < 8) {
       return sendJson(res, 400, { error: 'Password must be at least 8 characters' });
