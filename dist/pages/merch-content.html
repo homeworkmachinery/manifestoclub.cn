@@ -778,23 +778,37 @@
             }
 
             // 添加到购物车处理函数
-  async function handleAddToCart() {
+async function handleAddToCart() {
+    const addBtn = document.getElementById('addToCartBtn');
+    if (!addBtn) return;
+    
+    // 保存原始按钮状态
+    const originalText = addBtn.textContent;
+    const originalBg = addBtn.style.backgroundColor || 'black';
+    
     try {
         if (!window.currentProduct) {
             alert('产品信息未加载');
+            restoreButtonState(addBtn, originalText, originalBg);
             return;
         }
 
         const product = window.currentProduct;
         console.log('Adding console product to cart:', product.name);
 
+        // 显示"添加中"状态
+        addBtn.textContent = 'ADDING...';
+        addBtn.style.backgroundColor = '#666'; // 灰色表示处理中
+        addBtn.disabled = true;
+
         // 检查用户登录状态
         const user = await checkUserLogin();
         if (!user) {
+            restoreButtonState(addBtn, originalText, originalBg);
             return;
         }
 
-        // 准备商品数据（✅ 完全保持原始逻辑）
+        // 准备商品数据
         const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
 
         // 准备变体信息
@@ -802,9 +816,8 @@
         const variantSuffix = selectedVariant ? `-${selectedVariant.key}` : '';
         const variantName = selectedVariant ? ` - ${selectedVariant.name}` : '';
 
-        // ✅ 构造完整的 cartItemData（和原始代码一模一样）
         const cartItemData = {
-            user_id: user.id,  // 后端会覆盖为当前用户
+            user_id: user.id,
             draft_id: null,
             type: `console-${product.id}${variantSuffix}`,
             quantity: 1,
@@ -846,9 +859,11 @@
 
         if (!token) {
             alert('未登录，请先登录');
+            restoreButtonState(addBtn, originalText, originalBg);
             return;
         }
 
+        // 尝试调用主 API
         try {
             const response = await fetch(`${API_BASE_URL}/api/cart/add`, {
                 method: 'POST',
@@ -857,7 +872,7 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    cartItemData  // ✅ 直接传递完整的 cartItemData
+                    cartItemData
                 })
             });
 
@@ -865,27 +880,35 @@
                 const errorData = await response.json().catch(() => ({ error: '未知错误' }));
                 console.error('❌ API 错误:', errorData);
                 alert('添加失败：' + (errorData.error || '未知错误'));
+                restoreButtonState(addBtn, originalText, originalBg);
                 return;
             }
 
             const result = await response.json();
             console.log('✅ API 响应:', result);
 
+            // 显示成功状态（✓ ADDED TO CART）
+            showButtonSuccess(addBtn, originalText);
+
             // 更新购物车徽章
             if (window.CartManager && window.CartManager.updateCartBadge) {
                 await window.CartManager.updateCartBadge();
             }
 
-            // 显示成功消息
-            showSuccessMessage(result.action === 'updated' ? '数量已更新' : '已添加到购物车');
-
         } catch (error) {
             console.error('❌ API 调用失败:', error);
 
-            // 备用方案：直接使用 Supabase（和原始代码一样）
-            if (confirm('API 调用失败。是否使用备用方案？')) {
-                console.log('使用备用方案：直接调用 Supabase...');
+            // 询问用户是否使用备用方案
+            const useFallback = confirm('API 调用失败。是否使用备用方案？');
+            if (!useFallback) {
+                restoreButtonState(addBtn, originalText, originalBg);
+                return;
+            }
 
+            console.log('使用备用方案：直接调用 Supabase...');
+
+            // 备用方案：直接使用 Supabase
+            try {
                 // 先检查购物车中是否已有此产品
                 const { data: existingItems, error: fetchError } = await supabase
                     .from('cart_items')
@@ -896,6 +919,7 @@
                 if (fetchError) {
                     console.error('Error checking existing items:', fetchError);
                     alert('查询购物车失败');
+                    restoreButtonState(addBtn, originalText, originalBg);
                     return;
                 }
 
@@ -920,11 +944,12 @@
                     if (error) {
                         console.error('Update error:', error);
                         alert('更新失败');
+                        restoreButtonState(addBtn, originalText, originalBg);
                         return;
                     }
 
                     console.log('Updated existing item:', data);
-                    showSuccessMessage('数量已更新');
+                    showButtonSuccess(addBtn, originalText);
 
                 } else {
                     // 添加新产品到购物车
@@ -950,68 +975,74 @@
 
                             if (retryError) {
                                 alert('添加失败：' + retryError.message);
+                                restoreButtonState(addBtn, originalText, originalBg);
                                 return;
                             }
 
                             console.log('Added to cart (without item_data):', retryData);
-                            storeProductInfoLocally(product.id, product);
                         } else {
                             alert('添加失败：' + error.message);
+                            restoreButtonState(addBtn, originalText, originalBg);
                             return;
                         }
                     } else {
                         console.log('Added to cart:', data);
                     }
 
-                    showSuccessMessage('已添加到购物车');
+                    showButtonSuccess(addBtn, originalText);
                 }
 
                 // 更新购物车徽章
                 if (window.CartManager && window.CartManager.updateCartBadge) {
                     await window.CartManager.updateCartBadge();
                 }
+
+            } catch (fallbackError) {
+                console.error('备用方案失败:', fallbackError);
+                alert('操作失败，请重试');
+                restoreButtonState(addBtn, originalText, originalBg);
             }
         }
 
     } catch (error) {
         console.error('Add to cart failed:', error);
         alert('操作失败，请重试');
+        restoreButtonState(addBtn, originalText, originalBg);
     }
 }
 
+// 辅助函数：恢复按钮状态
+function restoreButtonState(button, originalText, originalBg) {
+    if (!button) return;
+    button.textContent = originalText;
+    button.style.backgroundColor = originalBg;
+    button.disabled = false;
+}
 
-
-            // 显示成功消息
-            function showSuccessMessage() {
-                const btn = document.getElementById('addToCartBtn');
-                if (btn) {
-                    const originalText = btn.textContent;
-                    const originalBg = btn.style.backgroundColor || 'black';
-
-                    btn.textContent = '✓ Added to cart';
-                    btn.disabled = true;
-
-                    setTimeout(() => {
-                        btn.textContent = originalText;
-                        btn.style.backgroundColor = originalBg;
-                        btn.disabled = false;
-                    }, 2000);
-                }
-
-                // 显示购物车添加效果
-                if (window.CartManager && window.CartManager.showCartAddedEffect) {
-                    window.CartManager.showCartAddedEffect();
-                }
-
-                // 更新购物车计数
-                if (window.CartManager && window.CartManager.updateCartCount) {
-                    window.CartManager.updateCartCount();
-                }
-            }
-
-
-
-
+// 辅助函数：显示成功状态
+function showButtonSuccess(button, originalText) {
+    if (!button) return;
+    
+    // 设置成功状态
+    button.textContent = '✓ ADDED TO CART';
+    button.style.backgroundColor = 'black';
+    button.disabled = true;
+    
+    // 触发购物车更新效果
+    if (window.CartManager) {
+        if (window.CartManager.showCartAddedEffect) {
+            window.CartManager.showCartAddedEffect();
+        }
+        if (window.CartManager.updateCartCount) {
+            window.CartManager.updateCartCount();
+        }
+    }
+    
+    // 延迟后恢复原状
+    setTimeout(() => {
+        restoreButtonState(button, originalText, 'black');
+    }, 2000);
+}
 
             // 页面加载时初始化
             if (document.readyState === 'loading') {
