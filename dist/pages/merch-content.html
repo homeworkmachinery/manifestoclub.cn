@@ -336,22 +336,22 @@
                 }
             }
 
-            // 检查用户登录状态
-            async function checkUserLogin() {
-                const user = await getCurrentUser();
-                if (!user) {
-                    alert('请先登录');
-                    const event = new CustomEvent('showAuthModal', {
-                        detail: {
-                            message: '请登录后操作',
-                            redirect: window.location.href
-                        }
-                    });
-                    window.dispatchEvent(event);
-                    return null;
-                }
-                return user;
-            }
+     async function checkUserLogin() {
+    const user = await getCurrentUser();
+    if (!user) {
+        // 直接调用现有的认证函数打开登录 modal
+        if (typeof window.openAuthModal === 'function') {
+            window.openAuthModal();
+        }
+        if (typeof window.showLoginForm === 'function') {
+            window.showLoginForm();
+        }
+      
+    
+        return null;
+    }
+    return user;
+}
 
 
             if (!window.currentPageParams) {
@@ -1053,4 +1053,4 @@ function showButtonSuccess(button, originalText) {
 
             // SPA导航后重新初始化
             window.addEventListener('contentPageLoaded', initContentPage);
-        })();</script><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.265538c80bc4d7ce7212.js"></script></body>
+        })();</script><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.58638284a05edf88f888.js"></script></body>
