@@ -1785,47 +1785,63 @@ window.saveEditNoteFromArea = async function (noteId, bookId) {
     }
 }
             // 新增：更新导航按钮状态
-            function updateNavigationButtons(bookId) {
-                const notes = bookNotesCache[bookId] || [];
-                const currentIndex = currentNoteIndex[bookId] || 0;
-
-                const prevBtn = document.querySelector(`#notes-area-${bookId} .nav-arrow:first-child`);
-                const nextBtn = document.querySelector(`#notes-area-${bookId} .nav-arrow:last-child`);
-
-                // 更新上一条按钮
-                if (currentIndex === 0) {
-                    prevBtn.classList.add('disabled');
-                } else {
-                    prevBtn.classList.remove('disabled');
-                }
-
-                // 更新下一条按钮
-                if (currentIndex >= notes.length - 1) {
-                    nextBtn.classList.add('disabled');
-                } else {
-                    nextBtn.classList.remove('disabled');
-                }
-            }
+          function updateNavigationButtons(bookId) {
+    const notes = bookNotesCache[bookId] || [];
+    
+    // 如果笔记数为0或1，禁用所有箭头
+    if (notes.length <= 1) {
+        const prevBtn = document.querySelector(`#notes-area-${bookId} .nav-arrow:first-child`);
+        const nextBtn = document.querySelector(`#notes-area-${bookId} .nav-arrow:last-child`);
+        
+        if (prevBtn) prevBtn.classList.add('disabled');
+        if (nextBtn) nextBtn.classList.add('disabled');
+        return;
+    }
+    
+    // 循环浏览时箭头不需要禁用，所以移除disabled类
+    const prevBtn = document.querySelector(`#notes-area-${bookId} .nav-arrow:first-child`);
+    const nextBtn = document.querySelector(`#notes-area-${bookId} .nav-arrow:last-child`);
+    
+    if (prevBtn) prevBtn.classList.remove('disabled');
+    if (nextBtn) nextBtn.classList.remove('disabled');
+}
 
             // 新增：上一条笔记
-            window.prevNote = function (bookId) {
-                const currentIndex = currentNoteIndex[bookId] || 0;
-                if (currentIndex > 0) {
-                    currentNoteIndex[bookId] = currentIndex - 1;
-                    displayCurrentNote(bookId);
-                }
-            }
+        window.prevNote = function (bookId) {
+    const notes = bookNotesCache[bookId] || [];
+    if (notes.length === 0) return;
+    
+    const currentIndex = currentNoteIndex[bookId] || 0;
+    
+    if (currentIndex > 0) {
+        // 正常情况：往前翻一页
+        currentNoteIndex[bookId] = currentIndex - 1;
+    } else {
+        // 如果是第一条笔记：跳转到最后一条笔记
+        currentNoteIndex[bookId] = notes.length - 1;
+    }
+    
+    displayCurrentNote(bookId);
+}
+
 
             // 新增：下一条笔记
-            window.nextNote = function (bookId) {
-                const notes = bookNotesCache[bookId] || [];
-                const currentIndex = currentNoteIndex[bookId] || 0;
-                if (currentIndex < notes.length - 1) {
-                    currentNoteIndex[bookId] = currentIndex + 1;
-                    displayCurrentNote(bookId);
-                }
-            }
-
+          window.nextNote = function (bookId) {
+    const notes = bookNotesCache[bookId] || [];
+    if (notes.length === 0) return;
+    
+    const currentIndex = currentNoteIndex[bookId] || 0;
+    
+    if (currentIndex < notes.length - 1) {
+        // 正常情况：往后翻一页
+        currentNoteIndex[bookId] = currentIndex + 1;
+    } else {
+        // 如果是最后一条笔记：跳转到第一条笔记
+        currentNoteIndex[bookId] = 0;
+    }
+    
+    displayCurrentNote(bookId);
+}
 
 
             async function loadUserNotes(bookId) {
