@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "outputDirectory": "dist",
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 30,
+      "memory": 1024
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "api/index.js"
+    },
+    {
+      "src": "/(.*)\\.(js|css|png|jpg|jpeg|avif|gif|svg|ico|webp)$",
+      "dest": "/$1.$2"
+    },
+    {
+      "src": "/pages/(.*)\\.html$",
+      "dest": "/pages/$1.html"
+    },
+    {
+      "src": "/(.+)\\.html$",
+      "dest": "/$1.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}

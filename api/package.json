@@ -1,0 +1,9 @@
+{
+  "name": "api",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.86.2",
+    "pg": "^8.16.3"
+  }
+}
