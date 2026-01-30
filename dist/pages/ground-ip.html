@@ -1,0 +1,299 @@
+<style data-page="ground-ip">* {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* 顶部导航 */
+    .nav-header {
+        border: 2px solid black;
+        padding: 5px;
+        margin-bottom: 20px;
+        background-color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: calc(100% - 40px);
+        position: fixed;
+        z-index: 10;
+        top: 100px;
+
+    }
+
+    .nav-header h1 {
+        font-size: 24px;
+    }
+
+    .back-btn {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+.des{
+    border: 2px solid black;
+        padding: 5px;
+        background-color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+     
+        z-index: 10;
+margin-top: 65px;
+margin-bottom: 20px;
+}
+
+
+
+
+.book-items {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 20px;
+                list-style-type: none;
+         
+               
+            }
+            .book-items li {
+    position: relative;
+    border: 2px solid black;
+    overflow: hidden;
+    cursor: pointer;
+    background: white;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.book-items .image-container {
+    width: 100%;
+    height: 0;
+    padding-bottom: 141.4%; /* A4比例：297/210=1.414，1/1.414≈0.707，但这里是基于宽度的百分比 */
+    position: relative;
+    overflow: hidden;
+}
+
+.book-items img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* 文字区域 - 自动调整 */
+.book-items .overlay {
+    flex: 0 0 auto; /* 不伸缩，固定高度 */
+    border-top: 2px black solid;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 10px;
+    background: white;
+}
+
+/* description 确保文字完全显示 */
+.book-items .description {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 16px;
+}
+
+.book-items .meta {
+    flex: 1; /* 文字填充剩余空间 */
+    font-size: 14px;
+    font-style: italic;
+}
+/* 在CSS末尾添加注解样式 */
+
+
+    @media(max-width:600px) {
+        .nav-header  {
+            margin-top: -20px;
+            width: calc(100% - 20px);
+        }
+        .des{ 
+            margin-top: 55px;
+        }
+ .books{
+    margin-top: -7px;
+ }
+        .book-items {
+                    display: grid;
+            grid-template-columns: repeat(2,  1fr);
+            gap: 10px;
+            list-style-type: none;}
+    
+          .book-items{
+            gap: 10px;
+          }
+    }</style><link href="/css/styles.ffe12bf25f15d90e6cb1.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>GOUND IP PROJECT</h1><a data-page="print" class="back-btn">← BACK TO PRINT</a></div><div class="des">The Ground IP Project presents a historical framework of intellectual property through self-published manuals produced on thermal paper printer, grounding it in lived experience.</div><div class="books" id="booksContainer"><ul class="book-items"><li class="book-item" data-id="001" data-name="From Pirate Printing Presses to Feudal Digital Societies" data-price="¥45"><div class="image-container"><img src="/images/library/ground-ip/001.png"></div><div class="overlay"><div class="description"><span class="title">From Pirate Printing Presses to Feudal Digital Societies</span> <span class="meta">从盗版印刷机到封建数字社会<br>001</span></div></div></li></ul></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.29ae42a5a12d3894d4f3.js"></script></body><script>(function() {
+        console.log('[Ground] Page script starting at:', new Date().toISOString());
+        
+        // 使用唯一的命名空间避免冲突
+        const NAMESPACE = 'groundPage_' + Date.now();
+        
+        // 清理函数
+        function cleanupGroundPage() {
+            console.log('[Ground] Cleaning up...');
+            
+            // 移除所有可能的事件监听器
+            const containers = document.querySelectorAll('.book-items');
+            containers.forEach(container => {
+                // 克隆节点以移除所有事件监听器
+                const newContainer = container.cloneNode(true);
+                container.parentNode.replaceChild(newContainer, container);
+            });
+            
+            // 清理全局变量
+            if (window[NAMESPACE]) {
+                delete window[NAMESPACE];
+            }
+            delete window.cleanupGroundPage;
+        }
+        
+        // 立即注册清理函数
+        window.cleanupGroundPage = cleanupGroundPage;
+        
+        // 先清理
+        const existingCleanup = Object.keys(window).find(key => 
+            key.startsWith('groundPage_') && key !== NAMESPACE
+        );
+        if (existingCleanup) {
+            delete window[existingCleanup];
+        }
+        
+        // 处理产品点击 - 使用防抖
+        let isProcessing = false;
+       
+       
+        function handleProductClick(e) {
+    // 防止重复处理
+    if (isProcessing) {
+        console.log('[Ground] Click ignored - already processing');
+        return;
+    }
+    
+    const productItem = e.target.closest('.book-item, li[data-id]');
+    if (!productItem) {
+        return;
+    }
+    
+    // 立即阻止事件传播
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    
+    isProcessing = true;
+
+    // 获取产品数据
+    const productData = {
+        id: productItem.getAttribute('data-id'),
+        name: productItem.getAttribute('data-name'),
+        price: productItem.getAttribute('data-price'),
+        timestamp: Date.now()
+    };
+    
+    console.log('[Ground] Product clicked:', productData);
+    
+    // 使用更可靠的存储方式
+    try {
+        // 先清除旧数据
+        sessionStorage.removeItem('pendingProduct');
+        sessionStorage.removeItem('lastProductClick');
+        
+        // 存储新数据
+        sessionStorage.setItem('pendingProduct', JSON.stringify(productData));
+        sessionStorage.setItem('lastProductClick', productData.timestamp.toString());
+        
+        // 验证存储
+        const stored = sessionStorage.getItem('pendingProduct');
+        const storedTime = sessionStorage.getItem('lastProductClick');
+        console.log('[Ground] Stored product:', stored);
+        console.log('[Ground] Stored timestamp:', storedTime);
+        
+        // 使用 Promise 确保存储完成后再导航
+        Promise.resolve().then(() => {
+            // 再次验证数据
+            const finalCheck = sessionStorage.getItem('pendingProduct');
+            if (finalCheck === stored) {
+                console.log('[Ground] Storage verified, navigating...');
+                
+                // 清理当前页面
+                if (window.cleanupGroundPage) {
+                    window.cleanupGroundPage();
+                }
+                
+                // 使用路由导航到详情页,传入商品ID作为参数
+                if (window.router && window.router.navigate) {
+                    window.router.navigate('ground-content', { id: productData.id });
+                } else if (typeof window.loadPage === 'function') {
+                    window.loadPage('ground-content', { id: productData.id });
+                } else {
+                    console.error('[Ground] Navigation methods not found');
+                    isProcessing = false;
+                }
+            } else {
+                console.error('[Ground] Storage verification failed');
+                isProcessing = false;
+            }
+        });
+        
+    } catch (error) {
+        console.error('[Ground] Storage error:', error);
+        isProcessing = false;
+    }
+}
+        
+        // 初始化
+        function initGroundPage() {
+            console.log('[Ground] Initializing...');
+            
+            // 使用 setTimeout 确保 DOM 完全就绪
+            setTimeout(() => {
+        // 获取所有产品容器
+        const groundContainer = document.querySelector('.book-items');
+        
+        
+        if (!groundContainer) {
+            console.error('[Ground] Software container not found');
+        }
+        
+        // 存储处理器引用
+        window[NAMESPACE] = { handleProductClick };
+        
+        
+        if (groundContainer) {
+            groundContainer.addEventListener('click', handleProductClick, true);
+            console.log('[Ground] Event listener attached to software');
+        }
+        
+        // 重置处理标志
+        isProcessing = false;
+    }, 100);
+}
+        
+        // 确保 DOM 加载完成后初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initGroundPage);
+        } else {
+            initGroundPage();
+        }
+        
+        // 调试信息
+        console.log('[Ground] Script complete');
+    })();</script>
