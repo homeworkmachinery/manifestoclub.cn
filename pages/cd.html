@@ -1,4 +1,4 @@
-<head><link href="/css/styles.c6120c67c82cba3af7ca.css" rel="stylesheet"></head><style data-page="cd">.container {
+<head><link href="/css/styles.ffe12bf25f15d90e6cb1.css" rel="stylesheet"></head><style data-page="cd">.container {
     display: flex;
     flex-direction: column;
  }
@@ -8,7 +8,7 @@
     position: fixed;
 display: grid;
 box-sizing: border-box;
-grid-template-columns: repeat(2,  1fr);
+grid-template-columns: repeat(3,  1fr);
 width: calc(100% - 40px);
 height: 20px;
 gap: 10px;
@@ -32,4 +32,68 @@ width: calc(100% - 20px);
 
 
 }
-}</style><div class="container"><div class="left-panel"><div class="menu-item active" data-target="draft">CD/LP ARCHIVE</div><div class="menu-item" data-target="order">RADIO REVIEW</div></div><div class="right-panel"><div class="content-section" id="cd"></div><div class="content-section" id="radio"></div></div></div><div class="cd">-</div><script defer="defer" src="/js/vendors.1e26f8ac0292fd96d6e1.js"></script><script defer="defer" src="/js/styles.7aae21adbc8ce89b8327.js"></script><script defer="defer" src="/js/global.2090e18288e3b20c3fc8.js"></script>
+}</style><div class="container"><div class="left-panel"><div class="menu-item active" data-target="cd">CD/LP ARCHIVE</div><div class="menu-item" data-target="map">SOUND MAP</div><div class="menu-item" data-target="order">RADIO REVIEW</div></div><div class="right-panel"><div class="content-section" id="cd"></div><div class="content-section" id="map"></div><div class="content-section" id="radio"></div></div></div><div class="cd">-</div><script>window.handleGlobalClick = function(e) {
+    // 处理菜单点击
+ 
+    if (e.target.classList.contains('menu-item')) {
+        const target = e.target.getAttribute('data-target');
+        console.log(`📍 点击菜单项: ${target}`);
+        
+        if (!target) return;
+
+    
+        // ===== 菜单切换逻辑 =====
+        // 移除所有菜单项的 active 类
+        document.querySelectorAll('.menu-item').forEach(menu => menu.classList.remove('active'));
+
+        // 添加当前点击项的 active 类
+        e.target.classList.add('active');
+
+        // 隐藏所有内容区域
+        document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+
+        // 显示对应的内容区域
+        const targetSection = document.getElementById(target);
+        if (targetSection) {
+            targetSection.classList.add('active');
+            console.log(`✅ 激活 ${target} 内容区域`);
+        }
+
+
+        if (target === 'cd') {
+            setTimeout(() => {
+                console.log('📄 加载 draft...');
+                loadDrafts();
+            }, 50);
+        }
+
+      if (target === 'map') {
+            if (!window.loadedSections.order) {
+                setTimeout(async () => {
+                    console.log('📦 首次加载 order...');
+                    if (typeof loadUserOrders === 'function') {
+                        await loadUserOrders();
+                        window.loadedSections.order = true;
+                    }
+                }, 50);
+            }
+        }
+
+        if (target === 'radio') {
+            setTimeout(() => {
+                console.log('⚙️ 加载 setting...');
+                loadSettings();
+            }, 50);
+        }
+       
+        return;
+    }
+
+
+
+
+}
+
+if (typeof window !== 'undefined' && typeof displayUserProfile !== 'undefined') {
+    window.displayUserProfile = displayUserProfile;
+}</script><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.29ae42a5a12d3894d4f3.js"></script>
