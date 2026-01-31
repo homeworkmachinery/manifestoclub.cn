@@ -32,6 +32,7 @@
         width: calc(100% - 40px);
         position: fixed;
         top: 100px;
+        z-index:1000;
 
     }
 
@@ -460,7 +461,6 @@ border: 2px solid black;
     background: rgba(0, 0, 0, 0.7);
     color: white;
     border: none;
-    border-radius: 50%;
     font-size: 20px;
     cursor: pointer;
     z-index: 10000;
@@ -730,12 +730,7 @@ body.pdf-fullscreen .container:not(.pdf-reader-container) {
                         <button class="toolbar-btn" id="zoomInBtn" title="放大">
                             <span>+</span>
                         </button>
-                        <button class="toolbar-btn" id="fitWidthBtn" title="适应宽度">
-                            宽度
-                        </button>
-                        <button class="toolbar-btn" id="fitPageBtn" title="适应页面">
-                            页面
-                        </button>
+                     
                     </div>
                     
                     <div class="toolbar-center">
@@ -744,10 +739,10 @@ body.pdf-fullscreen .container:not(.pdf-reader-container) {
                     
                     <div class="toolbar-right">
                         <button class="toolbar-btn" id="fullscreenBtn" title="全屏">
-                            ⛶ 全屏
+                            ⛶
                         </button>
                         <button class="toolbar-btn" id="printBtn" title="打印当前页面">
-                            🖨️ 打印
+                            PRINT
                         </button>
                     </div>
                 </div>
@@ -1122,9 +1117,9 @@ body.pdf-fullscreen .container:not(.pdf-reader-container) {
         if (container) {
             container.innerHTML = `
                 <div class="pdf-error">
-                    <h3>📖 PDF预览</h3>
+                    <h3>PDF Preview</h3>
                     <p>${message}</p>
-                    <p>您仍然可以购买本书，购买后可通过我们的阅读器查看完整内容。</p>
+                    <p>You can still purchase this book and view the full content via the included TF card.</p>
                 </div>
             `;
         }
