@@ -302,7 +302,7 @@
 /* 在CSS末尾添加注解样式 */
 
 
-    @media(max-width:899px) {
+    @media(max-width:600px) {
         .nav-header {
             margin-top: -20px;
             width: calc(100% - 20px);
@@ -837,18 +837,18 @@ if (!user) {
                 pageEnd.classList.remove('input-shake');
 
                 if (!content) {
-                    alert('请输入笔记内容');
+                    alert('Please enter note content');
                     return;
                 }
 
                 // 验证页码：必须至少填写起始页
                 if (!pageStart.value) {
-                    alert('请填写页码');
+                    alert('Please fill in page number');
                     return;
                 }
 
                 if (pageEnd.value && parseInt(pageEnd.value) < parseInt(pageStart.value)) {
-                    alert('结束页不能小于起始页');
+                    alert('End page cannot be less than start page');
                     return;
                 }
 
@@ -1065,10 +1065,10 @@ async function displayCurrentNote(bookId) {
         // 检查是否是当前用户的笔记
         const isOwner = currentUser && currentUser.id === freshNote.user_id;
         const ownerButtons = isOwner ? `
-            <span class="note-delete" onclick="editNoteFromArea('${freshNote.id}', '${bookId}', ${freshNote.page_start}, ${freshNote.page_end})" style="cursor: pointer; margin-left: 15px;">编辑</span>
-            <span class="note-delete" onclick="deleteNote('${freshNote.id}', '${bookId}')" style="cursor: pointer; margin-left: 10px;">删除</span>
+            <span class="note-delete" onclick="editNoteFromArea('${freshNote.id}', '${bookId}', ${freshNote.page_start}, ${freshNote.page_end})" style="cursor: pointer; margin-left: 15px;">Edit</span>
+            <span class="note-delete" onclick="deleteNote('${freshNote.id}', '${bookId}')" style="cursor: pointer; margin-left: 10px;">Delete</span>
         ` : '';
-const printButton = `<span class="note-print" onclick="printNote('${bookId}', ${currentIndex})" style="cursor: pointer; margin-left: 10px;">打印</span>`;
+const printButton = `<span class="note-print" onclick="printNote('${bookId}', ${currentIndex})" style="cursor: pointer; margin-left: 10px;">Print</span>`;
        
         // 渲染内容
         let contentWithAnnotations = freshNote.content;
@@ -1076,7 +1076,7 @@ const printButton = `<span class="note-print" onclick="printNote('${bookId}', ${
         // 渲染注解部分
         const annotationsHtml = annotations && annotations.length > 0 ? `
             <div class="note-annotations" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
-                <div style="font-weight: bold; margin-bottom: 10px; font-size: 16px;">注解:</div>
+                <div style="font-weight: bold; margin-bottom: 10px; font-size: 16px;">Annotations:</div>
                 ${annotations.map(ann => `
                     <div style="margin-bottom: 8px; line-height: 1.4; font-size: 15px;">
                         <span style="color: black; font-weight: bold; margin-right: 6px;">${getCircledNumber(ann.display_order)}</span>
@@ -1294,15 +1294,15 @@ window.editNoteFromArea = async function (noteId, bookId, pageStart, pageEnd) {
     noteContainer.innerHTML = `
         <div style="margin-bottom: 10px;">
             <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                <input type="number" id="area-edit-pageStart-${noteId}" value="${pageStart || ''}" placeholder="起始页" 
+                <input type="number" id="area-edit-pageStart-${noteId}" value="${pageStart || ''}" placeholder="Start Page" 
                     style="width: 100px; padding: 5px; border: 2px solid black;">
                 <span style="line-height: 30px;">-</span>
-                <input type="number" id="area-edit-pageEnd-${noteId}" value="${pageEnd || ''}" placeholder="结束页" 
+                <input type="number" id="area-edit-pageEnd-${noteId}" value="${pageEnd || ''}" placeholder="End Page" 
                     style="width: 100px; padding: 5px; border: 2px solid black;">
             </div>
             <div style="margin-bottom: 10px;">
-                <button onclick="addAnnotationFromArea('${noteId}', '${bookId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">添加注解</button>
-                <span style="margin-left: 10px; font-size: 12px; color: #666;">选中文字后点击此按钮</span>
+                <button onclick="addAnnotationFromArea('${noteId}', '${bookId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">Add Annotations</button>
+                <span style="margin-left: 10px; font-size: 12px; color: #666;">After selecting text, click this button</span>
             </div>
             <div id="area-edit-content-${noteId}" contenteditable="true" style="width: 100%; min-height: 120px; padding: 10px; border: 2px solid black; font-family: inherit; font-size: 14px; overflow-y: auto; white-space: pre-wrap; line-height: 1.6;">${contentToEdit}</div>
             <div id="area-annotations-${noteId}" style="margin-top: 15px; padding-top: 15px; border-top: 2px solid black;">
@@ -1310,8 +1310,8 @@ window.editNoteFromArea = async function (noteId, bookId, pageStart, pageEnd) {
             </div>
         </div>
         <div style="display: flex; gap: 10px;">
-            <button id="area-save-btn-${noteId}" onclick="saveEditNoteFromArea('${noteId}', '${bookId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">保存</button>
-            <button onclick="cancelEditNoteFromArea('${bookId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">取消</button>
+            <button id="area-save-btn-${noteId}" onclick="saveEditNoteFromArea('${noteId}', '${bookId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">SAVE</button>
+            <button onclick="cancelEditNoteFromArea('${bookId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">CANCEL</button>
         </div>
     `;
 
@@ -1466,7 +1466,7 @@ function renderAnnotationsFromArea(noteId) {
     const annotations = noteAnnotations[noteId] || [];
     
     if (annotations.length === 0) {
-        annotationsContainer.innerHTML = '<div style="color: #999; font-size: 14px;">暂无注解</div>';
+        annotationsContainer.innerHTML = '<div style="color: #999; font-size: 14px;">No Annotations Yet</div>';
         return;
     }
 
@@ -1475,7 +1475,7 @@ function renderAnnotationsFromArea(noteId) {
             <div style="margin-bottom: 5px;">
                 <span style="color: black; font-weight: bold;">${getCircledNumber(ann.number)}</span>
                 <span style="color: black; font-size: 14px;">"${ann.text}"</span>
-                <button onclick="deleteAnnotationFromArea('${noteId}', '${ann.id}')" style="float: right; padding: 0px 8px; border: 2px solid black; background: white; cursor: pointer; font-size: 12px;">删除</button>
+                <button onclick="deleteAnnotationFromArea('${noteId}', '${ann.id}')" style="float: right; padding: 0px 8px; border: 2px solid black; background: white; cursor: pointer; font-size: 12px;">Delete</button>
             </div>
             <textarea id="area-annotation-note-${ann.id}" style="width: 100%; min-height: 60px; padding: 5px; border: 2px solid black; font-size: 13px;" placeholder="在此输入注解内容...">${ann.note}</textarea>
         </div>
@@ -1621,7 +1621,7 @@ window.saveEditNoteFromArea = async function (noteId, bookId) {
     const originalText = saveBtn.textContent;
     
     // 显示保存中状态
-    saveBtn.textContent = '保存中...';
+    saveBtn.textContent = 'SAVING...';
     saveBtn.disabled = true;
     saveBtn.style.opacity = '0.7';
     saveBtn.style.cursor = 'not-allowed';
@@ -1667,18 +1667,18 @@ window.saveEditNoteFromArea = async function (noteId, bookId) {
         const pageEnd = pageEndElement.value;
 
         if (!content || content.trim() === '') {
-            alert('请输入笔记内容');
+            alert('Please enter note content');
             throw new Error('内容为空');
         }
 
         // 验证页码
         if (!pageStart) {
-            alert('请填写页码');
+            alert('Please fill in page number');
             throw new Error('页码为空');
         }
 
         if (pageEnd && parseInt(pageEnd) < parseInt(pageStart)) {
-            alert('结束页不能小于起始页');
+            alert('End page cannot be less than start page');
             throw new Error('页码错误');
         }
 
@@ -1762,7 +1762,7 @@ window.saveEditNoteFromArea = async function (noteId, bookId) {
         await displayCurrentNote(bookId);
 
         // 恢复按钮状态
-        saveBtn.textContent = '保存成功!';
+        saveBtn.textContent = 'SAVED!';
         setTimeout(() => {
             saveBtn.textContent = originalText;
             saveBtn.disabled = false;
@@ -1849,7 +1849,7 @@ window.saveEditNoteFromArea = async function (noteId, bookId) {
     notesList.innerHTML = '<div class="loading">Loading notes...</div>';
 
     if (!currentUser) {
-        notesList.innerHTML = '<div class="empty-notes">请先登录</div>';
+        notesList.innerHTML = '<div class="empty-notes">Please log in first</div>';
         return;
     }
 
@@ -1908,10 +1908,10 @@ window.saveEditNoteFromArea = async function (noteId, bookId) {
             // 渲染注解部分
             const annotationsHtml = note.annotations && note.annotations.length > 0 ? `
                 <div class="note-annotations" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
-                    <div style="font-weight: bold; margin-bottom: 8px; font-size: 13px;">注解:</div>
+                    <div style="font-weight: bold; margin-bottom: 8px; font-size: 13px;">Annotations:</div>
                     ${note.annotations.map(ann => `
                         <div style="margin-bottom: 6px; line-height: 1.4; font-size: 12px;">
-                            <span style="color: #0066cc; font-weight: bold; margin-right: 4px;">${getCircledNumber(ann.display_order)}</span>
+                            <span style="color: black; font-weight: bold; margin-right: 4px;">${getCircledNumber(ann.display_order)}</span>
                             <span>${ann.annotation_text || '（无注解内容）'}</span>
                         </div>
                     `).join('')}
@@ -1925,8 +1925,8 @@ window.saveEditNoteFromArea = async function (noteId, bookId) {
                     <div class="note-meta">
                         <span>${pageInfo}${createdDate}</span>
                         <span>
-                            <span class="note-delete" onclick="editNote('${note.id}', ${note.page_start}, ${note.page_end})" style="cursor: pointer; margin-right: 10px;">编辑</span>
-                            <span class="note-delete" onclick="deleteNote('${note.id}')">删除</span>
+                            <span class="note-delete" onclick="editNote('${note.id}', ${note.page_start}, ${note.page_end})" style="cursor: pointer; margin-right: 10px;">Edit</span>
+                            <span class="note-delete" onclick="deleteNote('${note.id}')">Delete</span>
                         </span>
                     </div>
                 </div>
@@ -1935,7 +1935,7 @@ window.saveEditNoteFromArea = async function (noteId, bookId) {
 
     } catch (error) {
         console.error('加载笔记失败:', error);
-        notesList.innerHTML = '<div class="empty-notes">加载笔记失败</div>';
+        notesList.innerHTML = '<div class="empty-notes">Failed to load notes</div>';
     }
 }
 
@@ -1990,8 +1990,8 @@ window.saveEditNoteFromArea = async function (noteId, bookId) {
                     oninput="this.style.borderColor='black'">
             </div>
             <div style="margin-bottom: 10px;">
-                <button onclick="addAnnotation('${noteId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">添加注解</button>
-                <span style="margin-left: 10px; font-size: 12px; color: #666;">选中文字后点击此按钮</span>
+                <button onclick="addAnnotation('${noteId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">Add Annotations</button>
+                <span style="margin-left: 10px; font-size: 12px; color: #666;">After selecting text, click this button</span>
             </div>
             <div id="edit-content-${noteId}" contenteditable="true" style="width: 100%; min-height: 120px; padding: 10px; border: 2px solid black; font-family: inherit; font-size: 14px; overflow-y: auto; white-space: pre-wrap;">${editContent}</div>  <!-- 关键修改：使用 editContent 而不是 currentContent -->
             <div id="annotations-${noteId}" style="margin-top: 15px; padding-top: 15px; border-top: 2px solid black;">
@@ -1999,8 +1999,8 @@ window.saveEditNoteFromArea = async function (noteId, bookId) {
             </div>
         </div>
         <div style="display: flex; gap: 10px;">
-            <button onclick="saveEditNote('${noteId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">保存</button>
-            <button onclick="cancelEditNoteInModal('${noteId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">取消</button>
+            <button onclick="saveEditNote('${noteId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">SAVE</button>
+            <button onclick="cancelEditNoteInModal('${noteId}')" style="padding: 5px 15px; border: 2px solid black; background-color: white; cursor: pointer;">CANCEL</button>
         </div>
     `;
 
@@ -2052,7 +2052,7 @@ function insertAnnotationMarksInModalContent(noteId, annotations) {
             window.addAnnotation = function(noteId) {
     const selection = window.getSelection();
     if (!selection.rangeCount || selection.isCollapsed) {
-        alert('请先选中需要注解的文字');
+        alert('Please first select the text that needs annotation');
         return;
     }
 
@@ -2062,7 +2062,7 @@ function insertAnnotationMarksInModalContent(noteId, annotations) {
     
     // 确保选区在编辑区域内
     if (!editContent.contains(range.commonAncestorContainer)) {
-        alert('请在笔记内容区域选择文字');
+        alert('Please select text in the note content area');
         return;
     }
 
@@ -2120,7 +2120,7 @@ function insertAnnotationMarksInModalContent(noteId, annotations) {
     const annotations = noteAnnotations[noteId] || [];
     
     if (annotations.length === 0) {
-        annotationsContainer.innerHTML = '<div style="color: #999; font-size: 14px;">暂无注解</div>';
+        annotationsContainer.innerHTML = '<div style="color: #999; font-size: 14px;">No Annotations Yet</div>';
         return;
     }
 
@@ -2129,7 +2129,7 @@ function insertAnnotationMarksInModalContent(noteId, annotations) {
             <div style="margin-bottom: 5px;">
                 <span>${getCircledNumber(ann.number)}</span>
                 <span style="color: black; font-size: 14px;">"${ann.text}"</span>
-                <button onclick="deleteAnnotationFromArea('${noteId}', '${ann.id}')" style="float: right; padding: 0px 8px; border: 2px solid black; background: white; cursor: pointer; font-size: 12px;">删除</button>
+                <button onclick="deleteAnnotationFromArea('${noteId}', '${ann.id}')" style="float: right; padding: 0px 8px; border: 2px solid black; background: white; cursor: pointer; font-size: 12px;">Delete</button>
             </div>
             <textarea id="annotation-note-${ann.id}" style="width: 100%; min-height: 60px; padding: 5px; border: 2px solid black; font-size: 13px;" placeholder="在此输入注解内容...">${ann.note}</textarea>
         </div>
@@ -2222,19 +2222,19 @@ window.saveEditNote = async function (noteId) {
     pageEndElement.style.borderColor = 'black';
 
     if (!content || content.trim() === '') {
-        alert('请输入笔记内容');
+        alert('Please enter note content');
         return;
     }
 
     // 验证页码：必须至少填写起始页
     if (!pageStart) {
-        alert('请填写页码');
+        alert('Please fill in page number');
         return;
     }
 
     // 如果填写了结束页，验证结束页不能小于起始页
     if (pageEnd && parseInt(pageEnd) < parseInt(pageStart)) {
-        alert('结束页不能小于起始页');
+        alert('End page cannot be less than start page');
         return;
     }
 
@@ -2325,7 +2325,7 @@ window.saveEditNote = async function (noteId) {
 
 
             window.deleteNote = async function (noteId) {
-                if (!confirm('确定要删除这条笔记吗？')) {
+                if (!confirm('Are you sure you want to delete this note?')) {
                     return;
                 }
 
