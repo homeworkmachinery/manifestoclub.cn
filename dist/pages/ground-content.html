@@ -698,25 +698,79 @@ body:-ms-fullscreen #pdfReader {
     }
 
     // 确保PDF.js已加载
-    ensurePDFJSLoaded() {
+ ensurePDFJSLoaded() {
         return new Promise((resolve, reject) => {
+            // 如果已经加载,直接返回
             if (window.pdfjsLib) {
+                console.log('✅ PDF.js 已加载');
                 resolve();
                 return;
             }
 
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+            console.log('📦 开始加载 PDF.js...');
             
-            script.onload = () => {
-                pdfjsLib.GlobalWorkerOptions.workerSrc = 
-                    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-                console.log('PDF.js loaded');
-                resolve();
+            // 尝试多个CDN源
+            const cdnSources = [
+                {
+                    lib: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+                    worker: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+                },
+                {
+                    lib: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js',
+                    worker: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js'
+                },
+                {
+                    lib: 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js',
+                    worker: 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js'
+                }
+            ];
+
+            let currentSourceIndex = 0;
+
+            const tryLoadFromSource = () => {
+                if (currentSourceIndex >= cdnSources.length) {
+                    reject(new Error('所有CDN源都加载失败'));
+                    return;
+                }
+
+                const source = cdnSources[currentSourceIndex];
+                console.log(`📡 尝试CDN源 ${currentSourceIndex + 1}:`, source.lib);
+
+                const script = document.createElement('script');
+                script.src = source.lib;
+                
+                const timeout = setTimeout(() => {
+                    console.warn(`⏱️ CDN源 ${currentSourceIndex + 1} 超时`);
+                    script.remove();
+                    currentSourceIndex++;
+                    tryLoadFromSource();
+                }, 10000); // 10秒超时
+
+                script.onload = () => {
+                    clearTimeout(timeout);
+                    if (window.pdfjsLib) {
+                        window.pdfjsLib.GlobalWorkerOptions.workerSrc = source.worker;
+                        console.log('✅ PDF.js 加载成功:', source.lib);
+                        resolve();
+                    } else {
+                        console.warn(`⚠️ CDN源 ${currentSourceIndex + 1} 加载但未找到 pdfjsLib`);
+                        currentSourceIndex++;
+                        tryLoadFromSource();
+                    }
+                };
+                
+                script.onerror = (error) => {
+                    clearTimeout(timeout);
+                    console.error(`❌ CDN源 ${currentSourceIndex + 1} 加载失败:`, error);
+                    script.remove();
+                    currentSourceIndex++;
+                    tryLoadFromSource();
+                };
+
+                document.head.appendChild(script);
             };
-            
-            script.onerror = reject;
-            document.head.appendChild(script);
+
+            tryLoadFromSource();
         });
     }
 
@@ -1047,18 +1101,59 @@ exitFullscreenFallback() {
 
 
     // 加载PDF文档
-    async loadPDF(pdfUrl) {
+   async loadPDF(pdfUrl) {
         try {
             this.showLoading(true);
+            console.log('📄 开始加载PDF:', pdfUrl);
+            
+            // 清理URL并添加缓存破坏参数
+            let cleanUrl = pdfUrl;
+            
+            // 处理相对路径
+            if (pdfUrl.startsWith('/')) {
+                // 获取当前域名
+                const origin = window.location.origin;
+                cleanUrl = origin + pdfUrl;
+                console.log('🔗 转换为绝对路径:', cleanUrl);
+            }
             
             // 添加时间戳防止缓存
             const timestamp = Date.now();
-            const url = `${pdfUrl}?t=${timestamp}`;
+            const separator = cleanUrl.includes('?') ? '&' : '?';
+            const urlWithTimestamp = `${cleanUrl}${separator}t=${timestamp}`;
             
-            // 加载PDF
-            const loadingTask = pdfjsLib.getDocument(url);
+            console.log('🌐 最终URL:', urlWithTimestamp);
+
+            // 配置加载选项
+            const loadingTask = window.pdfjsLib.getDocument({
+                url: urlWithTimestamp,
+                // 禁用范围请求(有时会导致CORS问题)
+                disableRange: false,
+                // 禁用流式传输
+                disableStream: false,
+                // 启用标准字体
+                useSystemFonts: true,
+                // CORS模式
+                withCredentials: false
+            });
+
+            // 添加加载进度监听
+            loadingTask.onProgress = (progress) => {
+                if (progress.total > 0) {
+                    const percent = Math.round((progress.loaded / progress.total) * 100);
+                    console.log(`📊 加载进度: ${percent}%`);
+                    const loadingEl = document.querySelector('.pdf-loading div:last-child');
+                    if (loadingEl) {
+                        loadingEl.textContent = `正在加载PDF... ${percent}%`;
+                    }
+                }
+            };
+
+            // 等待PDF加载完成
             this.pdfDoc = await loadingTask.promise;
             this.totalPages = this.pdfDoc.numPages;
+            
+            console.log(`✅ PDF加载成功! 总页数: ${this.totalPages}`);
             
             // 更新页面信息
             this.updatePageInfo();
@@ -1069,8 +1164,32 @@ exitFullscreenFallback() {
             this.showLoading(false);
             
         } catch (error) {
-            console.error('PDF加载失败:', error);
-            this.showError('PDF文件加载失败');
+            console.error('❌ PDF加载失败:', error);
+            
+            // 详细错误信息
+            let errorMessage = 'PDF文件加载失败';
+            
+            if (error.name === 'MissingPDFException') {
+                errorMessage = 'PDF文件不存在或无法访问';
+            } else if (error.name === 'UnexpectedResponseException') {
+                errorMessage = 'PDF文件格式错误或服务器响应异常';
+            } else if (error.message && error.message.includes('CORS')) {
+                errorMessage = 'PDF文件跨域访问被阻止(CORS错误)';
+            } else if (error.message) {
+                errorMessage = `加载错误: ${error.message}`;
+            }
+            
+            // 尝试重新加载
+            this.pdfLoadAttempts++;
+            if (this.pdfLoadAttempts < this.maxLoadAttempts) {
+                console.log(`🔄 尝试重新加载 (${this.pdfLoadAttempts}/${this.maxLoadAttempts})...`);
+                setTimeout(() => {
+                    this.loadPDF(pdfUrl);
+                }, 2000);
+                return;
+            }
+            
+            this.showError(errorMessage + '<br><br>可能的原因:<br>1. PDF文件不存在<br>2. 服务器配置问题<br>3. 网络连接问题');
             throw error;
         }
     }
@@ -1221,7 +1340,7 @@ exitFullscreenFallback() {
         context.rotate(-Math.PI / 4);
         
         // 绘制水印文字
-        context.fillText('预览样章 ', 0, 0);
+        context.fillText('PREVIEW', 0, 0);
         context.fillText('MANIFESTOCLUB.CN ', 0, 40);
         
         context.restore();
@@ -1403,6 +1522,13 @@ async function renderPDFPreview(product) {
 }
 
 
+
+
+
+
+
+
+//其他代码
             function syncPanelHeights() {
     const leftPanel = document.querySelector('.panel-left');
     const rightPanel = document.querySelector('.panel-right');
