@@ -12,6 +12,14 @@
       "src": "/api/(.*)",
       "dest": "api/index.js"
     },
+      {
+      "src": "/(.*)\\.(pdf|PDF)$",
+      "dest": "/$1.pdf",
+      "headers": {
+        "Content-Type": "application/pdf",
+        "Access-Control-Allow-Origin": "*"
+      }
+    },
     {
       "src": "/(.*)\\.(js|css|png|jpg|jpeg|avif|gif|svg|ico|webp)$",
       "dest": "/$1.$2"
