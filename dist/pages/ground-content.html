@@ -213,10 +213,25 @@
 
     }
 
+/* A4按钮样式 */
+.a4-mode-btn {
+    padding: 0px 16px;
+    background: white;
+    color: black;
+    border: 2px solid black;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.a4-mode-btn.active {
+    background: black;  /* 双页时黑底 */
+    color: white;       /* 双页时白字 */
+}
+
+
 /* PDF阅读器相关样式 */
 .pdf-reader-container {
     width: 100%; /* 改为100%宽度，继承父容器宽度 */
-    border: 2px solid black;
     background: white;
     position: relative;
     overflow: hidden;
@@ -227,11 +242,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
+    padding: 0px 20px;
 
-    border-bottom: 2px solid black;
+    border: 2px solid black;
     flex-wrap: wrap;
-    gap: 10px;
+ 
+ 
 }
 
 .toolbar-left, .toolbar-center, .toolbar-right {
@@ -241,10 +257,9 @@
 }
 
 .toolbar-btn {
-    padding: 0px 12px;
+    padding: 0px 5px;
     background: white;
     border: 2px solid black;
-
     cursor: pointer;
     font-size: 18px;
     display: flex;
@@ -254,7 +269,6 @@
 
 .toolbar-btn:hover {
     background: black;
-
     color: white;
 }
 
@@ -277,7 +291,6 @@
     justify-content: center;
     background: white;
     border: 2px solid black;
-
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
@@ -294,29 +307,38 @@
     font-weight: bold;
 }
 
-.page-info {
-    font-size: 14px;
-    color: #666;
-    white-space: nowrap;
-}
+
 
 /* PDF页面容器 */
 .pdf-pages-container {
+    margin-top: 20PX;
+    margin-bottom: 20px;
     width: 100%;
     height: 70vh;
     min-height: 500px;
     max-height: 800px;
-    overflow: hidden;
+    overflow: auto; /* 显示滚动条 */
     position: relative;
+    cursor: grab;
+    user-select: none;
+    border:2px solid black;
+
 }
+
+.pdf-pages-container.dragging {
+    cursor: grabbing !important;
+}
+
 .pdf-viewport {
-    width: 100%;
-    height: 100%;
+    width: max-content; /* ⭐ 从 100% 改为 max-content */
+    height: max-content; /* ⭐ 从 100% 改为 max-content */
+    min-width: 100%;
+    min-height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    transition: transform 0.3s ease;
+    transition: none; /* ⭐ 移除或设为 none，避免拖动卡顿 */
 }
 
 .pdf-page-wrapper {
@@ -328,20 +350,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    
 }
 
 .pdf-canvas-container {
     position: relative;
-
     background: white;
     overflow: hidden;
 }
 
 .pdf-canvas {
     display: block;
-    max-width: 100%;
-    max-height: 100%;
+    max-width: none; /* ⭐ 从 100% 改为 none */
+    max-height: none; /* ⭐ 从 100% 改为 none */
 }
 
 /* 水印 */
@@ -363,43 +384,35 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 15px 20px;
- 
-    border-top: 2px solid black;
-    gap: 20px;
+    padding: 10px 20px;
+    gap: 15px;
 }
 
 .nav-btn {
-    
-    background: black;
-    color: white;
-    border: none;
-  
+ border: 2px black solid;
     cursor: pointer;
     font-size: 18px;
- 
-    min-width: 100px;
+    min-width: 50px;
 }
 
 .nav-btn:hover {
-    background: #333;
+    background: black;
+    color:white;
 }
 
 .nav-btn:disabled {
-
     cursor: not-allowed;
 }
 
 .page-input {
-    width: 60px;
-    padding: 5px;
+    width: 50px;
+    padding: 2px;
     text-align: center;
     border: 2px solid black;
-
     font-size: 14px;
+    font-weight: bold;
 }
 
-/* 加载状态 */
 .pdf-loading {
     position: absolute;
     top: 50%;
@@ -414,7 +427,6 @@
     height: 40px;
     border: 3px solid #f3f3f3;
 border: 2px solid black;
-
     animation: spin 1s linear infinite;
     margin: 0 auto 15px;
 }
@@ -430,10 +442,7 @@ border: 2px solid black;
     color: #666;
 }
 
-/* 移除或修改原来的全屏样式 */
-.pdf-reader-container.fullscreen {
-    /* 修改为以下样式 */
-}
+
 
 /* 添加正确的新样式 */
 #pdfReader:fullscreen {
@@ -445,26 +454,7 @@ border: 2px solid black;
     overflow: auto !important;
 }
 
-#pdfReader:fullscreen .pdf-toolbar {
-    background: white;
-    border-bottom: 2px solid black;
-    padding: 15px 20px;
-    flex-shrink: 0;
-    z-index: 1000;
-}
 
-#pdfReader:fullscreen .pdf-pages-container {
-    flex: 1;
-    min-height: 0;
-    height: auto !important;
-}
-
-#pdfReader:fullscreen .pdf-navigator {
-    background: white;
-    border-top: 2px solid black;
-    padding: 15px 20px;
-    flex-shrink: 0;
-}
 
 /* 浏览器前缀 */
 #pdfReader:-webkit-full-screen,
@@ -500,8 +490,138 @@ body:-ms-fullscreen #pdfReader {
     flex-direction: column !important;
 }
 
+/* 骑马订模式样式 */
+.pdf-page-wrapper.double-page.saddle-spread {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    position: relative !important;
+    padding: 40px;
+    background: #f8f8f8;
+}
+/* .pdf-canvas-container.saddle-left {
+    position: relative;
+    background: white;
+    box-shadow: -5px 5px 15px rgba(0,0,0,0.1);
+    transform: perspective(1000px) rotateY(5deg);
+    transition: transform 0.3s ease;
+    border-right: 1px solid #ddd;
+} */
 
 
+/* .pdf-canvas-container.saddle-right {
+    position: relative;
+    background: white;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
+    transform: perspective(1000px) rotateY(-5deg);
+    transition: transform 0.3s ease;
+    border-left: 1px solid #ddd;
+} */
+
+.saddle-gap {
+       min-width: var(--gutter-width, 30px); /* 使用CSS变量，默认为30px */
+    background: linear-gradient(to right, 
+        transparent 0%, 
+        rgba(0,0,0,0.1) 50%, 
+        transparent 100%);
+}
+
+
+
+/* 骑马订模式下的页码显示 - 对开页码 */
+.saddle-spread-number {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 4px 12px;
+    font-size: 14px;
+
+    z-index: 10;
+    border: 2px solid white;
+
+}
+
+
+/* 骑马订模式下的信息显示 - 对开页码和范围 */
+#spreadInfo {
+   
+   
+    padding: 0px 10px;
+    font-size: 14px;
+    border: 2px solid black;
+
+}
+
+/* 确保单页模式下的页码在对开模式下不显示 */
+.saddle-left,
+.saddle-right {
+    position: relative;
+}
+
+.saddle-left::after,
+.saddle-right::after {
+    display: none;
+}
+
+
+
+/* 骑马订模式提示 */
+.saddle-help {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.95);
+    color: white;
+    padding: 14px 18px;
+    font-size: 12px;
+    max-width: 400px;
+    z-index: 20;
+    animation: fadeIn 0.5s ease;
+    border: 2px solid #4CAF50;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
+
+.saddle-help .help-content h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #4CAF50;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.saddle-help .help-content p {
+    margin: 5px 0;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+.saddle-help .help-content strong {
+    color: #FFC107;
+}
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .saddle-spread-number {
+        bottom: 10px;
+        font-size: 12px;
+        padding: 3px 8px;
+    }
+    
+    .saddle-help {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        transform: none;
+        margin: 10px auto;
+        width: 90%;
+    }
+}
 /* 打印样式 */
 @media print {
     body * {
@@ -631,7 +751,124 @@ body:-ms-fullscreen #pdfReader {
         opacity: 0.8;
     }
 
+/* 阅读模式控制 */
+.view-mode-controls {
+    display: flex;
+    border: 2px solid black;
 
+    overflow: hidden;
+}
+
+.view-mode-btn {
+    padding: 4px 8px;
+    background: white;
+    border: none;
+    border-right: 2px solid black;
+    font-size: 14px;
+ 
+    cursor: pointer;
+    min-width: 40px;
+    text-align: center;
+
+}
+
+.view-mode-btn:last-child {
+    border-right: none;
+}
+
+.view-mode-btn:hover {
+    background: #f0f0f0;
+}
+
+.view-mode-btn.active {
+    background: black;
+    color: white;
+}
+
+/* 双页模式样式 */
+.double-page {
+    background: #f5f5f5;
+    padding: 20px;
+   
+}
+
+
+.pdf-page-wrapper.double-page {
+    display: flex !important;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    position: relative !important;
+}
+
+.pdf-page-wrapper.single-page {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    position: relative !important;
+}
+
+/* 双页模式下的页面间距 */
+.pdf-page-wrapper.double-page .pdf-canvas-container {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.pdf-page-wrapper.double-page .pdf-canvas-container + .pdf-canvas-container {
+    margin-left: 20px;
+}
+
+/* 在现有的CSS中添加以下样式 */
+/* 隐藏页码输入框和页面总数 */
+.pdf-navigator .page-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 单页模式显示页码输入框 */
+.view-mode-single .page-input-wrapper {
+    display: flex;
+}
+
+/* 骑马订模式隐藏页码输入框 */
+.view-mode-saddle .page-input-wrapper {
+    display: none;
+}
+
+/* 确保对开信息显示正确 */
+.spread-info {
+    padding: 0px 10px;
+    font-size: 14px;
+    border: 2px solid black;
+}
+
+/* 单页模式隐藏对开信息 */
+.view-mode-single .spread-info {
+    display: none !important;
+}
+
+/* 骑马订模式显示对开信息 */
+.view-mode-saddle .spread-info {
+    display: inline !important;
+}
+
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .view-mode-controls {
+        display: none; /* 在小屏幕上隐藏阅读模式切换 */
+    }
+    
+    .pdf-page-wrapper.double-page {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .pdf-page-wrapper.double-page .pdf-canvas-container + .pdf-canvas-container {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+}
 
     /* 响应式设计 */
     @media(max-width:600px) {
@@ -664,795 +901,3684 @@ body:-ms-fullscreen #pdfReader {
             margin-top: 5px;
             padding: 5px;
         }
-    }</style><link href="/css/styles.ffe12bf25f15d90e6cb1.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>BOOK</h1><a data-page="ground-ip" class="back-btn">← BACK TO GROUND</a></div><div class="panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-name" id="productTitle">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info"></div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button></div><div class="product-details"><div class="details-content" id="productDetails"></div></div></div><script>(function () {
+    }
 
-            class PDFReader {
-                constructor() {
-        this.pdfDoc = null;
+
+    /* 打印模态框样式 */
+.print-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+   
+    z-index: 1000;
+    
+}
+
+.print-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    background: white;
+    border: 2px solid black;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+ 
+}
+
+.print-modal-header {
+    padding: 20PX 20px 0PX 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.print-modal-header h3 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.close-modal-btn {
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.close-modal-btn:hover {
+    background: black;
+    color: white;
+}
+
+.print-modal-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+
+.selection-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.selection-btn {
+    padding: 5px 16px;
+    background: white;
+    border: 2px solid black;
+    cursor: pointer;
+    font-size: 14px;
+  
+}
+
+.selection-btn:hover {
+    background: black;
+    color: white;
+}
+
+.page-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 2px solid black;
+}
+
+.page-preview-item {
+    border: 2px solid black;
+    padding: 10px;
+    cursor: pointer;
+
+    background: white;
+}
+
+.page-preview-item:hover {
+    border-color: black;
+    background: #f9f9f9;
+}
+
+.page-preview-item.selected {
+    border-color: black;
+    background: black;
+    color: white;
+}
+
+.page-preview-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.page-checkbox {
+    width: 20px;
+    height: 20px;
+    accent-color: black;
+    cursor: pointer;
+}
+
+.page-info {
+    flex: 1;
+}
+
+.page-number {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.page-dimension {
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
+}
+
+.page-preview-item.selected .page-dimension {
+    color: black;
+}
+
+
+
+
+/* 模态框底部按钮 */
+.print-modal-footer {
+    padding: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.print-modal-footer button {
+    padding: 5px 10px;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid black;
+    cursor: pointer;
+
+}
+
+.cancel-btn {
+    background: white;
+    color: black;
+}
+
+.cancel-btn:hover {
+    background: black;
+    color: white;
+}
+
+.confirm-print-btn {
+    background: black;
+    color: white;
+}
+
+.confirm-print-btn:hover {
+    background: #333;
+}
+
+.confirm-print-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .print-modal {
+        width: 95%;
+        max-height: 90vh;
+    }
+    
+    .page-selection-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+    
+    .print-modal-footer {
+        flex-direction: column;
+    }
+    
+    .print-modal-footer button {
+        width: 100%;
+    }
+}
+/* A4对开打印模态框新布局样式 */
+
+/* 对开页选择区域（最上方） */
+.spread-selection-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid black;
+}
+
+.spread-selection-section h4 {
+    margin-bottom: 15px;
+    border-bottom: 2px solid black;
+    padding-bottom: 8px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.spread-selection-section .selection-controls {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.spread-selection-section .page-range-input {
+    margin-bottom: 20px;
+}
+
+.spread-selection-section .page-range-input label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.spread-selection-section .range-input-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.spread-selection-section #pageRangeInput {
+    flex: 1;
+    padding: 8px;
+    border: 2px solid black;
+    font-size: 14px;
+    background: white;
+}
+
+.spread-selection-section .range-help-text {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.4;
+}
+
+/* 打印设置网格布局 */
+.print-settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 20px;
+}
+
+@media (max-width: 1000px) {
+    .print-settings-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+}
+
+/* 左下：打印设置 */
+.print-basic-settings h4 {
+    margin-bottom: 15px;
+    border-bottom: 2px solid black;
+    padding-bottom: 8px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* 右下：A4对开打印设置 */
+.print-advanced-settings .preview-canvas-container {
+    margin-bottom: 25px;
+}
+
+.print-advanced-settings .preview-canvas-container #printPreviewCanvas {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 210/297; /* A4比例 */
+    border: 2px solid black;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.print-advanced-settings .preview-canvas-container  {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #333;
+    padding: 12px;
+    border: 2px solid black;
+    background: #f8f8f8;
+    text-align: left;
+}
+
+
+.print-advanced-settings .print-info {
+    margin-top: 25px;
+    padding: 20px;
+    border: 2px solid black;
+    background: #f8f8f8;
+}
+
+.print-advanced-settings .print-info h5 {
+    margin-bottom: 12px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.print-advanced-settings .print-info ul {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 13px;
+    color: #333;
+    line-height: 1.6;
+}
+
+.print-advanced-settings .print-info li {
+    margin-bottom: 6px;
+}
+
+/* 通用组件样式保持原样，但位置调整 */
+.a4-selection-btn {
+    padding: 8px 15px;
+    border: 2px solid black;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.a4-selection-btn:hover {
+    background: #f0f0f0;
+}
+
+.a4-selection-btn:active {
+    background: black;
+    color: white;
+}
+
+.orientation-btn {
+    padding:5px 10px;
+    border: 2px solid black;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.orientation-btn:hover {
+    background: #f0f0f0;
+}
+
+.orientation-btn.active {
+    background: black;
+    color: white;
+}
+
+.margin-input input {
+    width: 100%;
+    padding: 8px;
+    border: 2px solid black;
+    font-size: 16px;
+    text-align: center;
+    background: white;
+    font-family: monospace;
+}
+
+.margin-input input:focus {
+    outline: none;
+    border-color: #333;
+    background: #fff9e6;
+}
+
+.checkbox-option input[type="checkbox"] {
+    transform: scale(1.3);
+    cursor: pointer;
+}
+
+.checkbox-option label {
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* 对开页选择网格样式 */
+.a4-page-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 15px;
+    border: 2px solid black;
+    background: white;
+    margin-top: 10px;
+}
+
+.a4-page-preview-item {
+    border: 2px solid black;
+    padding: 12px;
+    cursor: pointer;
+    background: white;
+    transition: all 0.2s;
+}
+
+.a4-page-preview-item:hover {
+    background: #f9f9f9;
+    border-color: #333;
+}
+
+.a4-page-preview-item.selected {
+    background: black;
+    color: white;
+    border-color: black;
+}
+
+.a4-page-preview-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.a4-page-checkbox {
+    width: 20px;
+    height: 20px;
+    margin-top: 3px;
+    accent-color: black;
+    cursor: pointer;
+}
+
+.a4-page-info {
+    flex: 1;
+}
+
+.a4-page-number {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.a4-page-dimension {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.a4-page-preview-item.selected .a4-page-dimension {
+    color: #ccc;
+}
+
+.a4-page-thumbnail img {
+    width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+}
+
+.a4-page-thumbnail-placeholder {
+    height: 100px;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    color: #999;
+    font-size: 13px;
+}</style><link href="/css/styles.ffe12bf25f15d90e6cb1.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>BOOK</h1><a data-page="ground-ip" class="back-btn">← BACK TO GROUND</a></div><div class="panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-name" id="productTitle">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info"></div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button></div><div class="product-details"><div class="details-content" id="productDetails"></div></div></div><div class="print-modal-overlay" id="printModalOverlay"><div class="print-modal"><div class="print-modal-header"><h3>Select Print Pages</h3><button class="close-modal-btn" id="closePrintModalBtn">×</button></div><div class="print-modal-content" id="printModalContent"></div><div class="print-modal-footer"><button class="cancel-btn" id="cancelPrintBtn">Cancel</button> <button class="confirm-print-btn" id="confirmPrintBtn" disabled="disabled">Print Selected Pages</button></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.29ae42a5a12d3894d4f3.js"></script></body><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script>(function () { 
+        // 设置 PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        class PDFReader {
+   constructor() {
+    this.pdfDoc = null;
         this.currentPage = 1;
         this.totalPages = 0;
         this.scale = 1.0;
         this.isLoading = false;
         this.canvases = new Map();
+        this.thumbnails = new Map();
         this.renderQueue = [];
         this.isRendering = false;
         this.isFullscreen = false;
-        this.originalBodyOverflow = '';
-    }
-    // 初始化PDF阅读器
-    async init(product) {
-        try {
-            // 确保PDF.js已加载
-            await this.ensurePDFJSLoaded();
-            
-            // 创建阅读器界面
-            this.createUI();
-            
-            // 加载PDF文档
-            await this.loadPDF(product.pdfUrl);
-            
-        } catch (error) {
-            console.error('PDF阅读器初始化失败:', error);
-            this.showError('Failed to load PDF file');
-        }
+        this.isDragging = false;
+        this.startX = 0;
+        this.startY = 0;
+        this.scrollLeft = 0;
+        this.scrollTop = 0;
+        this.viewMode = 'single';
+        this.currentSpread = 1;
+        this.pageGap = 20;
+        this.saddleHelpShown = false;
+        this.thumbnailsLoaded = false;
+        this.preventUrlChange = false;
+        this.printModalBound = false;
+        
+        // 添加清理函数引用
+        this.cleanupDragEvents = null;
+        this.cleanupLinkHandler = null;
+
+         this.isPrinting = false; // 添加打印锁
+    this.dragThreshold = 5; // 拖拽阈值（像素）
+    this.hasDragged = false; 
+
+     this.isDraggingActive = false;
+    this.dragProtectionTimer = null;
+    this.lastDragEndTime = 0;
+
+     this.navigationLocked = false;
+        this.originalNavigate = null;
+        this.originalPushState = null;
+        this.originalReplaceState = null;
     }
 
-    // 确保PDF.js已加载
- ensurePDFJSLoaded() {
-        return new Promise((resolve, reject) => {
-            // 如果已经加载,直接返回
-            if (window.pdfjsLib) {
-                console.log('✅ PDF.js 已加载');
-                resolve();
-                return;
+destroy() {
+   this.unlockNavigation();
+        
+        if (this.cleanupDragEvents) {
+            this.cleanupDragEvents();
+        }
+        if (this.cleanupLinkHandler) {
+            this.cleanupLinkHandler();
+        }
+        
+        const iframes = document.querySelectorAll('iframe[id^="print-iframe-"]');
+        iframes.forEach(iframe => {
+            if (iframe.parentNode) {
+                iframe.parentNode.removeChild(iframe);
+            }
+        });
+        
+        this.isPrinting = false;
+    
+   
+}
+
+            async init(product) {
+                try {
+                    this.createUI();
+                    this.initDragScroll();
+                    await this.loadPDF(product.pdfUrl);
+                } catch (error) {
+                    console.error('PDF阅读器初始化失败:', error);
+                    this.showError('Failed to load PDF file');
+                }
             }
 
-            console.log('📦 开始加载 PDF.js...');
+          createUI() {
+    const detailsEl = document.getElementById('productDetails');
+    if (!detailsEl) return;
+
+       detailsEl.innerHTML = `
+    <div class="pdf-reader-container" id="pdfReader">
+        <!-- 工具栏 -->
+        <div class="pdf-toolbar">
+            <div class="toolbar-left">                   
+                <button class="toolbar-btn" id="zoomOutBtn" title="缩小">
+                    <span>−</span>
+                </button>
+                <div class="zoom-controls">
+                    <span class="zoom-percent" id="zoomPercent">100%</span>
+                </div>
+                <button class="toolbar-btn" id="zoomInBtn" title="放大">
+                    <span>+</span>
+                </button>
+                 <button class="toolbar-btn" id="resetZoomBtn" title="重置到适应窗口">
+                    ↺
+                </button>        
+                <button class="toolbar-btn" id="fullscreenBtn" title="全屏">
+                    ⛶
+                </button>
+            </div>
             
-            // 尝试多个CDN源
-            const cdnSources = [
-                {
-                    lib: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
-                    worker: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
-                },
-                {
-                    lib: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js',
-                    worker: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js'
-                },
-                {
-                    lib: 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js',
-                    worker: 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js'
-                }
-            ];
+     
+<div class="toolbar-center">
+    <div class="pdf-navigator">
+        <button class="nav-btn" id="prevPageBtn" disabled>Prev</button>
+        
+        <div class="page-navigation-container" style="display: flex; align-items: center; gap: 10px;">
+            <!-- 包裹在一个div中而不是form -->
+            <div class="page-input-wrapper view-mode-single" onclick="event.stopPropagation()">
+                <input type="number" class="page-input" id="pageInput" min="1" value="1" 
+                       onkeypress="if(event.key==='Enter'){event.preventDefault();return false;}">
+                <span>/ <span id="totalPages">?</span></span>
+            </div>
+            
+            <span class="spread-info" id="spreadInfo" style="display:none;"></span>
+        </div>
+        
+        <button class="nav-btn" id="nextPageBtn">Next</button>
+    </div>
+</div>
+            
+            <div class="toolbar-right">
+                <!-- A4按钮 - 双态切换 -->
+                <button class="a4-mode-btn" id="a4ModeBtn" title="切换到骑马订模式">A4</button>
+               <button class="toolbar-btn" id="printModalBtn" title="打印选择页面">
+    PRINT
+</button>
+            </div>
+        </div>
 
-            let currentSourceIndex = 0;
-
-            const tryLoadFromSource = () => {
-                if (currentSourceIndex >= cdnSources.length) {
-                    reject(new Error('所有CDN源都加载失败'));
-                    return;
-                }
-
-                const source = cdnSources[currentSourceIndex];
-                console.log(`📡 尝试CDN源 ${currentSourceIndex + 1}:`, source.lib);
-
-                const script = document.createElement('script');
-                script.src = source.lib;
-                
-                const timeout = setTimeout(() => {
-                    console.warn(`⏱️ CDN源 ${currentSourceIndex + 1} 超时`);
-                    script.remove();
-                    currentSourceIndex++;
-                    tryLoadFromSource();
-                }, 10000); // 10秒超时
-
-                script.onload = () => {
-                    clearTimeout(timeout);
-                    if (window.pdfjsLib) {
-                        window.pdfjsLib.GlobalWorkerOptions.workerSrc = source.worker;
-                        console.log('✅ PDF.js 加载成功:', source.lib);
-                        resolve();
-                    } else {
-                        console.warn(`⚠️ CDN源 ${currentSourceIndex + 1} 加载但未找到 pdfjsLib`);
-                        currentSourceIndex++;
-                        tryLoadFromSource();
-                    }
-                };
-                
-                script.onerror = (error) => {
-                    clearTimeout(timeout);
-                    console.error(`❌ CDN源 ${currentSourceIndex + 1} 加载失败:`, error);
-                    script.remove();
-                    currentSourceIndex++;
-                    tryLoadFromSource();
-                };
-
-                document.head.appendChild(script);
-            };
-
-            tryLoadFromSource();
-        });
-    }
-
-    // 创建阅读器界面
-    createUI() {
-        const detailsEl = document.getElementById('productDetails');
-        if (!detailsEl) return;
-
-        detailsEl.innerHTML = `
-            <div class="pdf-reader-container" id="pdfReader">
-
-                
-                <!-- 工具栏 -->
-                <div class="pdf-toolbar">
-                    <div class="toolbar-left">
-                        <button class="toolbar-btn" id="zoomOutBtn" title="缩小">
-                            <span>−</span>
-                        </button>
-                        <div class="zoom-controls">
-                            <span class="zoom-percent" id="zoomPercent">100%</span>
-                        </div>
-                        <button class="toolbar-btn" id="zoomInBtn" title="放大">
-                            <span>+</span>
-                        </button>
-                     
-                    </div>
-                    
-                    <div class="toolbar-center">
-                        <span class="page-info" id="pageInfo"></span>
-                    </div>
-                    
-                    <div class="toolbar-right">
-                        <button class="toolbar-btn" id="fullscreenBtn" title="全屏">
-                            ⛶
-                        </button>
-                        <button class="toolbar-btn" id="printBtn" title="打印当前页面">
-                            PRINT
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 页面显示区域 -->
-                <div class="pdf-pages-container" id="pdfPagesContainer">
-                    <div class="pdf-viewport" id="pdfViewport">
-                        <!-- 页面会动态插入到这里 -->
-                    </div>
-                    
-                    <!-- 加载状态 -->
-                    <div class="pdf-loading" id="pdfLoading">
-                        <div class="loading-spinner"></div>
-                        <div>正在加载PDF...</div>
-                    </div>
-                </div>
-
-                <!-- 页面导航 -->
-                <div class="pdf-navigator">
-                    <button class="nav-btn" id="prevPageBtn" disabled>Prev</button>
-                    
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <input type="number" class="page-input" id="pageInput" min="1" value="1">
-                        <span>/ <span id="totalPages">?</span></span>
-                    </div>
-                    
-                    <button class="nav-btn" id="nextPageBtn">Next</button>
+        <!-- 页面显示区域 -->
+        <div class="pdf-pages-container" id="pdfPagesContainer">
+            <div class="pdf-viewport" id="pdfViewport">
+                <!-- 页面会动态插入到这里 -->
+            </div>
+            
+            <!-- 加载状态 -->
+            <div class="pdf-loading" id="pdfLoading">
+                <div class="loading-spinner"></div>
+                <div>正在加载PDF...</div>
+            </div>
+            
+            <!-- 骑马订模式提示 -->
+            <div class="saddle-help" id="saddleHelp" style="display:none;">
+                <div class="help-content">
+                    <h4>骑马订模式</h4>
+                    <p>页面按印刷装订顺序排列，模拟真实的书籍阅读体验。</p>
+                    <p><strong>示例（8页文档）：</strong></p>
+                    <p>• 第1对开页：8 | 1</p>
+                    <p>• 第2对开页：2 | 7</p>
+                    <p>• 第3对开页：6 | 3</p>
+                    <p>• 第4对开页：4 | 5</p>
                 </div>
             </div>
-        `;
-
-setTimeout(() => {
+        </div>
+    </div>
+    `;
+    
+    setTimeout(() => {
         this.addFullscreenEventListeners();
     }, 100);
 
-        // 绑定事件
-        this.bindEvents();
-    }
-
-
-    // 绑定事件
-    bindEvents() {
-        // 缩放控制
-        document.getElementById('zoomInBtn').addEventListener('click', () => this.zoomIn());
-        document.getElementById('zoomOutBtn').addEventListener('click', () => this.zoomOut());
-      
-        
-        // 页面导航
-        document.getElementById('prevPageBtn').addEventListener('click', () => this.prevPage());
-        document.getElementById('nextPageBtn').addEventListener('click', () => this.nextPage());
-        document.getElementById('pageInput').addEventListener('change', (e) => this.goToPage(parseInt(e.target.value)));
-        
-        // 打印
-        document.getElementById('printBtn').addEventListener('click', () => window.print());
-        
-        // 键盘快捷键
-        document.addEventListener('keydown', (e) => this.handleKeydown(e));
-        
-        // 鼠标滚轮缩放
-        document.getElementById('pdfPagesContainer').addEventListener('wheel', (e) => {
-            if (e.ctrlKey || e.metaKey) {
-                e.preventDefault();
-                if (e.deltaY < 0) this.zoomIn();
-                else this.zoomOut();
-            }
-        });
-
-            // 全屏控制
-    document.getElementById('fullscreenBtn').addEventListener('click', () => this.requestFullscreen());
-   
-    }
-
-    // 在 PDFReader 类中添加以下方法：
-
-// 请求进入全屏
-async requestFullscreen() {
-    const container = document.getElementById('pdfReader');
-    if (!container) return;
-    
-    try {
-        // 在进入全屏前，确保PDF阅读器在DOM中正确
-        const detailsEl = document.getElementById('productDetails');
-        if (detailsEl) {
-            // 临时将PDF阅读器移到body最外层，避免被其他元素影响
-            const pdfReader = document.getElementById('pdfReader');
-            if (pdfReader) {
-                document.body.appendChild(pdfReader);
-            }
-        }
-        
-        // 请求全屏
-        if (container.requestFullscreen) {
-            await container.requestFullscreen();
-        } else if (container.webkitRequestFullscreen) {
-            await container.webkitRequestFullscreen();
-        } else if (container.msRequestFullscreen) {
-            await container.msRequestFullscreen();
-        } else if (container.mozRequestFullScreen) {
-            await container.mozRequestFullScreen();
-        }
-        
-        this.isFullscreen = true;
-        console.log('进入全屏模式');
-        
-    } catch (error) {
-        console.error('全屏请求失败:', error);
-    }
+    this.bindEvents();
 }
-// 退出全屏
-async exitFullscreen() {
-    try {
-        if (document.exitFullscreen) {
-            await document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            await document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-            await document.msExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-            await document.mozCancelFullScreen();
-        }
-        
-        this.isFullscreen = false;
-        console.log('退出全屏模式');
-        
-        // 退出全屏后，将PDF阅读器放回原位置
-        setTimeout(() => {
-            this.restorePDFReaderPosition();
-        }, 100);
-        
-    } catch (error) {
-        console.error('退出全屏失败:', error);
-    }
+generateA4PrintOptions() {
+    const modalContent = document.getElementById('printModalContent');
+    if (!modalContent) return;
+    
+    let html = `
+        <div class="print-options-container" onclick="event.stopPropagation()">
+            <!-- 对开页选择在最上方 -->
+            <div class="spread-selection-section">
+                
+                <div class="selection-controls">
+                    <button class="a4-selection-btn" id="selectAllBtn">全选</button>
+                    <button class="a4-selection-btn" id="selectNoneBtn">取消全选</button>
+                    <button class="a4-selection-btn" id="selectOddBtn">仅选奇数对开页</button>
+                    <button class="a4-selection-btn" id="selectEvenBtn">仅选偶数对开页</button>
+                </div>
+                
+              
+                
+                <div class="a4-page-selection-grid" id="pageSelectionGrid">
+                    <!-- 对开页选择项会动态插入 -->
+                </div>
+            </div>
+            
+            <div class="print-settings-grid">
+                <!-- 左下：打印设置 -->
+                <div class="print-basic-settings">
+                    <h4>打印设置</h4>
+                    
+                    <div class="orientation-selector">
+                        <label>纸张方向</label>
+                        <div class="orientation-buttons">
+                            <button class="orientation-btn active" id="orientationPortrait">纵向</button>
+                            <button class="orientation-btn" id="orientationLandscape">横向</button>
+                        </div>
+                        <div class="orientation-help">
+                            选择纸张打印方向
+                        </div>
+                    </div>
+                    
+                    <div class="margin-controls">
+                        <label>边距设置 (毫米)</label>
+                        
+                        <div class="margin-inputs-grid">
+                            <!-- 订口 (装订边) -->
+                            <div class="margin-input">
+                                <label>订口</label>
+                                <input type="number" id="marginGutter" min="0" max="50" value="20">
+                                <div class="help-text">页面朝向书籍中心、用于装订的一侧</div>
+                            </div>
+                            
+                         
+                            
+                            <!-- 天头 -->
+                            <div class="margin-input">
+        <label>上下</label>
+        <input type="number" id="marginVertical" min="0" max="50" value="20">
+        <div class="help-text">统一调整页面上下边距</div>
+    </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右下：A4对开打印设置 -->
+                <div class="print-advanced-settings">
+                    <h4>A4对开打印设置</h4>
+                    
+                    <div class="preview-canvas-container">
+                        <canvas id="printPreviewCanvas"></canvas>
+                        <div id="printPreviewInfo"></div>
+                    </div>
+                    
+                
+                    
+                  
+                </div>
+            </div>
+        </div>
+    `;
+    
+    modalContent.innerHTML = html;
+    
+    // 生成对开页选择列表
+    this.generateA4PageSelectionList();
+    
+    // 初始化打印预览
+    this.initializeA4PrintPreview();
 }
 
-restorePDFReaderPosition() {
-    const pdfReader = document.getElementById('pdfReader');
-    const detailsEl = document.getElementById('productDetails');
-    
-    if (pdfReader && detailsEl) {
-        // 将PDF阅读器放回product-details中
-        detailsEl.innerHTML = '';
-        detailsEl.appendChild(pdfReader);
-    }
-}
 
-addFullscreenEventListeners() {
-    const container = document.getElementById('pdfReader');
-    
-    const fullscreenChangeHandler = () => {
-        const isFullscreen = !!(document.fullscreenElement || 
-                              document.webkitFullscreenElement || 
-                              document.mozFullScreenElement || 
-                              document.msFullscreenElement);
-        
-        this.isFullscreen = isFullscreen;
-        
-        if (isFullscreen) {
-            // 进入全屏时的处理
-            container.classList.add('fullscreen');
-            document.getElementById('fullscreenBtn').style.display = 'none';
-         
-            
-            // 调整页面显示
-            setTimeout(() => {
-                this.centerPage();
-                this.refreshPage();
-            }, 100);
-            
-        } else {
-            // 退出全屏时的处理
-            container.classList.remove('fullscreen');
-            document.getElementById('fullscreenBtn').style.display = 'inline-block';
-         
-            
-            // 恢复PDF阅读器位置
-            this.restorePDFReaderPosition();
-            
-            // 调整页面显示
-            setTimeout(() => {
-                this.centerPage();
-                this.refreshPage();
-            }, 100);
-        }
-    };
-    
-    document.addEventListener('fullscreenchange', fullscreenChangeHandler);
-    document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler);
-    document.addEventListener('mozfullscreenchange', fullscreenChangeHandler);
-    document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
-}
 
-// 全屏状态变化处理
-onFullscreenChange() {
-    const container = document.getElementById('pdfReader');
-    if (!container) return;
+
+setPrintMode(mode) {
+    const spreadBtn = document.getElementById('printModeSpread');
+    const singleBtn = document.getElementById('printModeSingle');
     
-    if (this.isFullscreen) {
-        container.classList.add('fullscreen');
-        document.body.classList.add('pdf-fullscreen');
-        
-        // 全屏时的额外处理
-        this.adjustForFullscreen();
-        
+    if (!spreadBtn || !singleBtn) return;
+    
+    if (mode === 'spread') {
+        spreadBtn.classList.add('active');
+        singleBtn.classList.remove('active');
     } else {
-        container.classList.remove('fullscreen');
-        document.body.classList.remove('pdf-fullscreen');
+        spreadBtn.classList.remove('active');
+        singleBtn.classList.add('active');
     }
     
-    // 重新调整页面
+    // 更新页面选择列表以反映模式变化
+    this.generatePageSelectionList();
+    this.updatePrintPreview();
+}
+
+initializeA4PrintPreview() {
+    // 初始化预览画布
+    const previewCanvas = document.getElementById('printPreviewCanvas');
+    const previewInfo = document.getElementById('printPreviewInfo');
+    
+    if (!previewCanvas || !previewInfo) return;
+    
+    // 设置画布大小
+    previewCanvas.width = 500;
+    previewCanvas.height = 700;
+    
+    // 绘制初始预览
+    this.updateA4PrintPreview();
+    
+    // 监听所有设置变化，更新预览
+    const settingsInputs = [
+        'orientationPortrait', 'orientationLandscape',
+        'marginGutter', 'marginTop', 'marginBottom',
+        'printCropMarks', 'printPageNumbers', 'printBleedMarks'
+    ];
+    
+    settingsInputs.forEach(inputId => {
+        const element = document.getElementById(inputId);
+        if (element) {
+            if (element.type === 'button') {
+                element.addEventListener('click', () => {
+                    setTimeout(() => this.updateA4PrintPreview(), 100);
+                });
+            } else if (element.type === 'checkbox' || element.type === 'number' || element.type === 'text') {
+                element.addEventListener('input', () => {
+                    setTimeout(() => this.updateA4PrintPreview(), 100);
+                });
+                element.addEventListener('change', () => {
+                    setTimeout(() => this.updateA4PrintPreview(), 100);
+                });
+            }
+        }
+    });
+    
+    // 监听页面选择变化
+    const grid = document.getElementById('pageSelectionGrid');
+    if (grid) {
+        grid.addEventListener('change', () => {
+            setTimeout(() => this.updateA4PrintPreview(), 100);
+        });
+    }
+}
+updateA4PrintPreview() {
+    const previewCanvas = document.getElementById('printPreviewCanvas');
+    if (!previewCanvas) return;
+    
+    const ctx = previewCanvas.getContext('2d');
+    if (!ctx) return;
+    
+    ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+    
+    const isLandscape = document.getElementById('orientationLandscape')?.classList.contains('active');
+    const marginGutter = parseInt(document.getElementById('marginGutter')?.value || 20) * 3.78;
+    const marginVertical = parseInt(document.getElementById('marginVertical')?.value || 20) * 3.78;
+    const marginTop = marginVertical;
+    const marginBottom = marginVertical;
+    
+    // ✅ 修复4: 获取实际PDF页面尺寸
+    let actualPageWidth = 794;  // 默认A4纵向宽度(像素)
+    let actualPageHeight = 1123; // 默认A4纵向高度(像素)
+    
+    // 从第一个canvas获取实际尺寸
+    if (this.canvases.size > 0) {
+        const firstCanvas = this.canvases.values().next().value;
+        if (firstCanvas) {
+            actualPageWidth = firstCanvas.width;
+            actualPageHeight = firstCanvas.height;
+        }
+    }
+    
+    // 计算A4纸张尺寸
+    const a4Width = isLandscape ? 1123 : 794;
+    const a4Height = isLandscape ? 794 : 1123;
+    
+    const scale = Math.min(
+        previewCanvas.width / a4Width,
+        previewCanvas.height / a4Height
+    ) * 0.7;
+    
+    const drawX = (previewCanvas.width - a4Width * scale) / 2;
+    const drawY = (previewCanvas.height - a4Height * scale) / 2;
+    
+    ctx.save();
+    ctx.translate(drawX, drawY);
+    ctx.scale(scale, scale);
+    
+    // 绘制A4纸张背景
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, a4Width, a4Height);
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(0, 0, a4Width, a4Height);
+    
+    // 绘制边距线
+    ctx.strokeStyle = '#4CAF50';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([5, 3]);
+    
+    const centerX = a4Width / 2;
+    const gutterWidth = 10;
+    
+    // 左页订口（右侧）
+    ctx.beginPath();
+    ctx.moveTo(centerX - gutterWidth/2 - marginGutter, marginTop);
+    ctx.lineTo(centerX - gutterWidth/2 - marginGutter, a4Height - marginBottom);
+    ctx.stroke();
+    
+    // 右页订口（左侧）
+    ctx.beginPath();
+    ctx.moveTo(centerX + gutterWidth/2 + marginGutter, marginTop);
+    ctx.lineTo(centerX + gutterWidth/2 + marginGutter, a4Height - marginBottom);
+    ctx.stroke();
+    
+    // 上下边距
+    ctx.beginPath();
+    ctx.moveTo(0, marginTop);
+    ctx.lineTo(a4Width, marginTop);
+    ctx.stroke();
+    
+    ctx.beginPath();
+    ctx.moveTo(0, a4Height - marginBottom);
+    ctx.lineTo(a4Width, a4Height - marginBottom);
+    ctx.stroke();
+    
+    ctx.setLineDash([]);
+    
+    // 计算左页内容区域
+    const leftContentX = 0;
+    const leftContentWidth = centerX - gutterWidth/2 - marginGutter;
+    const contentY = marginTop;
+    const contentHeight = a4Height - marginTop - marginBottom;
+    
+    // ✅ 修复4: 根据实际页面比例绘制内容区域
+    const pageAspect = actualPageWidth / actualPageHeight;
+    const areaAspect = leftContentWidth / contentHeight;
+    
+    let displayWidth, displayHeight, displayX, displayY;
+    
+    if (pageAspect > areaAspect) {
+        // 页面更宽，以宽度为准
+        displayWidth = leftContentWidth;
+        displayHeight = leftContentWidth / pageAspect;
+        displayX = leftContentX;
+        displayY = contentY + (contentHeight - displayHeight) / 2;
+    } else {
+        // 页面更高，以高度为准
+        displayHeight = contentHeight;
+        displayWidth = contentHeight * pageAspect;
+        displayX = leftContentX + (leftContentWidth - displayWidth) / 2;
+        displayY = contentY;
+    }
+    
+    // 绘制左页内容区域（浅蓝色）
+    ctx.fillStyle = '#e8f4f8';
+    ctx.fillRect(displayX, displayY, displayWidth, displayHeight);
+    ctx.strokeStyle = '#999';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(displayX, displayY, displayWidth, displayHeight);
+    
+    // 绘制装订线
+    ctx.fillStyle = '#f0f0f0';
+    ctx.fillRect(centerX - gutterWidth/2, contentY, gutterWidth, contentHeight);
+    ctx.strokeStyle = '#666';
+    ctx.strokeRect(centerX - gutterWidth/2, contentY, gutterWidth, contentHeight);
+    
+    // 绘制右页内容区域（浅粉色）
+    const rightContentX = centerX + gutterWidth/2 + marginGutter;
+    const rightContentWidth = a4Width - rightContentX;
+    
+    // 右页同样根据实际比例
+    if (pageAspect > areaAspect) {
+        displayWidth = rightContentWidth;
+        displayHeight = rightContentWidth / pageAspect;
+        displayX = rightContentX;
+        displayY = contentY + (contentHeight - displayHeight) / 2;
+    } else {
+        displayHeight = contentHeight;
+        displayWidth = contentHeight * pageAspect;
+        displayX = rightContentX + (rightContentWidth - displayWidth) / 2;
+        displayY = contentY;
+    }
+    
+    ctx.fillStyle = '#f8e8f8';
+    ctx.fillRect(displayX, displayY, displayWidth, displayHeight);
+    ctx.strokeStyle = '#999';
+    ctx.strokeRect(displayX, displayY, displayWidth, displayHeight);
+    
+    // 添加示例页码
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 14px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('8', leftContentWidth / 2, a4Height - marginBottom + 20);
+    ctx.fillText('1', rightContentX + rightContentWidth / 2, a4Height - marginBottom + 20);
+    
+    ctx.restore();
+}
+
+showPrintModal() {
+    const modalOverlay = document.getElementById('printModalOverlay');
+    const modalContent = document.getElementById('printModalContent');
+    
+    if (!modalOverlay || !modalContent) {
+        console.error('打印模态框元素未找到');
+        return;
+    }
+    
+    // 如果模态框已经显示，先隐藏再重新显示
+    if (modalOverlay.style.display === 'block') {
+        this.hidePrintModal();
+        setTimeout(() => {
+            this.showPrintModal();
+        }, 100);
+        return;
+    }
+    
+    // 根据当前视图模式决定显示哪种打印界面
+    const isA4Mode = this.viewMode === 'saddle';
+    
+    if (isA4Mode) {
+        // A4对开模式：显示增强的打印设置
+        this.showA4PrintModal();
+    } else {
+        // 单页模式：保持原有的简单界面
+        this.showSimplePrintModal();
+    }
+}
+showSimplePrintModal() {
+    const modalOverlay = document.getElementById('printModalOverlay');
+    const modalContent = document.getElementById('printModalContent');
+    
+    // ✅ 重置缩略图状态，强制重新加载
+    this.thumbnailsLoaded = false;
+    
+    // 显示加载状态
+    modalContent.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+            <div class="loading-spinner" style="margin: 0 auto 20px;"></div>
+            <div>正在加载页面缩略图...</div>
+        </div>
+    `;
+    
+    modalOverlay.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    
+    // 临时禁用路由
+    this.savedRouter = window.router;
+    if (window.router && window.router.navigate) {
+        this.originalNavigate = window.router.navigate;
+        window.router.navigate = () => {
+            console.log('路由在打印模态框打开时被阻止');
+        };
+    }
+    
+    // 强制重新加载所有缩略图（使用当前缩放比例）
+    this.loadAllThumbnails().then(() => {
+        this.generateSimplePageSelectionList();
+        this.bindSimplePrintModalEvents();
+        
+        setTimeout(() => {
+            this.updatePrintButtonState();
+        }, 100);
+    }).catch(error => {
+        console.error('缩略图重新生成失败:', error);
+        this.generateSimplePageSelectionList();
+        this.bindSimplePrintModalEvents();
+        
+        setTimeout(() => {
+            this.updatePrintButtonState();
+        }, 100);
+    });
+}
+
+showA4PrintModal() {
+    const modalOverlay = document.getElementById('printModalOverlay');
+    const modalContent = document.getElementById('printModalContent');
+    
+    // 显示加载状态
+    modalContent.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+            <div class="loading-spinner" style="margin: 0 auto 20px;"></div>
+            <div>正在生成A4对开打印预览...</div>
+        </div>
+    `;
+    
+    modalOverlay.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    
+    // 临时禁用路由
+    this.savedRouter = window.router;
+    if (window.router && window.router.navigate) {
+        this.originalNavigate = window.router.navigate;
+        window.router.navigate = () => {
+            console.log('路由在打印模态框打开时被阻止');
+        };
+    }
+    
+    // 生成A4对开打印选项界面
     setTimeout(() => {
-        this.centerPage();
-        this.refreshPage();
+        this.generateA4PrintOptions();
+        this.bindA4PrintModalEvents();
+        this.updatePrintButtonState();
+    }, 300);
+}
+// 添加确保缩略图加载的方法
+async ensureThumbnails() {
+    if (!this.thumbnailsLoaded) {
+        // 如果还没加载完，继续加载
+        await this.loadAllThumbnails();
+    }
+}
+
+hidePrintModal() {
+    const modalOverlay = document.getElementById('printModalOverlay');
+    if (modalOverlay) {
+        modalOverlay.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    
+    // 恢复路由功能
+    if (this.savedRouter && this.originalNavigate) {
+        window.router.navigate = this.originalNavigate;
+        delete this.savedRouter;
+        delete this.originalNavigate;
+    }
+    
+    // 重置绑定标志
+    this.printModalBound = false;
+    
+    console.log('❌ 打印模态框已隐藏');
+}// 修改 generateSimplePageSelectionList 方法中的最后一行
+generateSimplePageSelectionList() {
+    const modalContent = document.getElementById('printModalContent');
+    if (!modalContent) return;
+    
+    // 原有的简单页面选择界面
+    let html = `
+        <div class="page-selection-section" onclick="event.stopPropagation()">
+            <div class="selection-controls">
+                <button class="selection-btn" id="selectAllBtn">Select All Pages</button>
+                <button class="selection-btn" id="selectNoneBtn">Deselect All</button>
+                <button class="selection-btn" id="selectOddBtn">Select Odd Pages</button>
+                <button class="selection-btn" id="selectEvenBtn">Select Even Pages</button>
+            </div>
+            
+            <div class="page-selection-grid" id="pageSelectionGrid" onclick="event.stopPropagation()">
+    `;
+    
+    // 原有的单页选择逻辑
+    for (let i = 1; i <= this.totalPages; i++) {
+        const pageLabel = `Page ${i}`;
+        const thumbnailSrc = this.getThumbnailDataUrl(i);
+        const isSelected = true;
+        
+        html += `
+            <div class="page-preview-item ${isSelected ? 'selected' : ''}" 
+                 data-page="${i}" 
+                 ${isSelected ? 'data-selected="true"' : ''}>
+                <div class="page-preview-content">
+                    <input type="checkbox" class="page-checkbox" id="page-${i}" 
+                           data-page="${i}" ${isSelected ? 'checked' : ''}>
+                    <div class="page-info">
+                        <div class="page-number">${pageLabel}</div>
+                        ${thumbnailSrc ? `
+                            <div class="page-thumbnail">
+                                <img src="${thumbnailSrc}" alt="第${i}页缩略图" 
+                                     style="width: 120px; height: auto; margin-top: 8px; 
+                                            border: 1px solid #ddd; ">
+                            </div>
+                        ` : `
+                            <div class="page-dimension">单页</div>
+                        `}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    html += `
+            </div>
+        </div>
+    `;
+    
+    modalContent.innerHTML = html;
+    
+    // ✅ 重要：立即更新打印按钮状态
+    setTimeout(() => {
+        this.updatePrintButtonState();
+    }, 0);
+    
+    // 绑定页面选择项事件 - 修正这里
+    this.bindPageSelectionEvents(); // 改为调用 bindPageSelectionEvents
+}
+
+
+getSpreadThumbnailDataUrl(leftPage, rightPage, isLandscape = false) {
+    const leftThumb = leftPage ? this.thumbnails.get(leftPage) : null;
+    const rightThumb = rightPage ? this.thumbnails.get(rightPage) : null;
+    
+    if (!leftThumb && !rightThumb) {
+        console.warn(`对开页 ${leftPage}-${rightPage} 缩略图未找到`);
+        return '';
+    }
+    
+    // 创建拼合画布
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    if (isLandscape) {
+        // 横向：上下排列
+        const maxW = Math.max(
+            leftThumb ? leftThumb.width : 0,
+            rightThumb ? rightThumb.width : 0
+        );
+        const totalH = (leftThumb ? leftThumb.height : 0) + 
+                      (rightThumb ? rightThumb.height : 0) + 5;
+        
+        canvas.width = maxW;
+        canvas.height = totalH;
+        
+        ctx.fillStyle = '#f0f0f0';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        if (leftThumb) {
+            ctx.drawImage(leftThumb, (maxW - leftThumb.width) / 2, 0);
+        }
+        if (rightThumb) {
+            const y = (leftThumb ? leftThumb.height : 0) + 5;
+            ctx.drawImage(rightThumb, (maxW - rightThumb.width) / 2, y);
+        }
+    } else {
+        // 纵向：左右排列
+        const totalW = (leftThumb ? leftThumb.width : 0) + 
+                      (rightThumb ? rightThumb.width : 0) + 5;
+        const maxH = Math.max(
+            leftThumb ? leftThumb.height : 0,
+            rightThumb ? rightThumb.height : 0
+        );
+        
+        canvas.width = totalW;
+        canvas.height = maxH;
+        
+        ctx.fillStyle = '#f0f0f0';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        if (leftThumb) {
+            ctx.drawImage(leftThumb, 0, (maxH - leftThumb.height) / 2);
+        }
+        if (rightThumb) {
+            const x = (leftThumb ? leftThumb.width : 0) + 5;
+            ctx.drawImage(rightThumb, x, (maxH - rightThumb.height) / 2);
+        }
+    }
+    
+    return canvas.toDataURL('image/png');
+}
+
+
+
+generateA4PageSelectionList() {
+    const grid = document.getElementById('pageSelectionGrid');
+    if (!grid) return;
+    
+    // 获取当前打印设置以决定缩略图方向
+    const isLandscape = document.getElementById('orientationLandscape')?.classList.contains('active');
+    
+    let html = '';
+    const pairs = this.calculateSaddlePairs();
+    
+    // 生成对开页选项
+    pairs.forEach((pair, index) => {
+        const spreadNum = index + 1;
+        const leftPage = pair.leftPage;
+        const rightPage = pair.rightPage;
+        const pageRange = this.getPageRangeText(leftPage, rightPage);
+        
+        // ✅ 修复1: 生成对开页缩略图（支持横竖版）
+        const spreadThumbnail = this.getSpreadThumbnailDataUrl(
+            leftPage, 
+            rightPage, 
+            isLandscape
+        );
+        
+        html += `
+            <div class="page-preview-item selected" 
+                 data-spread="${spreadNum}" 
+                 data-selected="true">
+                <div class="page-preview-content">
+                    <input type="checkbox" 
+                           class="page-checkbox" 
+                           id="spread-${spreadNum}" 
+                           data-spread="${spreadNum}" 
+                           checked>
+                    <div class="page-info">
+                        <div class="page-number">对开页 ${spreadNum}</div>
+                        <div class="page-dimension">页码: ${pageRange}</div>
+                        ${spreadThumbnail ? `
+                            <div class="page-thumbnail">
+                                <img src="${spreadThumbnail}" 
+                                     alt="对开页 ${spreadNum}"
+                                     style="width: 100%; height: auto; margin-top: 10px; 
+                                            border: 1px solid #ddd; border-radius: 2px;">
+                            </div>
+                        ` : `
+                            <div class="page-thumbnail-placeholder">
+                                缩略图生成中...
+                            </div>
+                        `}
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    grid.innerHTML = html;
+    
+    // ✅ 修复2: 立即更新选中状态
+    setTimeout(() => {
+        const allItems = grid.querySelectorAll('.page-preview-item');
+        const allCheckboxes = grid.querySelectorAll('.page-checkbox');
+        
+        allItems.forEach(item => {
+            item.classList.add('selected');
+            item.setAttribute('data-selected', 'true');
+        });
+        
+        allCheckboxes.forEach(checkbox => {
+            checkbox.checked = true;
+        });
+        
+        this.updatePrintButtonState();
     }, 100);
+    
+    // 绑定事件
+    this.bindA4PageSelectionEvents();
 }
 
-// 全屏时的调整
-adjustForFullscreen() {
-    // 隐藏不必要的元素
-    const elementsToHide = [
-        '.nav-header',
-        '.panel-left', 
-        '.panel-right',
-        '.product-details'
-    ];
+bindA4PageSelectionEvents() {
+    const grid = document.getElementById('pageSelectionGrid');
+    if (!grid) return;
     
-    elementsToHide.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(el => {
-            el.style.display = 'none';
-        });
-    });
-}
-
-// 还原显示的元素
-restoreElements() {
-    const elementsToShow = [
-        '.nav-header',
-        '.panel-left',
-        '.panel-right', 
-        '.product-details'
-    ];
+    const pageItems = grid.querySelectorAll('.page-preview-item');
+    const checkboxes = grid.querySelectorAll('.page-checkbox');
     
-    elementsToShow.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(el => {
-            el.style.display = '';
-        });
-    });
-}
-
-// 备用全屏方案（如果浏览器不支持 Fullscreen API）
-enterFullscreenFallback() {
-    console.log('使用备用全屏方案');
-    const container = document.getElementById('pdfReader');
-    
-    container.style.position = 'fixed';
-    container.style.top = '0';
-    container.style.left = '0';
-    container.style.width = '100vw';
-    container.style.height = '100vh';
-    container.style.zIndex = '9999';
-    container.style.backgroundColor = 'white';
-    container.style.margin = '0';
-    container.style.padding = '0';
-    container.style.border = 'none';
-    
-    this.isFullscreen = true;
-    this.adjustForFullscreen();
-}
-
-// 备用退出全屏方案
-exitFullscreenFallback() {
-    console.log('退出备用全屏方案');
-    const container = document.getElementById('pdfReader');
-    
-    container.style.position = '';
-    container.style.top = '';
-    container.style.left = '';
-    container.style.width = '';
-    container.style.height = '';
-    container.style.zIndex = '';
-    container.style.backgroundColor = '';
-    container.style.margin = '';
-    container.style.padding = '';
-    container.style.border = '';
-    
-    this.isFullscreen = false;
-    this.restoreElements();
-}
-
-
-
-    // 加载PDF文档
-   async loadPDF(pdfUrl) {
-        try {
-            this.showLoading(true);
-            console.log('📄 开始加载PDF:', pdfUrl);
-            
-            // 清理URL并添加缓存破坏参数
-            let cleanUrl = pdfUrl;
-            
-            // 处理相对路径
-            if (pdfUrl.startsWith('/')) {
-                // 获取当前域名
-                const origin = window.location.origin;
-                cleanUrl = origin + pdfUrl;
-                console.log('🔗 转换为绝对路径:', cleanUrl);
-            }
-            
-            // 添加时间戳防止缓存
-            const timestamp = Date.now();
-            const separator = cleanUrl.includes('?') ? '&' : '?';
-            const urlWithTimestamp = `${cleanUrl}${separator}t=${timestamp}`;
-            
-            console.log('🌐 最终URL:', urlWithTimestamp);
-
-            // 配置加载选项
-            const loadingTask = window.pdfjsLib.getDocument({
-                url: urlWithTimestamp,
-                // 禁用范围请求(有时会导致CORS问题)
-                disableRange: false,
-                // 禁用流式传输
-                disableStream: false,
-                // 启用标准字体
-                useSystemFonts: true,
-                // CORS模式
-                withCredentials: false
-            });
-
-            // 添加加载进度监听
-            loadingTask.onProgress = (progress) => {
-                if (progress.total > 0) {
-                    const percent = Math.round((progress.loaded / progress.total) * 100);
-                    console.log(`📊 加载进度: ${percent}%`);
-                    const loadingEl = document.querySelector('.pdf-loading div:last-child');
-                    if (loadingEl) {
-                        loadingEl.textContent = `正在加载PDF... ${percent}%`;
-                    }
-                }
-            };
-
-            // 等待PDF加载完成
-            this.pdfDoc = await loadingTask.promise;
-            this.totalPages = this.pdfDoc.numPages;
-            
-            console.log(`✅ PDF加载成功! 总页数: ${this.totalPages}`);
-            
-            // 更新页面信息
-            this.updatePageInfo();
-            
-            // 加载第一页
-            await this.loadPage(this.currentPage);
-            
-            this.showLoading(false);
-            
-        } catch (error) {
-            console.error('❌ PDF加载失败:', error);
-            
-            // 详细错误信息
-            let errorMessage = 'PDF文件加载失败';
-            
-            if (error.name === 'MissingPDFException') {
-                errorMessage = 'PDF文件不存在或无法访问';
-            } else if (error.name === 'UnexpectedResponseException') {
-                errorMessage = 'PDF文件格式错误或服务器响应异常';
-            } else if (error.message && error.message.includes('CORS')) {
-                errorMessage = 'PDF文件跨域访问被阻止(CORS错误)';
-            } else if (error.message) {
-                errorMessage = `加载错误: ${error.message}`;
-            }
-            
-            // 尝试重新加载
-            this.pdfLoadAttempts++;
-            if (this.pdfLoadAttempts < this.maxLoadAttempts) {
-                console.log(`🔄 尝试重新加载 (${this.pdfLoadAttempts}/${this.maxLoadAttempts})...`);
-                setTimeout(() => {
-                    this.loadPDF(pdfUrl);
-                }, 2000);
+    // 点击项目切换选择
+    pageItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            // 防止事件冒泡
+            if (e.target.type === 'checkbox') {
                 return;
             }
             
-            this.showError(errorMessage + '<br><br>可能的原因:<br>1. PDF文件不存在<br>2. 服务器配置问题<br>3. 网络连接问题');
-            throw error;
+            const checkbox = item.querySelector('.page-checkbox');
+            if (!checkbox) return;
+            
+            // 切换选中状态
+            checkbox.checked = !checkbox.checked;
+            
+            // 强制更新UI状态
+            if (checkbox.checked) {
+                item.classList.add('selected');
+                item.setAttribute('data-selected', 'true');
+            } else {
+                item.classList.remove('selected');
+                item.removeAttribute('data-selected');
+            }
+            
+            // 手动触发change事件，但阻止冒泡
+            const changeEvent = new Event('change', { bubbles: false });
+            checkbox.dispatchEvent(changeEvent);
+            
+            this.updatePrintButtonState();
+            this.updateA4PrintPreview(); // 更新A4预览
+            
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    });
+    
+    // 复选框变化时更新UI
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+            const item = e.target.closest('.page-preview-item');
+            if (!item) return;
+            
+            if (checkbox.checked) {
+                item.classList.add('selected');
+                item.setAttribute('data-selected', 'true');
+            } else {
+                item.classList.remove('selected');
+                item.removeAttribute('data-selected');
+            }
+            
+            this.updatePrintButtonState();
+            this.updateA4PrintPreview(); // 更新A4预览
+        });
+        
+        // 防止复选框点击事件冒泡
+        checkbox.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    });
+}
+
+
+getThumbnailDataUrl(pageNum) {
+    // ✅ 先检查缩略图是否存在，如果不存在则尝试重新加载
+    if (!this.thumbnails.has(pageNum)) {
+        console.log(`缩略图 ${pageNum} 不存在，尝试重新加载...`);
+        // 可以在这里触发异步加载，但为了简单起见，返回空
+        return '';
+    }
+    
+    const thumbnailCanvas = this.thumbnails.get(pageNum);
+    if (!thumbnailCanvas) return '';
+    
+    const displayCanvas = document.createElement('canvas');
+    const ctx = displayCanvas.getContext('2d');
+    const displayWidth = 120;
+    const displayHeight = (thumbnailCanvas.height / thumbnailCanvas.width) * displayWidth;
+    
+    displayCanvas.width = displayWidth;
+    displayCanvas.height = displayHeight;
+    
+    ctx.drawImage(thumbnailCanvas, 0, 0, thumbnailCanvas.width, thumbnailCanvas.height, 
+                  0, 0, displayWidth, displayHeight);
+    
+    return displayCanvas.toDataURL('image/png');
+}
+getSaddlePageLabel(pageNum, pairs) {
+    if (!pairs.length) return `第 ${pageNum} 页`;
+    
+    for (const pair of pairs) {
+        if (pair.leftPage === pageNum) {
+            return `第 ${pageNum} 页 (对开左)`;
+        }
+        if (pair.rightPage === pageNum) {
+            return `第 ${pageNum} 页 (对开右)`;
+        }
+    }
+    return `第 ${pageNum} 页`;
+}
+
+bindPageSelectionEvents() {
+    const grid = document.getElementById('pageSelectionGrid');
+    const pageItems = grid.querySelectorAll('.page-preview-item');
+    const checkboxes = grid.querySelectorAll('.page-checkbox');
+    
+    // 点击项目切换选择
+    pageItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            // 防止事件冒泡
+            if (e.target.type === 'checkbox') {
+                return;
+            }
+            
+            const checkbox = item.querySelector('.page-checkbox');
+            if (!checkbox) return;
+            
+            // 切换选中状态
+            checkbox.checked = !checkbox.checked;
+            
+            // 强制更新UI状态
+            if (checkbox.checked) {
+                item.classList.add('selected');
+                item.setAttribute('data-selected', 'true');
+            } else {
+                item.classList.remove('selected');
+                item.removeAttribute('data-selected');
+            }
+            
+            // 手动触发change事件，但阻止冒泡
+            const changeEvent = new Event('change', { bubbles: false });
+            checkbox.dispatchEvent(changeEvent);
+            
+            this.updatePrintButtonState();
+            
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    });
+    
+    // 复选框变化时更新UI
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+            const item = e.target.closest('.page-preview-item');
+            if (!item) return;
+            
+            if (checkbox.checked) {
+                item.classList.add('selected');
+                item.setAttribute('data-selected', 'true');
+            } else {
+                item.classList.remove('selected');
+                item.removeAttribute('data-selected');
+            }
+            
+            this.updatePrintButtonState();
+        });
+        
+        // 防止复选框点击事件冒泡
+        checkbox.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    });
+}
+
+
+bindSimplePrintModalEvents() {
+    // 原有的简单模态框事件绑定
+    this.printModalBound = true;
+    
+    const closeBtn = document.getElementById('closePrintModalBtn');
+    const cancelBtn = document.getElementById('cancelPrintBtn');
+    const confirmBtn = document.getElementById('confirmPrintBtn');
+    const overlay = document.getElementById('printModalOverlay');
+    
+    const handleClose = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.hidePrintModal();
+    };
+    
+    const handleConfirm = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (this.isPrinting) {
+            console.log('⚠️ 打印正在进行，忽略点击');
+            return;
+        }
+        
+        this.performSimplePrint();
+    };
+    
+    if (closeBtn) closeBtn.addEventListener('click', handleClose);
+    if (cancelBtn) cancelBtn.addEventListener('click', handleClose);
+    if (confirmBtn) confirmBtn.addEventListener('click', handleConfirm);
+    if (overlay) overlay.addEventListener('click', (e) => {
+        if (e.target.id === 'printModalOverlay') {
+            e.preventDefault();
+            e.stopPropagation();
+            this.hidePrintModal();
+        }
+    });
+    
+    // 选择控制按钮
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const selectNoneBtn = document.getElementById('selectNoneBtn');
+    const selectOddBtn = document.getElementById('selectOddBtn');
+    const selectEvenBtn = document.getElementById('selectEvenBtn');
+    
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.selectAllPages(true);
+        });
+    }
+    
+    if (selectNoneBtn) {
+        selectNoneBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.selectAllPages(false);
+        });
+    }
+    
+    if (selectOddBtn) {
+        selectOddBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.selectOddEvenPages(true);
+        });
+    }
+    
+    if (selectEvenBtn) {
+        selectEvenBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.selectOddEvenPages(false);
+        });
+    }
+}
+
+bindA4PrintModalEvents() {
+    this.printModalBound = true;
+    
+    const closeBtn = document.getElementById('closePrintModalBtn');
+    const cancelBtn = document.getElementById('cancelPrintBtn');
+    const confirmBtn = document.getElementById('confirmPrintBtn');
+    const overlay = document.getElementById('printModalOverlay');
+    
+    const handleClose = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.hidePrintModal();
+    };
+    
+    const handleConfirm = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (this.isPrinting) {
+            console.log('⚠️ 打印正在进行，忽略点击');
+            return;
+        }
+        
+        this.performA4Print();
+    };
+    
+    if (closeBtn) closeBtn.addEventListener('click', handleClose);
+    if (cancelBtn) cancelBtn.addEventListener('click', handleClose);
+    if (confirmBtn) confirmBtn.addEventListener('click', handleConfirm);
+    if (overlay) overlay.addEventListener('click', (e) => {
+        if (e.target.id === 'printModalOverlay') {
+            e.preventDefault();
+            e.stopPropagation();
+            this.hidePrintModal();
+        }
+    });
+    
+    // 纸张方向选择
+    const orientationPortrait = document.getElementById('orientationPortrait');
+    const orientationLandscape = document.getElementById('orientationLandscape');
+    
+    if (orientationPortrait && orientationLandscape) {
+        const setOrientation = (isLandscape) => {
+            if (isLandscape) {
+                orientationLandscape.classList.add('active');
+                orientationPortrait.classList.remove('active');
+            } else {
+                orientationPortrait.classList.add('active');
+                orientationLandscape.classList.remove('active');
+            }
+            this.updateA4PrintPreview();
+        };
+        
+        orientationPortrait.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setOrientation(false);
+        });
+        
+        orientationLandscape.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setOrientation(true);
+        });
+    }
+    
+    // 边距输入框事件
+    const marginInputs = ['marginGutter', 'marginVertical'];
+    marginInputs.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        if (input) {
+            input.addEventListener('input', () => {
+                this.updateA4PrintPreview();
+            });
+        }
+    });
+    
+    // 选择控制按钮
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const selectNoneBtn = document.getElementById('selectNoneBtn');
+    const selectOddBtn = document.getElementById('selectOddBtn');
+    const selectEvenBtn = document.getElementById('selectEvenBtn');
+    const applyRangeBtn = document.getElementById('applyRangeBtn');
+    const pageRangeInput = document.getElementById('pageRangeInput');
+    
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.selectAllPages(true);
+        });
+    }
+    
+    if (selectNoneBtn) {
+        selectNoneBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.selectAllPages(false);
+        });
+    }
+    
+    if (selectOddBtn) {
+        selectOddBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.selectOddEvenSpreads(true);
+        });
+    }
+    
+    if (selectEvenBtn) {
+        selectEvenBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.selectOddEvenSpreads(false);
+        });
+    }
+    
+    if (applyRangeBtn && pageRangeInput) {
+        applyRangeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.parseSpreadRange(pageRangeInput.value);
+        });
+        
+        pageRangeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                e.stopPropagation();
+                this.parseSpreadRange(pageRangeInput.value);
+            }
+        });
+    }
+}
+parseSpreadRange(rangeString) {
+    if (!rangeString.trim()) return;
+    
+    const spreads = new Set();
+    const parts = rangeString.split(',');
+    const pairs = this.calculateSaddlePairs();
+    const maxSpread = pairs.length;
+    
+    for (const part of parts) {
+        const trimmedPart = part.trim();
+        
+        if (trimmedPart.includes('-')) {
+            const [startStr, endStr] = trimmedPart.split('-').map(s => s.trim());
+            const start = Number(startStr);
+            const end = Number(endStr);
+            
+            if (!isNaN(start) && !isNaN(end) && start <= end) {
+                for (let i = start; i <= end; i++) {
+                    if (i >= 1 && i <= maxSpread) {
+                        spreads.add(i);
+                    }
+                }
+            }
+        } else {
+            const spreadNum = Number(trimmedPart);
+            if (!isNaN(spreadNum) && spreadNum >= 1 && spreadNum <= maxSpread) {
+                spreads.add(spreadNum);
+            }
+        }
+    }
+    
+    // 应用选择
+    const checkboxes = document.querySelectorAll('.page-checkbox');
+    const pageItems = document.querySelectorAll('.page-preview-item');
+    
+    checkboxes.forEach((checkbox, index) => {
+        const spreadNum = Number(checkbox.dataset.spread);
+        const shouldSelect = spreads.has(spreadNum);
+        
+        checkbox.checked = shouldSelect;
+        const item = pageItems[index];
+        if (shouldSelect) {
+            item.classList.add('selected');
+        } else {
+            item.classList.remove('selected');
+        }
+    });
+    
+    this.updatePrintButtonState();
+}
+async performSimplePrint() {
+    // 原有的单页打印逻辑
+    if (this.isPrinting) {
+        console.log('⚠️ 打印正在进行中，忽略重复请求');
+        return;
+    }
+    
+    const selectedPages = [];
+    const checkboxes = document.querySelectorAll('.page-checkbox:checked');
+    
+    checkboxes.forEach(checkbox => {
+        const pageNum = Number(checkbox.dataset.page);
+        if (!isNaN(pageNum)) {
+            selectedPages.push(pageNum);
+        }
+    });
+    
+    if (selectedPages.length === 0) {
+        alert('请至少选择一个页面进行打印');
+        return;
+    }
+    
+    this.isPrinting = true;
+    console.log('🖨️ 开始单页打印流程...');
+    
+    this.hidePrintModal();
+    
+    const originalViewMode = this.viewMode;
+    const originalPage = this.currentPage;
+    
+    try {
+        console.log('打印页面:', selectedPages);
+        
+        // 创建打印iframe
+        const printIframe = document.createElement('iframe');
+        printIframe.id = 'print-iframe-' + Date.now();
+        printIframe.style.position = 'absolute';
+        printIframe.style.width = '0';
+        printIframe.style.height = '0';
+        printIframe.style.border = 'none';
+        printIframe.style.visibility = 'hidden';
+        document.body.appendChild(printIframe);
+        
+        // 生成打印内容
+        let printHTML = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>打印 - ${selectedPages.length} 页</title>
+                <style>
+                    @media print {
+                        body { margin: 0; padding: 0; }
+                        .print-page { 
+                            page-break-after: always; 
+                            page-break-inside: avoid;
+                            position: relative;
+                        }
+                        .print-page:last-child { page-break-after: auto; }
+                    }
+                    
+                    body {
+                        font-family: Arial, sans-serif;
+                        margin: 0;
+                        padding: 20px;
+                    }
+                </style>
+            </head>
+            <body>
+        `;
+        
+        for (const pageNum of selectedPages) {
+            await this.loadPage(pageNum);
+            const canvas = this.canvases.get(pageNum);
+            
+            if (canvas) {
+                const imgData = canvas.toDataURL('image/png');
+                printHTML += `
+                    <div class="print-page">
+                        <img src="${imgData}" style="width: 100%; max-width: 100%; height: auto;">
+                    </div>
+                `;
+            }
+        }
+        
+        printHTML += `
+            </body>
+            </html>
+        `;
+        
+        const iframeDoc = printIframe.contentDocument || printIframe.contentWindow.document;
+        iframeDoc.open();
+        iframeDoc.write(printHTML);
+        iframeDoc.close();
+        
+        printIframe.onload = () => {
+            console.log('📄 打印内容加载完成');
+            
+            setTimeout(() => {
+                try {
+                    printIframe.contentWindow.focus();
+                    printIframe.contentWindow.print();
+                    console.log('✅ 打印对话框已打开');
+                } catch (printError) {
+                    console.error('❌ 打印失败:', printError);
+                    alert('打印失败: ' + printError.message);
+                }
+                
+                setTimeout(() => {
+                    if (printIframe && printIframe.parentNode) {
+                        document.body.removeChild(printIframe);
+                        console.log('🗑️ 打印iframe已清理');
+                    }
+                    
+                    this.isPrinting = false;
+                    console.log('🔓 打印锁已释放');
+                }, 2000);
+            }, 500);
+        };
+        
+        printIframe.onerror = (error) => {
+            console.error('❌ Iframe加载错误:', error);
+            if (printIframe && printIframe.parentNode) {
+                document.body.removeChild(printIframe);
+            }
+            this.isPrinting = false;
+            alert('打印内容加载失败');
+        };
+        
+    } catch (error) {
+        console.error('❌ 打印过程出错:', error);
+        alert('打印过程中发生错误: ' + error.message);
+        this.isPrinting = false;
+    } finally {
+        setTimeout(() => {
+            if (originalPage !== this.currentPage) {
+                this.loadPage(originalPage);
+            }
+        }, 100);
+    }
+}
+selectAllPages(select) {
+    const checkboxes = document.querySelectorAll('.page-checkbox');
+    const pageItems = document.querySelectorAll('.page-preview-item');
+    
+    checkboxes.forEach((checkbox, index) => {
+        checkbox.checked = select;
+        const item = pageItems[index];
+        if (select) {
+            item.classList.add('selected');
+        } else {
+            item.classList.remove('selected');
+        }
+    });
+    
+    this.updatePrintButtonState();
+}
+selectOddEvenPages(selectOdd) {
+    const checkboxes = document.querySelectorAll('.page-checkbox');
+    const pageItems = document.querySelectorAll('.page-preview-item');
+    
+    checkboxes.forEach((checkbox, index) => {
+        const pageNum = parseInt(checkbox.dataset.page);
+        const isOdd = pageNum % 2 === 1;
+        
+        if ((selectOdd && isOdd) || (!selectOdd && !isOdd)) {
+            checkbox.checked = true;
+            pageItems[index].classList.add('selected');
+        } else {
+            checkbox.checked = false;
+            pageItems[index].classList.remove('selected');
+        }
+    });
+    
+    this.updatePrintButtonState();
+}
+
+selectOddEvenSpreads(selectOdd) {
+    const checkboxes = document.querySelectorAll('.page-checkbox');
+    const pageItems = document.querySelectorAll('.page-preview-item');
+    
+    checkboxes.forEach((checkbox, index) => {
+        const spreadNum = parseInt(checkbox.dataset.spread);
+        const isOdd = spreadNum % 2 === 1;
+        
+        if ((selectOdd && isOdd) || (!selectOdd && !isOdd)) {
+            checkbox.checked = true;
+            pageItems[index].classList.add('selected');
+        } else {
+            checkbox.checked = false;
+            pageItems[index].classList.remove('selected');
+        }
+    });
+    
+    this.updatePrintButtonState();
+}
+
+parsePageRange(rangeString) {
+    if (!rangeString.trim()) return;
+    
+    const pages = new Set();
+    const parts = rangeString.split(',');
+    
+    for (const part of parts) {
+        const trimmedPart = part.trim();
+        
+        if (trimmedPart.includes('-')) {
+            const [startStr, endStr] = trimmedPart.split('-').map(s => s.trim());
+            const start = Number(startStr);
+            const end = Number(endStr);
+            
+            if (!isNaN(start) && !isNaN(end) && start <= end) {
+                for (let i = start; i <= end; i++) {
+                    if (i >= 1 && i <= this.totalPages) {
+                        pages.add(i);
+                    }
+                }
+            }
+        } else {
+            const pageNum = Number(trimmedPart);
+            if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= this.totalPages) {
+                pages.add(pageNum);
+            }
+        }
+    }
+    
+    // 应用选择 - 不触发导航
+    const checkboxes = document.querySelectorAll('.page-checkbox');
+    const pageItems = document.querySelectorAll('.page-preview-item');
+    
+    checkboxes.forEach((checkbox, index) => {
+        const pageNum = Number(checkbox.dataset.page);
+        const shouldSelect = pages.has(pageNum);
+        
+        // 直接设置,不触发事件
+        checkbox.checked = shouldSelect;
+        const item = pageItems[index];
+        if (shouldSelect) {
+            item.classList.add('selected');
+        } else {
+            item.classList.remove('selected');
+        }
+    });
+    
+    this.updatePrintButtonState();
+}
+
+
+
+generateA4PageNumbers(leftPage, rightPage, settings) {
+    const pageHeight = settings.isLandscape ? 210 : 297;
+    const bottomPos = pageHeight - settings.marginBottom + 5;
+    
+    let html = '';
+    
+    if (leftPage) {
+        html += `
+            <div class="page-number" style="left: ${settings.marginGutter + 20}mm; top: ${bottomPos}mm;">
+                ${leftPage}
+            </div>
+        `;
+    }
+    
+    if (rightPage) {
+        const pageWidth = settings.isLandscape ? 297 : 210;
+        html += `
+            <div class="page-number" style="right: ${settings.marginForeEdge + 20}mm; top: ${bottomPos}mm;">
+                ${rightPage}
+            </div>
+        `;
+    }
+    
+    return html;
+}
+generateA4CropMarks(isLandscape) {
+    const pageWidth = isLandscape ? 297 : 210;
+    const pageHeight = isLandscape ? 210 : 297;
+    
+    return `
+        <!-- 左上角裁切线 -->
+        <div class="crop-mark" style="left: 0mm; top: 0mm;"></div>
+        <div class="crop-mark-vertical" style="left: 0mm; top: 0mm;"></div>
+        
+        <!-- 右上角裁切线 -->
+        <div class="crop-mark" style="left: ${pageWidth-5}mm; top: 0mm;"></div>
+        <div class="crop-mark-vertical" style="left: ${pageWidth-0.2}mm; top: 0mm;"></div>
+        
+        <!-- 左下角裁切线 -->
+        <div class="crop-mark" style="left: 0mm; top: ${pageHeight}mm;"></div>
+        <div class="crop-mark-vertical" style="left: 0mm; top: ${pageHeight-5}mm;"></div>
+        
+        <!-- 右下角裁切线 -->
+        <div class="crop-mark" style="left: ${pageWidth-5}mm; top: ${pageHeight}mm;"></div>
+        <div class="crop-mark-vertical" style="left: ${pageWidth-0.2}mm; top: ${pageHeight-5}mm;"></div>
+    `;
+}
+async generateA4PageImage(pageNum, position, settings) {
+    await this.loadPage(pageNum);
+    const canvas = this.canvases.get(pageNum);
+    
+    if (!canvas) return '';
+    
+    const imgData = canvas.toDataURL('image/png');
+    
+    // 计算位置和尺寸
+    const pageWidth = settings.isLandscape ? 297 : 210;  // A4尺寸 mm
+    const pageHeight = settings.isLandscape ? 210 : 297;
+    
+    const gutterWidth = 10;  // 装订线宽度（mm）
+    const centerX = pageWidth / 2;
+    
+    let left, top, width, height;
+    
+    if (position === 'left') {
+        // 左页：从左边缘到中心线减去订口和装订线
+        left = 0;
+        width = centerX - gutterWidth/2 - settings.marginGutter;
+        top = settings.marginTop;
+        height = pageHeight - settings.marginTop - settings.marginBottom;
+    } else if (position === 'right') {
+        // 右页：从中心线加订口和装订线到右边缘
+        left = centerX + gutterWidth/2 + settings.marginGutter;
+        width = pageWidth - left;
+        top = settings.marginTop;
+        height = pageHeight - settings.marginTop - settings.marginBottom;
+    } else {
+        // 单页模式（不应该在A4对开中使用）
+        left = settings.marginGutter;
+        width = pageWidth - settings.marginGutter * 2;
+        top = settings.marginTop;
+        height = pageHeight - settings.marginTop - settings.marginBottom;
+    }
+    
+    return `
+        <img src="${imgData}" class="page-image" 
+             style="left: ${left}mm; top: ${top}mm; width: ${width}mm; height: ${height}mm;">
+    `;
+}
+
+async performA4Print() {
+    if (this.isPrinting) {
+        console.log('⚠️ 打印正在进行中，忽略重复请求');
+        return;
+    }
+    
+    // 获取当前设置
+    const isLandscape = document.getElementById('orientationLandscape')?.classList.contains('active');
+    
+    // ✅ 修复3: 只使用实际存在的边距变量
+    const marginGutter = parseInt(document.getElementById('marginGutter')?.value || 20);
+    const marginVertical = parseInt(document.getElementById('marginVertical')?.value || 20);
+    const marginTop = marginVertical;
+    const marginBottom = marginVertical;
+    
+    // 获取选中的对开页
+    const selectedSpreads = [];
+    const checkboxes = document.querySelectorAll('.page-checkbox:checked');
+    
+    checkboxes.forEach(checkbox => {
+        if (checkbox.dataset.spread) {
+            selectedSpreads.push(Number(checkbox.dataset.spread));
+        }
+    });
+    
+    if (selectedSpreads.length === 0) {
+        alert('请至少选择一个对开页进行打印');
+        return;
+    }
+    
+    this.isPrinting = true;
+    console.log('🖨️ 开始A4对开打印流程...');
+    
+    this.hidePrintModal();
+    
+    try {
+        console.log('打印设置:', {
+            orientation: isLandscape ? '横向' : '纵向',
+            margins: { marginGutter, marginTop, marginBottom },
+            spreads: selectedSpreads
+        });
+        
+        // 创建打印iframe
+        const printIframe = document.createElement('iframe');
+        printIframe.id = 'print-iframe-' + Date.now();
+        printIframe.style.position = 'absolute';
+        printIframe.style.width = '0';
+        printIframe.style.height = '0';
+        printIframe.style.border = 'none';
+        printIframe.style.visibility = 'hidden';
+        document.body.appendChild(printIframe);
+        
+        // 生成打印内容
+        let printHTML = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>A4对开打印 - ${selectedSpreads.length} 对开页</title>
+                <style>
+                    @media print {
+                        @page {
+                            size: A4 ${isLandscape ? 'landscape' : 'portrait'};
+                            margin: 0;
+                        }
+                        
+                        body { 
+                            margin: 0; 
+                            padding: 0; 
+                        }
+                        
+                        .print-sheet {
+                            width: ${isLandscape ? '297mm' : '210mm'};
+                            height: ${isLandscape ? '210mm' : '297mm'};
+                            position: relative;
+                            page-break-after: always;
+                            background: white;
+                        }
+                        
+                        .print-sheet:last-child {
+                            page-break-after: auto;
+                        }
+                        
+                        .page-image {
+                            position: absolute;
+                            object-fit: contain;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+        `;
+        
+        const pairs = this.calculateSaddlePairs();
+        
+        for (const spreadNum of selectedSpreads) {
+            const spread = pairs[spreadNum - 1];
+            if (!spread) continue;
+            
+            printHTML += `<div class="print-sheet">`;
+            
+            // 左页
+            if (spread.leftPage) {
+                printHTML += await this.generateA4PageImage(spread.leftPage, 'left', {
+                    isLandscape, 
+                    marginGutter,
+                    marginTop,
+                    marginBottom
+                });
+            }
+            
+            // 右页
+            if (spread.rightPage) {
+                printHTML += await this.generateA4PageImage(spread.rightPage, 'right', {
+                    isLandscape, 
+                    marginGutter,
+                    marginTop,
+                    marginBottom
+                });
+            }
+            
+            printHTML += `</div>`;
+        }
+        
+        printHTML += `</body></html>`;
+        
+        const iframeDoc = printIframe.contentDocument || printIframe.contentWindow.document;
+        iframeDoc.open();
+        iframeDoc.write(printHTML);
+        iframeDoc.close();
+        
+        printIframe.onload = () => {
+            setTimeout(() => {
+                try {
+                    printIframe.contentWindow.focus();
+                    printIframe.contentWindow.print();
+                } catch (printError) {
+                    console.error('❌ 打印失败:', printError);
+                    alert('打印失败: ' + printError.message);
+                }
+                
+                setTimeout(() => {
+                    if (printIframe && printIframe.parentNode) {
+                        document.body.removeChild(printIframe);
+                    }
+                    this.isPrinting = false;
+                }, 2000);
+            }, 500);
+        };
+        
+    } catch (error) {
+        console.error('❌ A4打印过程出错:', error);
+        alert('打印过程中发生错误: ' + error.message);
+        this.isPrinting = false;
+    }
+}
+
+     bindEvents() {
+    // 缩放控制
+    document.getElementById('zoomInBtn').addEventListener('click', () => this.zoomIn());
+    document.getElementById('zoomOutBtn').addEventListener('click', () => this.zoomOut());
+    document.getElementById('resetZoomBtn').addEventListener('click', () => this.resetZoom());
+    // 页面导航 - 修改这里
+    document.getElementById('prevPageBtn').addEventListener('click', (e) => {
+        e.preventDefault(); // 阻止默认行为
+        e.stopPropagation(); // 阻止事件冒泡
+        this.prevPage();
+    });
+    
+    document.getElementById('nextPageBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.nextPage();
+    });
+    
+    // 修改页码输入框事件处理
+    const pageInput = document.getElementById('pageInput');
+    pageInput.addEventListener('change', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.goToPage(parseInt(e.target.value));
+    });
+    
+    // 添加keydown事件,防止回车键触发表单提交
+    pageInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            e.stopPropagation();
+            this.goToPage(parseInt(e.target.value));
+            e.target.blur(); // 失去焦点
+        }
+    });
+    
+    // A4按钮事件
+    const a4Btn = document.getElementById('a4ModeBtn');
+    if (a4Btn) {
+        a4Btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const newMode = this.viewMode === 'single' ? 'saddle' : 'single';
+            this.setViewMode(newMode);
+        });
+    }
+    
+    // 全屏控制
+    document.getElementById('fullscreenBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.requestFullscreen();
+    });
+    
+    // 打印按钮
+    document.getElementById('printModalBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.showPrintModal();
+    });
+    
+    // 键盘快捷键
+    document.addEventListener('keydown', (e) => this.handleKeydown(e));
+
+     this.preventPdfLinksNavigation();
+}
+preventPdfLinksNavigation() {
+    const pdfReader = document.getElementById('pdfReader');
+    if (!pdfReader) return;
+    
+    // ✅ 更激进的链接拦截策略
+    const aggressiveLinkBlocker = (e) => {
+        const link = e.target.closest('a');
+        if (!link) return;
+        
+        // 检查是否在保护期内
+        const now = Date.now();
+        const timeSinceDragEnd = now - this.lastDragEndTime;
+        
+        const shouldBlock = this.isDragging || 
+                          this.isDraggingActive || 
+                          this.hasDragged || 
+                          this.preventUrlChange ||
+                          timeSinceDragEnd < 800;
+        
+        if (shouldBlock) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            console.log('🛑 PDF容器内激进拦截');
+            return false;
+        }
+        
+        // 检查是否是SPA路由链接
+        const page = link.getAttribute('data-page');
+        if (page) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (window.router && window.router.navigate) {
+                window.router.navigate(page);
+            }
+            return false;
+        }
+    };
+    
+    // 在多个阶段拦截
+    pdfReader.addEventListener('click', aggressiveLinkBlocker, true);
+    pdfReader.addEventListener('mousedown', aggressiveLinkBlocker, true);
+    pdfReader.addEventListener('mouseup', aggressiveLinkBlocker, true);
+    
+    // 保存清理函数
+    this.cleanupLinkHandler = () => {
+        pdfReader.removeEventListener('click', aggressiveLinkBlocker, true);
+        pdfReader.removeEventListener('mousedown', aggressiveLinkBlocker, true);
+        pdfReader.removeEventListener('mouseup', aggressiveLinkBlocker, true);
+    };
+}
+
+updatePrintButtonState() {
+    const selectedCount = document.querySelectorAll('.page-checkbox:checked').length;
+    const printBtn = document.getElementById('confirmPrintBtn');
+    
+    if (selectedCount > 0) {
+        printBtn.disabled = false;
+        printBtn.textContent = `Print (${selectedCount} pages)`;
+    } else {
+        printBtn.disabled = true;
+        printBtn.textContent = 'Print Selected Pages';
+    }
+}
+
+     calculateSaddlePairs() {
+        const pairs = [];
+        
+        // 骑马订排列规则：
+        // 对于N页文档，配对方式为：
+        // 第1对开页：N 和 1
+        // 第2对开页：2 和 N-1
+        // 第3对开页：N-2 和 3
+        // 第4对开页：4 和 N-3
+        // 以此类推...
+        
+        // 确保页数是4的倍数（骑马订要求）
+        let effectivePages = this.totalPages;
+        if (this.totalPages % 4 !== 0) {
+            effectivePages = Math.ceil(this.totalPages / 4) * 4;
+        }
+        
+        const totalSpreads = Math.ceil(effectivePages / 2);
+        
+        for (let i = 0; i < totalSpreads; i++) {
+            let leftPage, rightPage;
+            
+            if (i % 2 === 0) {
+                // 偶数索引：显示大页码在左，小页码在右
+                // 例如：8,1 或 6,3
+                leftPage = effectivePages - (i * 2) / 2;
+                rightPage = i + 1;
+            } else {
+                // 奇数索引：显示小页码在左，大页码在右
+                // 例如：2,7 或 4,5
+                leftPage = i + 1;
+                rightPage = effectivePages - ((i - 1) * 2) / 2 - 1;
+            }
+            
+            pairs.push({
+                spreadIndex: i,
+                spreadNumber: i + 1, // 对开页码从1开始
+                leftPage: leftPage <= this.totalPages ? leftPage : null,
+                rightPage: rightPage <= this.totalPages ? rightPage : null,
+                isBlank: leftPage > this.totalPages || rightPage > this.totalPages,
+                // 计算包含的页面范围（用于显示）
+                pageRange: this.getPageRangeText(leftPage, rightPage)
+            });
+        }
+        
+        return pairs;
+    }
+
+getPageRangeText(leftPage, rightPage) {
+    if (leftPage && rightPage) {
+        // 总是显示较小的页码在前，较大的页码在后
+        const firstPage = Math.min(leftPage, rightPage);
+        const secondPage = Math.max(leftPage, rightPage);
+        return `${firstPage}-${secondPage}`;
+    } else if (leftPage) {
+        return `${leftPage}`;
+    } else if (rightPage) {
+        return `${rightPage}`;
+    }
+    return '';
+}
+
+    // 获取当前骑马订对开页
+   getCurrentSaddleSpread() {
+        if (this.totalPages === 0) return null;
+        
+        const pairs = this.calculateSaddlePairs();
+        
+        // 找到包含当前页面的对开页
+        let foundSpread = null;
+        
+        for (let i = 0; i < pairs.length; i++) {
+            const spread = pairs[i];
+            
+            if (spread.leftPage === this.currentPage || spread.rightPage === this.currentPage) {
+                foundSpread = spread;
+                break;
+            }
+        }
+        
+        // 如果没有找到（可能在空白页），返回第一个对开页
+        if (!foundSpread && pairs.length > 0) {
+            foundSpread = pairs[0];
+        }
+        
+        return foundSpread;
+    }
+
+    // 跳转到特定骑马订对开页
+   goToSaddleSpread(spreadNumber) {
+        const pairs = this.calculateSaddlePairs();
+        const spreadIndex = spreadNumber - 1;
+        
+        if (spreadIndex >= 0 && spreadIndex < pairs.length) {
+            const spread = pairs[spreadIndex];
+            this.currentSpread = spreadNumber;
+            
+            // 设置当前页为对开页的第一个有效页面
+            const firstValidPage = spread.leftPage || spread.rightPage;
+            
+            if (firstValidPage) {
+                this.currentPage = firstValidPage;
+                // 更新输入框显示对开页码
+                this.updatePageInput();
+                this.refreshCurrentView();
+                this.updateNavigationButtons();
+            }
         }
     }
 
-    // 加载指定页面
-    async loadPage(pageNum) {
+
+  updatePageInput() {
+        const pageInput = document.getElementById('pageInput');
+        const totalPagesEl = document.getElementById('totalPages');
+        
+        if (this.viewMode === 'saddle') {
+            const pairs = this.calculateSaddlePairs();
+            // 显示对开页码而不是单页页码
+            pageInput.value = this.currentSpread;
+            if (totalPagesEl) {
+                totalPagesEl.textContent = pairs.length;
+            }
+        } else {
+            // 单页模式显示单页页码
+            pageInput.value = this.currentPage;
+            if (totalPagesEl) {
+                totalPagesEl.textContent = this.totalPages;
+            }
+        }
+    }
+
+setViewMode(mode) {
+        if (mode === this.viewMode) return;
+        
+        this.viewMode = mode;
+        
+        // ✅ 进入对开模式时锁定导航
+        if (mode === 'saddle') {
+            this.lockNavigation();
+        } else {
+            this.unlockNavigation();
+        }
+    
+    // 更新A4按钮状态
+    const a4Btn = document.getElementById('a4ModeBtn');
+    if (a4Btn) {
+        if (mode === 'saddle') {
+            a4Btn.classList.add('active');
+            a4Btn.title = '切换到单页模式';
+            console.log('切换到骑马订模式');
+        } else {
+            a4Btn.classList.remove('active');
+            a4Btn.title = '切换到骑马订模式';
+            console.log('切换到单页模式');
+        }
+    }
+    
+    // 为PDF容器添加模式类名，用于CSS选择器
+    const pdfContainer = document.getElementById('pdfReader');
+    if (pdfContainer) {
+        // 移除旧的模式类名
+        pdfContainer.classList.remove('view-mode-single', 'view-mode-saddle');
+        // 添加新的模式类名
+        pdfContainer.classList.add(`view-mode-${mode}`);
+    }
+    
+    // 如果切换到骑马订模式，重新计算当前对开页
+    if (mode === 'saddle') {
+            const spread = this.getCurrentSaddleSpread();
+            if (spread) {
+                this.currentSpread = spread.spreadNumber;
+            } else {
+                this.currentSpread = 1;
+            }
+        }
+        
+        this.updatePageInput();
+        this.refreshCurrentView();
+        this.updateSpreadInfo();
+        this.updateNavigationButtons();
+}
+    lockNavigation() {
+        console.log('🔒 锁定所有导航方式');
+        this.navigationLocked = true;
+        
+        // 方法1：拦截路由器
+        if (window.router && window.router.navigate) {
+            if (!this.originalNavigate) {
+                this.originalNavigate = window.router.navigate;
+            }
+            
+            window.router.navigate = (...args) => {
+                console.error('🚫 对开模式：路由导航被阻止', args);
+                return;
+            };
+        }
+        
+        // 方法2：拦截history API
+        if (!this.originalPushState) {
+            this.originalPushState = history.pushState;
+        }
+        if (!this.originalReplaceState) {
+            this.originalReplaceState = history.replaceState;
+        }
+        
+        history.pushState = (...args) => {
+            console.error('🚫 对开模式：pushState被阻止', args);
+            return;
+        };
+        
+        history.replaceState = (...args) => {
+            console.error('🚫 对开模式：replaceState被阻止', args);
+            return;
+        };
+        
+        // 方法3：拦截所有<a>标签
+        this.lockAllLinks();
+        
+        // 方法4：监听popstate并阻止
+        this.popstateBlocker = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.error('🚫 对开模式：popstate被阻止');
+        };
+        window.addEventListener('popstate', this.popstateBlocker, true);
+        
+        // 方法5：监听hashchange并阻止
+        this.hashchangeBlocker = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.error('🚫 对开模式：hashchange被阻止');
+        };
+        window.addEventListener('hashchange', this.hashchangeBlocker, true);
+    }
+
+    // ========== 新增：解锁导航 ==========
+    unlockNavigation() {
+        console.log('🔓 解锁所有导航方式');
+        this.navigationLocked = false;
+        
+        // 恢复路由器
+        if (window.router && this.originalNavigate) {
+            window.router.navigate = this.originalNavigate;
+        }
+        
+        // 恢复history API
+        if (this.originalPushState) {
+            history.pushState = this.originalPushState;
+        }
+        if (this.originalReplaceState) {
+            history.replaceState = this.originalReplaceState;
+        }
+        
+        // 移除事件监听器
+        if (this.popstateBlocker) {
+            window.removeEventListener('popstate', this.popstateBlocker, true);
+        }
+        if (this.hashchangeBlocker) {
+            window.removeEventListener('hashchange', this.hashchangeBlocker, true);
+        }
+        
+        // 解锁链接
+        this.unlockAllLinks();
+    }
+
+    // ========== 新增：锁定所有链接 ==========
+    lockAllLinks() {
+        const pdfContainer = document.getElementById('pdfReader');
+        if (!pdfContainer) return;
+        
+        const allLinks = pdfContainer.querySelectorAll('a');
+        console.log(`🔒 锁定 ${allLinks.length} 个链接`);
+        
+        allLinks.forEach(link => {
+            // 保存原始属性
+            if (!link.dataset.locked) {
+                link.dataset.originalHref = link.href || '';
+                link.dataset.originalOnclick = link.onclick ? link.onclick.toString() : '';
+                link.dataset.locked = 'true';
+            }
+            
+            // 移除href
+            link.removeAttribute('href');
+            
+            // 禁用点击
+            link.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                console.error('🚫 链接被锁定');
+                return false;
+            };
+            
+            // 禁用样式
+            link.style.pointerEvents = 'none';
+            link.style.cursor = 'default';
+            link.style.textDecoration = 'none';
+        });
+        
+        // 监听新添加的链接
+        if (!this.linkObserver) {
+            this.linkObserver = new MutationObserver(() => {
+                if (this.navigationLocked) {
+                    this.lockAllLinks();
+                }
+            });
+            
+            this.linkObserver.observe(pdfContainer, {
+                childList: true,
+                subtree: true
+            });
+        }
+    }
+
+    // ========== 新增：解锁所有链接 ==========
+    unlockAllLinks() {
+        const pdfContainer = document.getElementById('pdfReader');
+        if (!pdfContainer) return;
+        
+        const allLinks = pdfContainer.querySelectorAll('a[data-locked="true"]');
+        console.log(`🔓 解锁 ${allLinks.length} 个链接`);
+        
+        allLinks.forEach(link => {
+            // 恢复原始属性
+            if (link.dataset.originalHref) {
+                link.href = link.dataset.originalHref;
+            }
+            
+            link.removeAttribute('data-locked');
+            link.removeAttribute('data-original-href');
+            
+            // 恢复样式
+            link.style.pointerEvents = '';
+            link.style.cursor = '';
+            link.style.textDecoration = '';
+        });
+        
+        // 停止观察
+        if (this.linkObserver) {
+            this.linkObserver.disconnect();
+            this.linkObserver = null;
+        }
+    }
+
+refreshAllVisiblePages() {
+    const pagesToClear = new Set();
+    
+    if (this.viewMode === 'single') {
+        // 单页模式：只刷新当前页
+        pagesToClear.add(this.currentPage);
+    } else if (this.viewMode === 'saddle') {
+        // 骑马订模式：刷新当前对开页的两页
+        const spread = this.getCurrentSaddleSpread();
+        if (spread) {
+            if (spread.leftPage) pagesToClear.add(spread.leftPage);
+            if (spread.rightPage) pagesToClear.add(spread.rightPage);
+        }
+    }
+    
+    // 清除并重新渲染这些页面（仅清除canvases，不清除thumbnails）
+    pagesToClear.forEach(page => {
+        this.canvases.delete(page);
+       
+    });
+    
+    // 重新加载当前视图
+    this.refreshCurrentView();
+}
+  refreshCurrentView() {
+        if (this.viewMode === 'single') {
+            this.displaySinglePage(this.currentPage);
+        } else {
+            this.displaySaddleSpread(this.currentSpread);
+        }
+    }
+
+
+     // 显示单页（保持原有页码显示）
+async displaySinglePage(pageNum) {
+    const viewport = document.getElementById('pdfViewport');
+    viewport.innerHTML = '';
+    
+    if (pageNum < 1 || pageNum > this.totalPages) return;
+    
+    let canvas = this.canvases.get(pageNum);
+    if (!canvas) {
+        await this.renderPage(pageNum);
+        canvas = this.canvases.get(pageNum);
+    }
+    
+    if (!canvas) return;
+    
+    // 创建页面容器
+    const pageWrapper = document.createElement('div');
+    pageWrapper.className = 'pdf-page-wrapper single-page';
+    
+    const canvasContainer = document.createElement('div');
+    canvasContainer.className = 'pdf-canvas-container';
+    canvasContainer.style.width = `${canvas.width}px`;
+    canvasContainer.style.height = `${canvas.height}px`;
+    
+    
+    
+    canvasContainer.appendChild(canvas);
+    pageWrapper.appendChild(canvasContainer);
+    viewport.appendChild(pageWrapper);
+    
+    // 调整视口大小
+    this.adjustViewportSize(canvas.width, canvas.height);
+    
+    // 居中显示
+    setTimeout(() => this.centerPage(pageWrapper), 100);
+}
+
+    async displaySaddleSpread(spreadNumber) {
+        const viewport = document.getElementById('pdfViewport');
+        if (!viewport) return;
+        
+        viewport.innerHTML = '';
+        
+        const pairs = this.calculateSaddlePairs();
+        const spreadIndex = Math.max(0, Math.min(spreadNumber - 1, pairs.length - 1));
+        const spread = pairs[spreadIndex];
+        
+        if (!spread) {
+            console.error('无法找到骑马订对开页:', spreadNumber);
+            return;
+        }
+        
+        try {
+            const spreadWrapper = document.createElement('div');
+            spreadWrapper.className = 'pdf-page-wrapper double-page saddle-spread';
+            spreadWrapper.dataset.spread = spreadNumber;
+            
+            // 左侧页面
+            if (spread.leftPage) {
+                const leftCanvas = await this.getPageCanvas(spread.leftPage);
+                if (leftCanvas) {
+                    const leftWrapper = document.createElement('div');
+                    leftWrapper.className = 'pdf-canvas-container saddle-left';
+                    leftWrapper.style.width = `${leftCanvas.width}px`;
+                    leftWrapper.style.height = `${leftCanvas.height}px`;
+                    leftWrapper.dataset.page = spread.leftPage;
+                    
+                    leftWrapper.appendChild(leftCanvas);
+                    spreadWrapper.appendChild(leftWrapper);
+                }
+            }
+            
+            const gap = document.createElement('div');
+            gap.className = 'saddle-gap';
+            gap.style.width = `${this.pageGap}px`;
+            spreadWrapper.appendChild(gap);
+            
+            // 右侧页面
+            if (spread.rightPage) {
+                const rightCanvas = await this.getPageCanvas(spread.rightPage);
+                if (rightCanvas) {
+                    const rightWrapper = document.createElement('div');
+                    rightWrapper.className = 'pdf-canvas-container saddle-right';
+                    rightWrapper.style.width = `${rightCanvas.width}px`;
+                    rightWrapper.style.height = `${rightCanvas.height}px`;
+                    rightWrapper.dataset.page = spread.rightPage;
+                    
+                    rightWrapper.appendChild(rightCanvas);
+                    spreadWrapper.appendChild(rightWrapper);
+                }
+            }
+            
+            viewport.appendChild(spreadWrapper);
+            
+            this.currentSpread = spreadNumber;
+            this.adjustSaddleViewport(spreadWrapper);
+            
+            setTimeout(() => this.centerPage(spreadWrapper), 100);
+            this.updateSpreadInfo();
+            
+            // ✅ 关键：渲染完成后立即锁定链接
+            setTimeout(() => {
+                if (this.navigationLocked) {
+                    this.lockAllLinks();
+                }
+            }, 200);
+            
+        } catch (error) {
+            console.error('骑马订显示错误:', error);
+            this.viewMode = 'single';
+            this.displaySinglePage(this.currentPage);
+        }
+    }
+updateSpreadInfo() {
+    const spreadInfo = document.getElementById('spreadInfo');
+    
+    if (this.viewMode === 'saddle') {
+        const pairs = this.calculateSaddlePairs();
+        const currentSpread = pairs[this.currentSpread - 1];
+        
+        if (spreadInfo) {
+            spreadInfo.style.display = 'inline';
+            if (currentSpread) {
+                // 显示格式：对开 1/4 (8-1)
+                const pageRange = this.getPageRangeText(currentSpread.leftPage, currentSpread.rightPage);
+                spreadInfo.textContent = `COPY ${this.currentSpread}/${pairs.length} (${pageRange})`;
+            } else {
+                spreadInfo.textContent = `COPY ${this.currentSpread}/${pairs.length}`;
+            }
+        }
+    } else {
+        if (spreadInfo) {
+            spreadInfo.style.display = 'none';
+        }
+    }
+}
+  async getPageCanvas(pageNum) {
+        if (pageNum < 1 || pageNum > this.totalPages) return null;
+        
+        let canvas = this.canvases.get(pageNum);
+        if (!canvas) {
+            await this.renderPage(pageNum);
+            canvas = this.canvases.get(pageNum);
+        }
+        
+        if (!canvas) return null;
+        
+        // 复制canvas避免多个地方使用同一个
+        const canvasCopy = document.createElement('canvas');
+        canvasCopy.width = canvas.width;
+        canvasCopy.height = canvas.height;
+        const ctx = canvasCopy.getContext('2d');
+        ctx.drawImage(canvas, 0, 0);
+        
+        return canvasCopy;
+    }
+
+    // 创建骑马订页面包装器
+    createSaddlePageWrapper(canvas, pageNum, side) {
+        const pageWrapper = document.createElement('div');
+        pageWrapper.className = `pdf-canvas-container saddle-page saddle-${side}`;
+        pageWrapper.style.width = `${canvas.width}px`;
+        pageWrapper.style.height = `${canvas.height}px`;
+        pageWrapper.dataset.page = pageNum;
+        
+        // 添加页面编号
+        const pageNumber = document.createElement('div');
+        pageNumber.className = 'page-number';
+        pageNumber.textContent = pageNum;
+        pageWrapper.appendChild(pageNumber);
+        
+        pageWrapper.appendChild(canvas);
+        return pageWrapper;
+    }
+
+    // 调整骑马订视图的视口大小
+      adjustSaddleViewport(spreadWrapper) {
+        const viewport = document.getElementById('pdfViewport');
+        const container = document.getElementById('pdfPagesContainer');
+        if (!viewport || !container) return;
+        
+        const spreadRect = spreadWrapper.getBoundingClientRect();
+        const padding = 100;
+        
+        viewport.style.width = `${Math.max(spreadRect.width + padding, container.clientWidth)}px`;
+        viewport.style.height = `${Math.max(spreadRect.height + padding, container.clientHeight)}px`;
+    }
+
+
+    // 调整普通视图的视口大小
+     adjustViewportSize(pageWidth, pageHeight) {
+        const viewport = document.getElementById('pdfViewport');
+        const container = document.getElementById('pdfPagesContainer');
+        if (!viewport || !container) return;
+        
+        const padding = 100;
+        viewport.style.width = `${Math.max(pageWidth + padding, container.clientWidth)}px`;
+        viewport.style.height = `${Math.max(pageHeight + padding, container.clientHeight)}px`;
+    }
+
+initDragScroll() {
+    const container = document.getElementById('pdfPagesContainer');
+    if (!container) return;
+    
+    let dragStartTime = 0;
+    let initialX = 0;
+    let initialY = 0;
+    
+    // ✅ 核心修复：全局链接拦截器（最高优先级）
+    const globalLinkBlocker = (e) => {
+        const now = Date.now();
+        const timeSinceDragEnd = now - this.lastDragEndTime;
+        
+        // 检查是否应该阻止链接
+        const shouldBlock = this.isDragging || 
+                          this.isDraggingActive || 
+                          this.hasDragged || 
+                          this.preventUrlChange ||
+                          timeSinceDragEnd < 800; // 拖拽结束后800ms内都阻止
+        
+        if (shouldBlock) {
+            const link = e.target.closest('a');
+            if (link) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                console.log('🛑 全局链接拦截器已阻止链接点击');
+                return false;
+            }
+        }
+    };
+    
+    // ✅ 在document和window级别都添加拦截器（最高优先级）
+    document.addEventListener('click', globalLinkBlocker, true);
+    window.addEventListener('click', globalLinkBlocker, true);
+    
+    // ✅ 特殊：阻止容器内的所有<a>标签的默认行为
+    container.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (link && (this.isDragging || this.isDraggingActive || this.hasDragged || this.preventUrlChange)) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            console.log('🛑 容器内链接拦截');
+            return false;
+        }
+    }, true);
+    
+    // ✅ 监听所有<a>标签的点击（在它们被添加到DOM后）
+    const observer = new MutationObserver(() => {
+        const links = container.querySelectorAll('a');
+        links.forEach(link => {
+            // 移除旧的监听器（如果有）
+            link.removeEventListener('click', this.linkClickHandler);
+            
+            // 添加新的监听器
+            this.linkClickHandler = (e) => {
+                if (this.isDragging || this.isDraggingActive || this.hasDragged || this.preventUrlChange) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    console.log('🛑 直接链接监听器拦截');
+                    return false;
+                }
+            };
+            link.addEventListener('click', this.linkClickHandler, true);
+        });
+    });
+    
+    observer.observe(container, {
+        childList: true,
+        subtree: true
+    });
+    
+    // ========== 鼠标按下 ==========
+    container.addEventListener('mousedown', (e) => {
+        const target = e.target;
+        const isLink = target.closest('a');
+        const isClickable = isLink || target.closest('button') || target.closest('input');
+        
+        if (isClickable && !isLink) {
+            return;
+        }
+        
+        // 如果点击的是链接，先阻止默认行为
+        if (isLink) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        // 记录状态
+        dragStartTime = Date.now();
+        initialX = e.clientX;
+        initialY = e.clientY;
+        this.hasDragged = false;
+        
+        // 激活所有拖拽标志
+        this.isDragging = true;
+        this.isDraggingActive = true;
+        this.preventUrlChange = true;
+        
+        container.classList.add('dragging');
+        this.startX = e.clientX;
+        this.startY = e.clientY;
+        this.scrollLeft = container.scrollLeft;
+        this.scrollTop = container.scrollTop;
+        
+        // 清除之前的保护定时器
+        if (this.dragProtectionTimer) {
+            clearTimeout(this.dragProtectionTimer);
+        }
+        
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    
+    // ========== 鼠标移动 ==========
+    container.addEventListener('mousemove', (e) => {
+        if (!this.isDragging) return;
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const deltaX = e.clientX - this.startX;
+        const deltaY = e.clientY - this.startY;
+        const totalDelta = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        // 如果移动超过阈值，标记为真正的拖拽
+        if (totalDelta > this.dragThreshold) {
+            this.hasDragged = true;
+            this.isDraggingActive = true;
+        }
+        
+        container.scrollLeft = this.scrollLeft - deltaX;
+        container.scrollTop = this.scrollTop - deltaY;
+        
+        this.preventUrlChange = true;
+    });
+    
+    // ========== 鼠标释放 ==========
+    const stopDrag = (e) => {
+        if (!this.isDragging) return;
+        
+        const now = Date.now();
+        const dragDuration = now - dragStartTime;
+        
+        this.isDragging = false;
+        container.classList.remove('dragging');
+        
+        // 记录拖拽结束时间
+        this.lastDragEndTime = now;
+        
+        // 如果鼠标释放在链接上，强制阻止
+        if (e) {
+            const link = e.target.closest('a');
+            if (link) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                console.log('🛑 拖拽结束时阻止链接');
+            }
+        }
+        
+        // ✅ 关键：使用定时器延迟重置所有标志
+        const resetDelay = this.hasDragged ? 1000 : 300; // 如果有拖拽，延迟1秒
+        
+        this.dragProtectionTimer = setTimeout(() => {
+            this.preventUrlChange = false;
+            this.hasDragged = false;
+            this.isDraggingActive = false;
+            console.log('✅ 拖拽保护已解除');
+        }, resetDelay);
+    };
+    
+    container.addEventListener('mouseup', stopDrag);
+    container.addEventListener('mouseleave', stopDrag);
+    
+    // ========== 触摸事件（移动端） ==========
+    let touchStartTime = 0;
+    
+    container.addEventListener('touchstart', (e) => {
+        const target = e.target;
+        const isClickable = target.closest('a') || target.closest('button') || target.closest('input');
+        
+        if (isClickable) {
+            const link = target.closest('a');
+            if (link) {
+                e.preventDefault();
+            }
+            return;
+        }
+        
+        touchStartTime = Date.now();
+        this.hasDragged = false;
+        
+        this.isDragging = true;
+        this.isDraggingActive = true;
+        this.preventUrlChange = true;
+        
+        container.classList.add('dragging');
+        this.startX = e.touches[0].clientX;
+        this.startY = e.touches[0].clientY;
+        this.scrollLeft = container.scrollLeft;
+        this.scrollTop = container.scrollTop;
+        
+        if (this.dragProtectionTimer) {
+            clearTimeout(this.dragProtectionTimer);
+        }
+        
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    
+    container.addEventListener('touchmove', (e) => {
+        if (!this.isDragging) return;
+        
+        const deltaX = e.touches[0].clientX - this.startX;
+        const deltaY = e.touches[0].clientY - this.startY;
+        const totalDelta = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        if (totalDelta > this.dragThreshold) {
+            this.hasDragged = true;
+            this.isDraggingActive = true;
+        }
+        
+        container.scrollLeft = this.scrollLeft - deltaX;
+        container.scrollTop = this.scrollTop - deltaY;
+        
+        this.preventUrlChange = true;
+        
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    
+    const stopTouchDrag = (e) => {
+        if (!this.isDragging) return;
+        
+        const now = Date.now();
+        this.isDragging = false;
+        container.classList.remove('dragging');
+        this.lastDragEndTime = now;
+        
+        const resetDelay = this.hasDragged ? 1000 : 300;
+        
+        this.dragProtectionTimer = setTimeout(() => {
+            this.preventUrlChange = false;
+            this.hasDragged = false;
+            this.isDraggingActive = false;
+        }, resetDelay);
+    };
+    
+    container.addEventListener('touchend', stopTouchDrag);
+    container.addEventListener('touchcancel', stopTouchDrag);
+    
+    // ✅ 保存清理函数
+    this.cleanupDragEvents = () => {
+        document.removeEventListener('click', globalLinkBlocker, true);
+        window.removeEventListener('click', globalLinkBlocker, true);
+        observer.disconnect();
+        if (this.dragProtectionTimer) {
+            clearTimeout(this.dragProtectionTimer);
+        }
+    };
+}
+
+
+async loadPDF(pdfUrl) {
+    try {
+        this.showLoading(true);
+        console.log('📄 开始加载PDF:', pdfUrl);
+        
+        const loadingTask = pdfjsLib.getDocument(pdfUrl);
+        this.pdfDoc = await loadingTask.promise;
+        this.totalPages = this.pdfDoc.numPages;
+        
+        console.log(`✅ PDF加载成功! 总页数: ${this.totalPages}`);
+        
+        this.updatePageInfo();
+        
+        // 并行加载所有缩略图
+        await this.loadAllThumbnails();
+        
+        // 然后加载当前页面
+        await this.loadPage(this.currentPage);
+        
+        this.showLoading(false);
+        
+    } catch (error) {
+        console.error('❌ PDF加载失败:', error);
+        this.showError('PDF文件加载失败');
+    }
+}
+async loadAllThumbnails() {
+    if (this.thumbnailsLoaded) return;
+    
+    console.log('🖼️ 开始加载所有页面缩略图...');
+    
+    const promises = [];
+    const BATCH_SIZE = 3; // 每次并发加载3个页面，避免一次性加载太多
+    
+    // 分批加载缩略图
+    for (let i = 1; i <= this.totalPages; i += BATCH_SIZE) {
+        const batchPromises = [];
+        const end = Math.min(i + BATCH_SIZE - 1, this.totalPages);
+        
+        for (let j = i; j <= end; j++) {
+            batchPromises.push(this.loadThumbnail(j));
+        }
+        
+        // 等待这一批完成
+        await Promise.all(batchPromises);
+        console.log(`✅ 已加载缩略图: ${i}-${end}/${this.totalPages}`);
+    }
+    
+    this.thumbnailsLoaded = true;
+    console.log('✅ 所有缩略图加载完成!');
+}
+
+// 添加加载单个缩略图的方法
+async loadThumbnail(pageNum) {
+    if (this.thumbnails.has(pageNum)) {
+        return this.thumbnails.get(pageNum);
+    }
+    
+    try {
+        const page = await this.pdfDoc.getPage(pageNum);
+        
+        // 为缩略图计算合适的尺寸
+        const viewport = page.getViewport({ scale: 1 });
+        const maxThumbnailWidth = 200; // 缩略图最大宽度
+        const maxThumbnailHeight = 300; // 缩略图最大高度
+        
+        // 计算适合缩略图的缩放比例
+        const widthScale = maxThumbnailWidth / viewport.width;
+        const heightScale = maxThumbnailHeight / viewport.height;
+        const thumbnailScale = Math.min(widthScale, heightScale, 0.5); // 最大缩放0.5
+        
+        const thumbnailViewport = page.getViewport({ scale: thumbnailScale });
+        
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.width = thumbnailViewport.width;
+        canvas.height = thumbnailViewport.height;
+        
+        // 渲染页面
+        await page.render({
+            canvasContext: context,
+            viewport: thumbnailViewport
+        }).promise;
+        
+        // 添加水印（与主阅读器相同）
+        this.addWatermark(canvas, context);
+        
+        // 存储到缩略图缓存
+        this.thumbnails.set(pageNum, canvas);
+        return canvas;
+        
+    } catch (error) {
+        console.error(`页面 ${pageNum} 缩略图加载失败:`, error);
+        return null;
+    }
+}
+      async loadPage(pageNum) {
         if (pageNum < 1 || pageNum > this.totalPages) return;
         
         this.currentPage = pageNum;
         this.updatePageInfo();
+        this.updatePageInput();
         
-        // 更新输入框
-        document.getElementById('pageInput').value = pageNum;
-        
-        // 更新导航按钮状态
-        document.getElementById('prevPageBtn').disabled = pageNum <= 1;
-        document.getElementById('nextPageBtn').disabled = pageNum >= this.totalPages;
-        
-        // 检查是否已缓存
-        if (this.canvases.has(pageNum)) {
-            this.displayPage(pageNum);
-            return;
+        // 如果当前是骑马订模式，更新到对应的对开页
+        if (this.viewMode === 'saddle') {
+            const spread = this.getCurrentSaddleSpread();
+            if (spread) {
+                this.currentSpread = spread.spreadNumber;
+            } else {
+                this.currentSpread = 1;
+            }
         }
         
-        // 渲染页面
-        await this.renderPage(pageNum);
+        // 更新导航按钮
+        this.updateNavigationButtons();
+        
+        // 检查需要渲染的页面
+        const needsRender = [];
+        if (!this.canvases.has(pageNum)) {
+            needsRender.push(pageNum);
+        }
+        
+        // 如果当前是骑马订模式，检查对开页中的页面
+        if (this.viewMode === 'saddle') {
+            const spread = this.getCurrentSaddleSpread();
+            if (spread) {
+                if (spread.leftPage && !this.canvases.has(spread.leftPage)) {
+                    needsRender.push(spread.leftPage);
+                }
+                if (spread.rightPage && !this.canvases.has(spread.rightPage)) {
+                    needsRender.push(spread.rightPage);
+                }
+            }
+        }
+        
+        // 渲染需要的页面
+        for (const pageToRender of needsRender) {
+            await this.renderPage(pageToRender);
+        }
+        
+        // 显示页面
+        this.refreshCurrentView();
     }
 
-    // 渲染页面
-    async renderPage(pageNum) {
-        if (this.isRendering) {
-            this.renderQueue.push(pageNum);
-            return;
+async generateSpreadThumbnail(leftPage, rightPage, isLandscape = false) {
+    if (!leftPage && !rightPage) return null;
+    
+    const leftCanvas = leftPage ? this.thumbnails.get(leftPage) : null;
+    const rightCanvas = rightPage ? this.thumbnails.get(rightPage) : null;
+    
+    if (!leftCanvas && !rightCanvas) return null;
+    
+    // 创建拼合画布
+    const spreadCanvas = document.createElement('canvas');
+    const ctx = spreadCanvas.getContext('2d');
+    
+    if (isLandscape) {
+        // 横向拼版：上下排列
+        const maxWidth = Math.max(
+            leftCanvas ? leftCanvas.width : 0,
+            rightCanvas ? rightCanvas.width : 0
+        );
+        const totalHeight = (leftCanvas ? leftCanvas.height : 0) + 
+                          (rightCanvas ? rightCanvas.height : 0) + 10; // 10px gap
+        
+        spreadCanvas.width = maxWidth;
+        spreadCanvas.height = totalHeight;
+        
+        // 绘制背景
+        ctx.fillStyle = '#f8f8f8';
+        ctx.fillRect(0, 0, spreadCanvas.width, spreadCanvas.height);
+        
+        // 绘制左页（上方）
+        if (leftCanvas) {
+            const leftX = (maxWidth - leftCanvas.width) / 2;
+            ctx.drawImage(leftCanvas, leftX, 0);
         }
         
-        this.isRendering = true;
+        // 绘制右页（下方）
+        if (rightCanvas) {
+            const rightX = (maxWidth - rightCanvas.width) / 2;
+            const rightY = (leftCanvas ? leftCanvas.height : 0) + 10;
+            ctx.drawImage(rightCanvas, rightX, rightY);
+        }
+    } else {
+        // 纵向拼版：左右排列
+        const totalWidth = (leftCanvas ? leftCanvas.width : 0) + 
+                          (rightCanvas ? rightCanvas.width : 0) + 10; // 10px gap
+        const maxHeight = Math.max(
+            leftCanvas ? leftCanvas.height : 0,
+            rightCanvas ? rightCanvas.height : 0
+        );
         
-        try {
-            const page = await this.pdfDoc.getPage(pageNum);
-            
-            // 计算缩放比例以适应容器
-            const container = document.getElementById('pdfPagesContainer');
-            const viewport = page.getViewport({ scale: 1 });
-            
-            // 计算最佳缩放比例
-            const containerWidth = container.clientWidth - 40; // 减去边距
-            const containerHeight = container.clientHeight - 40;
-            
-            const scaleX = containerWidth / viewport.width;
-            const scaleY = containerHeight / viewport.height;
-            const scale = Math.min(scaleX, scaleY, 2) * this.scale; // 限制最大缩放2倍
-            
-            // 创建canvas
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.className = 'pdf-canvas';
-            
-            // 设置canvas尺寸
-            const canvasViewport = page.getViewport({ scale });
-            canvas.width = canvasViewport.width;
-            canvas.height = canvasViewport.height;
-            
-            // 渲染页面
-            const renderContext = {
-                canvasContext: context,
-                viewport: canvasViewport
-            };
-            
-            await page.render(renderContext).promise;
-            
-            // 添加水印
-            this.addWatermark(canvas, context);
-            
-            // 缓存canvas
-            this.canvases.set(pageNum, canvas);
-            
-            // 显示页面
-            this.displayPage(pageNum);
-            
-        } catch (error) {
-            console.error('页面渲染失败:', error);
-        } finally {
-            this.isRendering = false;
-            
-            // 处理渲染队列
-            if (this.renderQueue.length > 0) {
-                const nextPage = this.renderQueue.shift();
-                this.renderPage(nextPage);
+        spreadCanvas.width = totalWidth;
+        spreadCanvas.height = maxHeight;
+        
+        // 绘制背景
+        ctx.fillStyle = '#f8f8f8';
+        ctx.fillRect(0, 0, spreadCanvas.width, spreadCanvas.height);
+        
+        // 绘制左页
+        if (leftCanvas) {
+            const leftY = (maxHeight - leftCanvas.height) / 2;
+            ctx.drawImage(leftCanvas, 0, leftY);
+        }
+        
+        // 绘制右页
+        if (rightCanvas) {
+            const rightX = (leftCanvas ? leftCanvas.width : 0) + 10;
+            const rightY = (maxHeight - rightCanvas.height) / 2;
+            ctx.drawImage(rightCanvas, rightX, rightY);
+        }
+    }
+    
+    // 转换为缩略图尺寸
+    const thumbnailCanvas = document.createElement('canvas');
+    const thumbnailCtx = thumbnailCanvas.getContext('2d');
+    
+    const maxThumbWidth = 180;
+    const maxThumbHeight = 250;
+    
+    const scale = Math.min(
+        maxThumbWidth / spreadCanvas.width,
+        maxThumbHeight / spreadCanvas.height,
+        1
+    );
+    
+    thumbnailCanvas.width = spreadCanvas.width * scale;
+    thumbnailCanvas.height = spreadCanvas.height * scale;
+    
+    thumbnailCtx.drawImage(spreadCanvas, 0, 0, 
+                          thumbnailCanvas.width, thumbnailCanvas.height);
+    
+    return thumbnailCanvas.toDataURL('image/png');
+}
+
+
+
+
+
+    updateNavigationButtons() {
+        const prevBtn = document.getElementById('prevPageBtn');
+        const nextBtn = document.getElementById('nextPageBtn');
+        
+        if (!prevBtn || !nextBtn) return;
+        
+        if (this.viewMode === 'single') {
+            prevBtn.disabled = this.currentPage <= 1;
+            nextBtn.disabled = this.currentPage >= this.totalPages;
+        } else {
+            const pairs = this.calculateSaddlePairs();
+            prevBtn.disabled = this.currentSpread <= 1;
+            nextBtn.disabled = this.currentSpread >= pairs.length;
+        }
+    }
+
+
+
+            async renderPage(pageNum) {
+                if (this.isRendering) {
+                    this.renderQueue.push(pageNum);
+                    return;
+                }
+                
+                this.isRendering = true;
+                
+                try {
+                    const page = await this.pdfDoc.getPage(pageNum);
+                    const container = document.getElementById('pdfPagesContainer');
+                    const viewport = page.getViewport({ scale: 1 });
+                    
+                    const containerWidth = container.clientWidth - 40;
+                    const containerHeight = container.clientHeight - 40;
+                    const scaleX = containerWidth / viewport.width;
+                    const scaleY = containerHeight / viewport.height;
+                    const scale = Math.min(scaleX, scaleY, 2) * this.scale;
+                    
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.className = 'pdf-canvas';
+                    
+                    const canvasViewport = page.getViewport({ scale });
+                    canvas.width = canvasViewport.width;
+                    canvas.height = canvasViewport.height;
+                    
+                    await page.render({
+                        canvasContext: context,
+                        viewport: canvasViewport
+                    }).promise;
+                    
+                    this.addWatermark(canvas, context);
+                    this.canvases.set(pageNum, canvas);
+                    
+                } catch (error) {
+                    console.error('页面渲染失败:', error);
+                } finally {
+                    this.isRendering = false;
+                    if (this.renderQueue.length > 0) {
+                        const nextPage = this.renderQueue.shift();
+                        this.renderPage(nextPage);
+                    }
+                }
+            }
+
+            adjustViewportSize(pageWidth, pageHeight) {
+                const viewport = document.getElementById('pdfViewport');
+                const container = document.getElementById('pdfPagesContainer');
+                if (!viewport || !container) return;
+                
+                const padding = 100;
+                viewport.style.width = `${Math.max(pageWidth + padding, container.clientWidth)}px`;
+                viewport.style.height = `${Math.max(pageHeight + padding, container.clientHeight)}px`;
+            }
+
+            centerPage(pageWrapper = null) {
+                const viewport = document.getElementById('pdfViewport');
+                const container = document.getElementById('pdfPagesContainer');
+                
+                if (!pageWrapper) {
+                    pageWrapper = viewport.querySelector('.pdf-page-wrapper');
+                }
+                
+                if (!pageWrapper || !viewport || !container) return;
+                
+                const pageRect = pageWrapper.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                
+                const targetScrollLeft = (pageRect.width - containerRect.width) / 2;
+                const targetScrollTop = (pageRect.height - containerRect.height) / 2;
+                
+                container.scrollLeft = targetScrollLeft;
+                container.scrollTop = targetScrollTop;
+            }
+
+         addWatermark(canvas, context) {
+    context.save();
+    context.globalAlpha = 0.05;
+    context.fillStyle = '#000000';
+    
+    // 根据画布尺寸调整水印字体大小
+    const fontSize = Math.min(30, canvas.width / 10);
+    context.font = `bold ${fontSize}px Arial`;
+    
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.translate(canvas.width / 2, canvas.height / 2);
+    context.rotate(-Math.PI / 4);
+    context.fillText('PREVIEW', 0, 0);
+    context.fillText('MANIFESTOCLUB.CN', 0, fontSize * 1.3);
+    context.restore();
+}
+
+        zoomIn() {
+    this.scale = Math.min(this.scale + 0.1, 3.0);
+    this.updateZoom();
+    // 统一刷新视图，而不仅仅是当前页
+    this.refreshAllVisiblePages();
+    // ✅ 确保下次打开打印模态框时重新生成缩略图
+    this.thumbnailsLoaded = false;
+}
+
+zoomOut() {
+    this.scale = Math.max(this.scale - 0.1, 0.5);
+    this.updateZoom();
+    this.refreshAllVisiblePages();
+    // ✅ 确保下次打开打印模态框时重新生成缩略图
+    this.thumbnailsLoaded = false;
+}
+
+resetZoom() {
+    this.scale = 1.0;
+    this.autoFitEnabled = true;
+    this.updateZoom();
+    this.refreshAllVisiblePages();
+    // ✅ 确保下次打开打印模态框时重新生成缩略图
+    this.thumbnailsLoaded = false;
+}
+            updateZoom() {
+                const percent = Math.round(this.scale * 100);
+                document.getElementById('zoomPercent').textContent = `${percent}%`;
+            }
+
+            refreshPage() {
+                const pagesToClear = [this.currentPage];
+                if (this.viewMode === 'double' && this.currentPage + 1 <= this.totalPages) {
+                    pagesToClear.push(this.currentPage + 1);
+                }
+                pagesToClear.forEach(page => this.canvases.delete(page));
+                this.loadPage(this.currentPage);
+            }
+
+     prevPage() {
+        if (this.viewMode === 'single') {
+            if (this.currentPage > 1) {
+                this.loadPage(this.currentPage - 1);
+            }
+        } else {
+            if (this.currentSpread > 1) {
+                this.goToSaddleSpread(this.currentSpread - 1);
             }
         }
     }
 
-    // 显示页面
-    displayPage(pageNum) {
-        const viewport = document.getElementById('pdfViewport');
-        viewport.innerHTML = '';
-        
-        const canvas = this.canvases.get(pageNum);
-        if (!canvas) return;
-        
-        // 创建页面容器
-        const pageWrapper = document.createElement('div');
-        pageWrapper.className = 'pdf-page-wrapper';
-        
-        const canvasContainer = document.createElement('div');
-        canvasContainer.className = 'pdf-canvas-container';
-        canvasContainer.style.width = `${canvas.width}px`;
-        canvasContainer.style.height = `${canvas.height}px`;
-        
-        canvasContainer.appendChild(canvas);
-        pageWrapper.appendChild(canvasContainer);
-        viewport.appendChild(pageWrapper);
-        
-        // 居中显示
-        this.centerPage();
-    }
-
-    // 居中页面
-    centerPage() {
-        const viewport = document.getElementById('pdfViewport');
-        const pageWrapper = viewport.querySelector('.pdf-page-wrapper');
-        if (!pageWrapper) return;
-        
-        const container = document.getElementById('pdfPagesContainer');
-        const pageRect = pageWrapper.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-        
-        const left = (containerRect.width - pageRect.width) / 2;
-        const top = (containerRect.height - pageRect.height) / 2;
-        
-        pageWrapper.style.left = `${left}px`;
-        pageWrapper.style.top = `${top}px`;
-    }
-
-    // 添加水印
-    addWatermark(canvas, context) {
-        context.save();
-        
-        // 设置水印样式
-        context.globalAlpha = 0.05;
-        context.fillStyle = '#000000';
-        context.font = 'bold 30px Arial';
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
-        
-        // 旋转水印
-        context.translate(canvas.width / 2, canvas.height / 2);
-        context.rotate(-Math.PI / 4);
-        
-        // 绘制水印文字
-        context.fillText('PREVIEW', 0, 0);
-        context.fillText('MANIFESTOCLUB.CN ', 0, 40);
-        
-        context.restore();
-    }
-
-    // 缩放控制
-    zoomIn() {
-        this.scale = Math.min(this.scale + 0.1, 3.0); // 最大放大3倍
-        this.updateZoom();
-        this.refreshPage();
-    }
-
-    zoomOut() {
-        this.scale = Math.max(this.scale - 0.1, 0.5); // 最小缩小0.5倍
-        this.updateZoom();
-        this.refreshPage();
-    }
-
-    fitToWidth() {
-        if (!this.pdfDoc || this.currentPage < 1) return;
-        
-        const container = document.getElementById('pdfPagesContainer');
-        const page = this.canvases.get(this.currentPage);
-        if (!page) return;
-        
-        const containerWidth = container.clientWidth - 40;
-        this.scale = containerWidth / page.width;
-        this.updateZoom();
-        this.refreshPage();
-    }
-
-    fitToPage() {
-        if (!this.pdfDoc || this.currentPage < 1) return;
-        
-        const container = document.getElementById('pdfPagesContainer');
-        const page = this.canvases.get(this.currentPage);
-        if (!page) return;
-        
-        const containerWidth = container.clientWidth - 40;
-        const containerHeight = container.clientHeight - 40;
-        
-        const scaleX = containerWidth / page.width;
-        const scaleY = containerHeight / page.height;
-        
-        this.scale = Math.min(scaleX, scaleY, 2); // 限制最大2倍
-        this.updateZoom();
-        this.refreshPage();
-    }
-
-    updateZoom() {
-        const percent = Math.round(this.scale * 100);
-        document.getElementById('zoomPercent').textContent = `${percent}%`;
-    }
-
-    refreshPage() {
-        // 清除当前页面的缓存
-        this.canvases.delete(this.currentPage);
-        // 重新渲染当前页面
-        this.renderPage(this.currentPage);
-    }
-
-    // 页面导航
-    prevPage() {
-        if (this.currentPage > 1) {
-            this.loadPage(this.currentPage - 1);
+    // 下一页
+  nextPage() {
+        if (this.viewMode === 'single') {
+            if (this.currentPage < this.totalPages) {
+                this.loadPage(this.currentPage + 1);
+            }
+        } else {
+            const pairs = this.calculateSaddlePairs();
+            if (this.currentSpread < pairs.length) {
+                this.goToSaddleSpread(this.currentSpread + 1);
+            }
         }
     }
 
-    nextPage() {
-        if (this.currentPage < this.totalPages) {
-            this.loadPage(this.currentPage + 1);
-        }
-    }
-
+            
     goToPage(pageNum) {
         const page = Math.max(1, Math.min(pageNum, this.totalPages));
-        this.loadPage(page);
-    }
-
-    updatePageInfo() {
-        document.getElementById('pageInfo').textContent = 
-            `第 ${this.currentPage} 页 / 共 ${this.totalPages} 页`;
-        document.getElementById('totalPages').textContent = this.totalPages;
-    }
-
-    // 键盘快捷键
-    handleKeydown(e) {
-          if (e.key === 'Escape' && this.isFullscreen) {
-        e.preventDefault();
-        this.exitFullscreen();
-        return;
-    }
-    
-    // F11 键也支持全屏切换
-    if (e.key === 'F11') {
-        e.preventDefault();
-        if (this.isFullscreen) {
-            this.exitFullscreen();
+        
+        if (this.viewMode === 'saddle') {
+            // 在骑马订模式下，输入的是对开页码
+            const pairs = this.calculateSaddlePairs();
+            const spreadNum = Math.max(1, Math.min(pageNum, pairs.length));
+            this.goToSaddleSpread(spreadNum);
         } else {
-            this.requestFullscreen();
+            // 单页模式下，输入的是单页页码
+            this.loadPage(page);
         }
-        return;
     }
 
-        if (e.target.tagName === 'INPUT') return;
+           updatePageInfo() {
+        const totalPagesEl = document.getElementById('totalPages');
+        if (!totalPagesEl) return;
+        
+        if (this.viewMode === 'saddle') {
+            const pairs = this.calculateSaddlePairs();
+            totalPagesEl.textContent = pairs.length;
+        } else {
+            totalPagesEl.textContent = this.totalPages;
+        }
+    }
+
+
+          handleKeydown(e) {
+        // 阻止默认行为，除非在输入框中
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
         
         switch(e.key) {
+            case 'Escape':
+                if (this.isFullscreen) {
+                    e.preventDefault();
+                    this.exitFullscreen();
+                }
+                break;
             case 'ArrowLeft':
                 e.preventDefault();
                 this.prevPage();
                 break;
             case 'ArrowRight':
+                e.preventDefault();
+                this.nextPage();
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                this.prevPage();
+                break;
+            case 'ArrowDown':
                 e.preventDefault();
                 this.nextPage();
                 break;
@@ -1469,39 +4595,110 @@ exitFullscreenFallback() {
                     this.zoomOut();
                 }
                 break;
-            case '0':
-                if (e.ctrlKey || e.metaKey) {
-                    e.preventDefault();
-                    this.fitToPage();
-                }
+            case 'PageUp':
+                e.preventDefault();
+                this.prevPage();
+                break;
+            case 'PageDown':
+                e.preventDefault();
+                this.nextPage();
                 break;
         }
-    }
 
-    // 显示/隐藏加载状态
-    showLoading(show) {
-        const loadingEl = document.getElementById('pdfLoading');
-        if (loadingEl) {
-            loadingEl.style.display = show ? 'block' : 'none';
+            const modalOverlay = document.getElementById('printModalOverlay');
+    if (modalOverlay && modalOverlay.style.display === 'block') {
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            this.hidePrintModal();
+            return;
         }
     }
-
-    // 显示错误
-    showError(message) {
-        const container = document.getElementById('pdfReader');
-        if (container) {
-            container.innerHTML = `
-                <div class="pdf-error">
-                    <h3>PDF Preview</h3>
-                    <p>${message}</p>
-                    <p>You can still purchase this book and view the full content via the included TF card.</p>
-                </div>
-            `;
-        }
     }
-}
 
-// 修改你的 renderPDFPreview 函数
+
+            showLoading(show) {
+                const loadingEl = document.getElementById('pdfLoading');
+                if (loadingEl) {
+                    loadingEl.style.display = show ? 'block' : 'none';
+                }
+            }
+
+            showError(message) {
+                const container = document.getElementById('pdfReader');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="pdf-error">
+                            <h3>PDF Preview</h3>
+                            <p>${message}</p>
+                        </div>
+                    `;
+                }
+            }
+
+            async requestFullscreen() {
+                const container = document.getElementById('pdfReader');
+                if (!container) return;
+                
+                try {
+                    if (container.requestFullscreen) {
+                        await container.requestFullscreen();
+                    } else if (container.webkitRequestFullscreen) {
+                        await container.webkitRequestFullscreen();
+                    } else if (container.msRequestFullscreen) {
+                        await container.msRequestFullscreen();
+                    }
+                    this.isFullscreen = true;
+                } catch (error) {
+                    console.error('全屏失败:', error);
+                }
+            }
+
+            async exitFullscreen() {
+                try {
+                    if (document.exitFullscreen) {
+                        await document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        await document.webkitExitFullscreen();
+                    }
+                    this.isFullscreen = false;
+                } catch (error) {
+                    console.error('退出全屏失败:', error);
+                }
+            }
+
+            addFullscreenEventListeners() {
+                const fullscreenChangeHandler = () => {
+                    const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+                    this.isFullscreen = isFullscreen;
+                };
+                
+                document.addEventListener('fullscreenchange', fullscreenChangeHandler);
+                document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler);
+            }
+        }
+
+        // 示例：初始化PDF阅读器
+        async function initPDFViewer() {
+            const product = {
+                pdfUrl: 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf'
+            };
+            
+            const pdfReader = new PDFReader();
+            await pdfReader.init(product);
+            window.pdfReader = pdfReader;
+        }
+
+        // 页面加载后初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPDFViewer);
+        } else {
+            initPDFViewer();
+        }
+
+
+
+        
+
 async function renderPDFPreview(product) {
     const detailsEl = document.getElementById('productDetails');
     if (!detailsEl) return;
@@ -1520,7 +4717,6 @@ async function renderPDFPreview(product) {
         showSimplePreview(product);
     }
 }
-
 
 
 
@@ -1657,14 +4853,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     pdfUrl: '/images/library/ground-ip/001.pdf',
                     variants: {
                         'a': {
-                            name: 'Chinese Ver.',
+                            name: 'Simplified Chinese',
                             image: '',
-                            description: '中文版'
+                            description: '简中'
                         },
-                        'b': {
-                            name: 'English Ver.',
+                         'b': {
+                            name: 'Traditional Chinese',
                             image: '',
-                            description: '英文版'
+                            description: '繁中'
+                        },
+                        'c': {
+                            name: 'English',
+                            image: '',
+                            description: '英文'
                         },
                                         
                     },
@@ -1807,6 +5008,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 
 
             }
+
+
+
+
+
+
 
             // 更新页面内容
             function updatePageContent(product, productId) {
@@ -2191,4 +5398,4 @@ function showButtonSuccess(button, originalText) {
 
             // SPA导航后重新初始化
             window.addEventListener('contentPageLoaded', initContentPage);
-        })();</script><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.ce885c7f7bfcf71c21e1.js"></script><script defer="defer" src="/js/global.29ae42a5a12d3894d4f3.js"></script></body>
+        })();</script>
