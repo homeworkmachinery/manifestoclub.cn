@@ -254,7 +254,105 @@
     .game-desc {
         font-size: 11px;
         opacity: 0.8;
-    }</style><link href="/css/styles.0b20e319a95fb4e8d812.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>BOOKS</h1><a data-page="ground-ip" class="back-btn">← BACK TO GROUND</a></div><div class="panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-name" id="productTitle">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info"></div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button></div><div class="product-details"><div class="details-content" id="productDetails"></div></div></div><div class="print-modal-overlay" id="printModalOverlay"><div class="print-modal"><div class="print-modal-header"><h3>Select Print Pages</h3><button class="close-modal-btn" id="closePrintModalBtn">×</button></div><div class="print-modal-content" id="printModalContent"></div><div class="print-modal-footer"><button class="cancel-btn" id="cancelPrintBtn">Cancel</button> <button class="confirm-print-btn" id="confirmPrintBtn" disabled="disabled">Print Selected Pages</button></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.fbdc55655fe396dc35b9.js"></script></body><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="/lib/pdfReader.js"></script><script>(function () {
+    }
+
+
+@media (max-width: 768px) {
+    
+    .container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0;
+    }
+  
+  
+ 
+      .panel-left {
+      
+        width: 100%;
+        box-sizing: border-box;
+        position: relative;
+        background: transparent !important; /* 强制透明背景 */
+        border: 2px solid black;
+        overflow: hidden;
+        z-index: 1; /* 降低z-index */
+    }
+  .container {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    
+
+    
+    /* 修复7：body默认边距 */
+    body {
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow-x: hidden; /* 防止水平滚动 */
+    }
+    
+    /* 修复8：product-details边距问题 */
+    .product-details {
+        margin-top: 5px;
+        padding: 0 !important;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    /* 修复9：确保所有元素都正确盒模型 */
+    * {
+        box-sizing: border-box;
+    }
+
+  .panel-right {
+        grid-column: 1;
+        grid-row: 3;
+        width: 100%;
+        order: 3;
+        position: relative;
+        right: auto;
+        top: auto;
+        margin-top: 0px;
+   
+    }
+    
+
+}
+
+
+  @media(max-width:768px) {
+        .game-options {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .nav-header {
+            margin-top: -20px;
+            width: calc(100% - 20px);
+        }
+
+        .panel-left {
+            width: 100%;
+            margin-top: 55px;
+        }
+
+        .panel-right {
+            position: relative;
+            width: 100%;
+            right: 0px;
+            top: -10px;
+            padding: 15px;
+        }
+
+        .product-details {
+            width: 100%;
+            right: 0px;
+            top: 0px;
+            margin-top: 5px;
+            padding: 5px;
+        }
+    }</style><link href="/css/styles.b042754357efc2e19b1c.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>BOOKS</h1><a data-page="ground-ip" class="back-btn">← BACK TO GROUND</a></div><div class="panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-name" id="productTitle">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info"></div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button></div><div class="product-details"><div class="details-content" id="productDetails"></div></div></div><div class="print-modal-overlay" id="printModalOverlay"><div class="print-modal"><div class="print-modal-header"><h3>Select Print Pages</h3><button class="close-modal-btn" id="closePrintModalBtn">×</button></div><div class="print-modal-content" id="printModalContent"></div><div class="print-modal-footer"><button class="cancel-btn" id="cancelPrintBtn">Cancel</button> <button class="confirm-print-btn" id="confirmPrintBtn" disabled="disabled">Print Selected Pages</button></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.d3e7bfb9867a43954787.js"></script></body><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="/lib/pdfReader.js"></script><script>(function () {
     
             function syncPanelHeights() {
     const leftPanel = document.querySelector('.panel-left');
@@ -380,21 +478,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     title:"从盗版印刷机到封建数字社会",
                     price: '¥45',
                     category: 'Game Cartridge',
-                    mainImage: '',
+                    mainImage: '/images/library/ground-ip/001/000.png',
                     // pdfUrl: '/images/library/ground-ip/001.pdf',
-                    imagesFolder:'/images/library/ground-ip/从盗版印刷机到封建数字社会',
+                    imagesFolder:'/images/library/ground-ip/001',
                     variants: {
                         'a': {
                             name: 'Simplified Chinese',
                             image: '',
                             description: '简中'
                         },
-                         'b': {
-                            name: 'Traditional Chinese',
-                            image: '',
-                            description: '繁中'
-                        },
-                        'c': {
+                      
+                        'b': {
                             name: 'English',
                             image: '',
                             description: '英文'
