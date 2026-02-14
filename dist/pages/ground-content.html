@@ -55,7 +55,7 @@
 
 
     /* 左侧图片区域 */
-    .panel-left {
+    .gound-panel-left {
     grid-column: 1;
     margin-top: 60px;
     border: 2px solid black;
@@ -64,7 +64,7 @@
     /* 高度将由JavaScript设置 */
 }
 
-.panel-left img {
+.gound-panel-left img {
     width: 100%;
     height: 100%; /* 填充整个容器 */
     object-fit: cover; /* 关键：裁剪以填充 */
@@ -74,7 +74,7 @@
 
 
     /* 右侧信息区域 */
-    .panel-right {
+    .ground-panel-right {
         grid-column: 2;
     grid-row: 1;
     padding: 30px;
@@ -269,7 +269,7 @@
   
   
  
-      .panel-left {
+      .gound-panel-left {
       
         width: 100%;
         box-sizing: border-box;
@@ -306,7 +306,7 @@
         box-sizing: border-box;
     }
 
-  .panel-right {
+  .ground-panel-right {
         grid-column: 1;
         grid-row: 3;
         width: 100%;
@@ -332,12 +332,12 @@
             width: calc(100% - 20px);
         }
 
-        .panel-left {
+        .gound-panel-left {
             width: 100%;
             margin-top: 55px;
         }
 
-        .panel-right {
+        .ground-panel-right {
             position: relative;
             width: 100%;
             right: 0px;
@@ -352,11 +352,11 @@
             margin-top: 5px;
             padding: 5px;
         }
-    }</style><link href="/css/styles.be19bfa06594d6bc6a70.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>BOOKS</h1><a data-page="ground-ip" class="back-btn">← BACK TO GROUND</a></div><div class="panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-name" id="productTitle">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info"></div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button></div><div class="product-details"><div class="details-content" id="productDetails"></div></div></div><div class="print-modal-overlay" id="printModalOverlay"><div class="print-modal"><div class="print-modal-header"><h3>Select Print Pages</h3><button class="close-modal-btn" id="closePrintModalBtn">×</button></div><div class="print-modal-content" id="printModalContent"></div><div class="print-modal-footer"><button class="cancel-btn" id="cancelPrintBtn">Cancel</button> <button class="confirm-print-btn" id="confirmPrintBtn" disabled="disabled">Print Selected Pages</button></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.d2a7b06a6560f7710c0e.js"></script></body><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="/lib/pdfReader.js"></script><script>(function () {
+    }</style><link href="/css/styles.a4746b0cd7cf4555c38c.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>BOOKS</h1><a data-page="ground-ip" class="back-btn">← BACK TO GROUND</a></div><div class="gound-panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="ground-panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-name" id="productTitle">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info"></div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button></div><div class="product-details"><div class="details-content" id="productDetails"></div></div></div><div class="print-modal-overlay" id="printModalOverlay"><div class="print-modal"><div class="print-modal-header"><h3>Select Print Pages</h3><button class="close-modal-btn" id="closePrintModalBtn">×</button></div><div class="print-modal-content" id="printModalContent"></div><div class="print-modal-footer"><button class="cancel-btn" id="cancelPrintBtn">Cancel</button> <button class="confirm-print-btn" id="confirmPrintBtn" disabled="disabled">Print Selected Pages</button></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.674b31da26dd4b84759a.js"></script></body><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="/lib/pdfReader.js"></script><script>(function () {
     
             function syncPanelHeights() {
-    const leftPanel = document.querySelector('.panel-left');
-    const rightPanel = document.querySelector('.panel-right');
+    const leftPanel = document.querySelector('.gound-gound-panel-left');
+    const rightPanel = document.querySelector('.ground-panel-right');
     
     if (!leftPanel || !rightPanel) return;
     
@@ -481,6 +481,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     mainImage: '/images/library/ground-ip/001/000.png',
                     // pdfUrl: '/images/library/ground-ip/001.pdf',
                     imagesFolder:'/images/library/ground-ip/001',
+                    totalPages: 34,
                     variants: {
                         'a': {
                             name: 'Simplified Chinese',
