@@ -55,7 +55,7 @@
 
 
     /* 左侧图片区域 */
-    .gound-panel-left {
+    .ground-panel-left {
     grid-column: 1;
     margin-top: 60px;
     border: 2px solid black;
@@ -64,7 +64,7 @@
     /* 高度将由JavaScript设置 */
 }
 
-.gound-panel-left img {
+.ground-panel-left img {
     width: 100%;
     height: 100%; /* 填充整个容器 */
     object-fit: cover; /* 关键：裁剪以填充 */
@@ -154,7 +154,7 @@
     grid-column: 1 / span 2;
     grid-row: 2;
     width: 100%;
-    margin-top: 20px;
+  
 }
 
     .details-header {
@@ -269,7 +269,7 @@
   
   
  
-      .gound-panel-left {
+      .ground-panel-left {
       
         width: 100%;
         box-sizing: border-box;
@@ -278,6 +278,9 @@
         border: 2px solid black;
         overflow: hidden;
         z-index: 1; /* 降低z-index */
+        margin-bottom: 10px;
+      
+      
     }
   .container {
         margin-top: 0 !important;
@@ -295,7 +298,7 @@
     
     /* 修复8：product-details边距问题 */
     .product-details {
-        margin-top: 5px;
+      
         padding: 0 !important;
         width: 100%;
         box-sizing: border-box;
@@ -332,30 +335,120 @@
             width: calc(100% - 20px);
         }
 
-        .gound-panel-left {
-            width: 100%;
-            margin-top: 55px;
-        }
-
+     
         .ground-panel-right {
             position: relative;
             width: 100%;
             right: 0px;
             top: -10px;
             padding: 15px;
+            margin-top: 20px;
         }
 
         .product-details {
             width: 100%;
             right: 0px;
             top: 0px;
-            margin-top: 5px;
+         
             padding: 5px;
         }
-    }</style><link href="/css/styles.a4746b0cd7cf4555c38c.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>BOOKS</h1><a data-page="ground-ip" class="back-btn">← BACK TO GROUND</a></div><div class="gound-panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="ground-panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-name" id="productTitle">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info"></div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button></div><div class="product-details"><div class="details-content" id="productDetails"></div></div></div><div class="print-modal-overlay" id="printModalOverlay"><div class="print-modal"><div class="print-modal-header"><h3>Select Print Pages</h3><button class="close-modal-btn" id="closePrintModalBtn">×</button></div><div class="print-modal-content" id="printModalContent"></div><div class="print-modal-footer"><button class="cancel-btn" id="cancelPrintBtn">Cancel</button> <button class="confirm-print-btn" id="confirmPrintBtn" disabled="disabled">Print Selected Pages</button></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.674b31da26dd4b84759a.js"></script></body><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="/lib/pdfReader.js"></script><script>(function () {
+    }
+
+.spec-item {
+    display: flex;
+    align-items: baseline;
+    line-height: 1.5;
+
+}
+
+  /* 在现有CSS中添加 */
+.details-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 20px;
+    width: 100%;
+    border: 2px solid black; /* 整体外边框 */
+}
+
+.description {
+    border: none;
+    border-right: 2px solid black; /* 右侧边框作为分隔线 */
+    padding: 15px;
+}
+
+.author {
+    border: none;
+    padding: 15px;
+}
+
+/* 规格样式 */
+
+/* 作者信息样式 */
+.author-content {
+    line-height: 1.5;
+}
+
+.author-content p {
+   
+}
+
+.author-content .author-bio {
+    font-style: italic;
+  
+}
+
+.author-content .author-social {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+}
+
+.author-social a {
+    color: black;
+    text-decoration: underline;
+}
+
+
+
+/* 响应式调整 - 手机端 */
+@media (max-width: 768px) {
+    .details-split {
+        grid-template-columns: 1fr;
+        border: 2px solid black;
+        margin-bottom: 10px;
+    }
+ .container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0;
+        gap: 0; /* 添加这行，移除gap */
+    }
+    
+    .description {
+        border-right: none; /* 移除右侧边框 */
+        border-bottom: 2px solid black; /* 添加底部边框作为分隔 */
+        padding: 15px;
+    }
+    
+    .author {
+        padding: 15px;
+    }
+    
+    /* 手机端规格标签宽度调整 */
+    .spec-label {
+        width: 40%; /* 稍微增加标签宽度 */
+    }
+    
+    .spec-value {
+        width: 60%;
+    }
+ 
+}</style><link href="/css/styles.a4746b0cd7cf4555c38c.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>BOOKS</h1><a data-page="ground-ip" class="back-btn">← BACK TO GROUND</a></div><div class="ground-panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="ground-panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-name" id="productTitle">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info"></div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button></div><div class="product-details"><div class="details-split"><div class="description"></div><div class="author"></div></div><div class="details-content" id="productDetails"></div></div></div><div class="print-modal-overlay" id="printModalOverlay"><div class="print-modal"><div class="print-modal-header"><h3>Select Print Pages</h3><button class="close-modal-btn" id="closePrintModalBtn">×</button></div><div class="print-modal-content" id="printModalContent"></div><div class="print-modal-footer"><button class="cancel-btn" id="cancelPrintBtn">Cancel</button> <button class="confirm-print-btn" id="confirmPrintBtn" disabled="disabled">Print Selected Pages</button></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.6634890415c7561c86dd.js"></script></body><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="/lib/pdfReader.js"></script><script>(function () {
     
             function syncPanelHeights() {
-    const leftPanel = document.querySelector('.gound-gound-panel-left');
+    const leftPanel = document.querySelector('.ground-panel-left');
     const rightPanel = document.querySelector('.ground-panel-right');
     
     if (!leftPanel || !rightPanel) return;
@@ -488,7 +581,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             image: '',
                             description: '简中'
                         },
-                      
                         'b': {
                             name: 'English',
                             image: '',
@@ -496,10 +588,43 @@ document.addEventListener('DOMContentLoaded', function() {
                         },
                                         
                     },
+   author: {
+            name: '作者姓名',
+            bio: '作者简介文字，可以包含多行内容。这里描述作者的背景、创作理念等。',
+            social: {
+                instagram: '@author_handle',
+                twitter: '@author_handle',
+                website: 'homeworkmachinery.host'
+            },
+            // 或者直接使用HTML格式
+            html: `
+                <div class="author-content">
+                    <p><strong>Author:</strong> buzhang</p>
+                    <p><strong>Manifesto:</strong> savebuzhang</p>
 
-                    description: `
-                
-                    `
+                    <p class="author-bio"></p>
+                    <div class="author-social">
+                        <span>Instagram: <a href="https://www.instagram.com/savebuzhang/" targrt="_blank"> @savebuzhang </a></span><br>
+                        <span>Wechat: ManifestoClub</span>
+                    
+                    </div>
+                </div>
+            `
+        },
+ specifications: {
+    html: `
+        <div class="specs-list">
+            <div class="spec-item"><strong>Pages:</strong>  34 pages</div>
+            <div class="spec-item"><strong>Dimensions:</strong>  75mm (width)</div>
+            <div class="spec-item"><strong>Paper:</strong>  Single-sided thermal triple-protection paper</div>
+            <div class="spec-item"><strong>Printing Method:</strong>  Thermal printing</div>
+            <div class="spec-item"><strong>Binding:</strong>  Hand-bound + machine punched</div>
+            <div class="spec-item"><strong>Language:</strong>  Simplified Chinese</div>
+        </div>
+    `
+},
+        
+                   
                 }
             };
 
@@ -636,8 +761,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
             // 更新页面内容
-            function updatePageContent(product, productId) {
-    // 更新产品信息（原有的代码）
+ function updatePageContent(product, productId) {
     const mainImage = document.getElementById('mainImage');
     if (mainImage) {
         mainImage.src = product.mainImage || `/images/merch/${productId}.jpg`;
@@ -659,16 +783,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 特殊处理：如果是书籍产品，显示PDF预览
-    if (productId === '001') { // 你的书籍产品ID
-        renderPDFPreview(product);
-    } else {
-        // 其他产品显示普通详情
-        const detailsEl = document.getElementById('productDetails');
-        if (detailsEl) {
-            detailsEl.innerHTML = product.description || '';
-        }
-    }
+    // 渲染作者信息
+    renderAuthorInfo(product);
+    
+    // 渲染产品规格
+    renderProductSpecifications(product, productId);
 
     // 存储当前产品信息
     window.currentProduct = {
@@ -680,6 +799,81 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Product loaded successfully:', product.name);
 }
 
+// 新增：渲染作者信息
+function renderAuthorInfo(product) {
+    const authorEl = document.querySelector('.author');
+    if (!authorEl) return;
+    
+    if (product.author) {
+        // 如果有自定义的HTML，直接使用
+        if (product.author.html) {
+            authorEl.innerHTML = product.author.html;
+        } 
+        // 否则从结构化数据生成
+        else {
+            let authorHTML = '<h3>About the Author</h3>';
+            authorHTML += '<div class="author-content">';
+            
+            if (product.author.name) {
+                authorHTML += `<p><strong>Author:</strong> ${product.author.name}</p>`;
+            }
+            
+            if (product.author.bio) {
+                authorHTML += `<p class="author-bio">${product.author.bio}</p>`;
+            }
+            
+            if (product.author.social) {
+                authorHTML += '<div class="author-social">';
+                Object.entries(product.author.social).forEach(([platform, handle]) => {
+                    authorHTML += `<p>${platform}: ${handle}</p>`;
+                });
+                authorHTML += '</div>';
+            }
+            
+            authorHTML += '</div>';
+            authorEl.innerHTML = authorHTML;
+        }
+    } else {
+        // 如果没有作者信息，显示占位内容
+        authorEl.innerHTML = `
+            <h3>About the Author</h3>
+            <div class="author-content">
+                <p>Information not available</p>
+            </div>
+        `;
+    }
+}
+
+function renderProductSpecifications(product, productId) {
+    const descriptionEl = document.querySelector('.description');
+    if (!descriptionEl) return;
+
+    // 直接使用specifications中的HTML
+    if (product.specifications && product.specifications.html) {
+        descriptionEl.innerHTML = product.specifications.html;
+    } else {
+        descriptionEl.innerHTML = '<p>No specifications available</p>';
+    }
+
+    // 如果是书籍产品，在details-content中显示PDF预览
+    if (productId === '001') {
+        const detailsContentEl = document.getElementById('productDetails');
+        if (detailsContentEl) {
+            detailsContentEl.innerHTML = `
+                <div class="pdf-preview-section">
+                    <h3>Preview</h3>
+                    <div id="pdfViewer" class="pdf-viewer-container">
+                        <!-- PDF.js 会在这里渲染 -->
+                    </div>
+                </div>
+            `;
+            // 调用PDF预览函数
+            if (typeof renderPDFPreview === 'function') {
+                renderPDFPreview(product);
+            }
+        }
+    }
+}
 
             // 显示错误信息
             function showError() {
