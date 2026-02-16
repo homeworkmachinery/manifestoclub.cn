@@ -55,13 +55,15 @@
 
 
     /* 左侧图片区域 */
-    .ground-panel-left {
+ .ground-panel-left {
     grid-column: 1;
     margin-top: 60px;
-    border: 2px solid black;
-    overflow: hidden; /* 确保图片超出时被裁剪 */
+    border: 2px solid black; /* 边框会占用空间，但不影响内部填充 */
+    overflow: hidden;
     position: relative;
-    /* 高度将由JavaScript设置 */
+    padding: 0;
+    line-height: 0; /* 添加这行，移除可能的行高带来的额外空间 */
+    font-size: 0; /* 添加这行，移除可能的字体带来的额外空间 */
 }
 
 .ground-panel-left img {
@@ -93,23 +95,24 @@
 
     .product-name {
         font-style: italic;
+          margin-bottom: 10px;
     }
 
     .product-year {
         font-size: 16px;
         color: #666;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
 
     .product-price {
         font-size: 32px;
         font-weight: bold;
         color: black;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
 
     .product-category {
-        margin-bottom: 15px;
+        margin-bottom: 10px;
     }
 
     .category-label {
@@ -135,7 +138,7 @@
         font-weight: bold;
         cursor: pointer;
         transition: all 0.3s ease;
-        margin-bottom: 20px;
+       
     }
 
 
@@ -408,7 +411,94 @@
     text-decoration: underline;
 }
 
+/* --- 轮播图专用样式 --- */
+.carousel-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-color: transparent; /* 修改：从 #f9f9f9 改为 transparent */
+    margin: 0; /* 确保没有外边距 */
+    padding: 0; /* 确保没有内边距 */
+}
+.carousel-slide {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    z-index: 1;
+     margin: 0; /* 确保没有外边距 */
+    padding: 0; /* 确保没有内边距 */
+}
 
+.carousel-slide.active {
+    opacity: 1;
+    z-index: 2;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 保持填充且不变形 */
+    object-position: center;
+    display: block;
+    margin: 0; /* 确保没有外边距 */
+    border: none;
+    padding: 0; /* 确保没有内边距 */
+}
+
+/* 导航按钮 */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.7);
+    border: 2px solid black;
+    color: black;
+    font-size: 20px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+   
+}
+
+.carousel-btn:hover {
+    background: black;
+    color: white;
+}
+
+.prev-btn { left: 10px; }
+.next-btn { right: 10px; }
+
+/* 底部指示点 */
+.carousel-indicators {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.indicator {
+    width: 10px;
+    height: 10px;
+    border: 2px solid black;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.indicator.active {
+    background: black;
+}
 
 /* 响应式调整 - 手机端 */
 @media (max-width: 768px) {
@@ -445,7 +535,7 @@
         width: 60%;
     }
  
-}</style><link href="/css/styles.a4746b0cd7cf4555c38c.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>BOOKS</h1><a data-page="ground-ip" class="back-btn">← BACK TO GROUND</a></div><div class="ground-panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="ground-panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-name" id="productTitle">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info"></div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button></div><div class="product-details"><div class="details-split"><div class="description"></div><div class="author"></div></div><div class="details-content" id="productDetails"></div></div></div><div class="print-modal-overlay" id="printModalOverlay"><div class="print-modal"><div class="print-modal-header"><h3>Select Print Pages</h3><button class="close-modal-btn" id="closePrintModalBtn">×</button></div><div class="print-modal-content" id="printModalContent"></div><div class="print-modal-footer"><button class="cancel-btn" id="cancelPrintBtn">Cancel</button> <button class="confirm-print-btn" id="confirmPrintBtn" disabled="disabled">Print Selected Pages</button></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.6634890415c7561c86dd.js"></script></body><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="/lib/pdfReader.js"></script><script>(function () {
+}</style><link href="/css/styles.61306649cf83a94f7bf6.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>BOOKS</h1><a data-page="ground-ip" class="back-btn">← BACK TO GROUND</a></div><div class="ground-panel-left" id="carouselWrapper"></div><div class="ground-panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-name" id="productTitle">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info"></div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button></div><div class="product-details"><div class="details-split"><div class="description"></div><div class="author"></div></div><div class="details-content" id="productDetails"></div></div></div><div class="print-modal-overlay" id="printModalOverlay"><div class="print-modal"><div class="print-modal-header"><h3>Select Print Pages</h3><button class="close-modal-btn" id="closePrintModalBtn">×</button></div><div class="print-modal-content" id="printModalContent"></div><div class="print-modal-footer"><button class="cancel-btn" id="cancelPrintBtn">Cancel</button> <button class="confirm-print-btn" id="confirmPrintBtn" disabled="disabled">Print Selected Pages</button></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.6634890415c7561c86dd.js"></script></body><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="/lib/pdfReader.js"></script><script>(function () {
     
             function syncPanelHeights() {
     const leftPanel = document.querySelector('.ground-panel-left');
@@ -572,6 +662,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     price: '¥45',
                     category: 'Game Cartridge',
                     mainImage: '/images/library/ground-ip/001/000.png',
+                    galleryFolder: '/images/library/ground-ip/gallery/001',
+                    galleryImages: ['000.png', '001.png', 'detail.png', 'back.png'],
                     // pdfUrl: '/images/library/ground-ip/001.pdf',
                     imagesFolder:'/images/library/ground-ip/001',
                     totalPages: 34,
@@ -618,8 +710,8 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="spec-item"><strong>Dimensions:</strong>  75mm (width)</div>
             <div class="spec-item"><strong>Paper:</strong>  Single-sided thermal triple-protection paper</div>
             <div class="spec-item"><strong>Printing Method:</strong>  Thermal printing</div>
-            <div class="spec-item"><strong>Binding:</strong>  Hand-bound + machine punched</div>
-            <div class="spec-item"><strong>Language:</strong>  Simplified Chinese</div>
+            <div class="spec-item"><strong>Binding:</strong>  Hand-bound + Machine punched</div>
+            <div class="spec-item"><strong>Language:</strong>  Simplified Chinese / English</div>
         </div>
     `
 },
@@ -760,13 +852,124 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+// 轮播图状态
+let currentSlideIndex = 0;
+let slideImages = [];
+
+function renderCarousel(product) {
+    const wrapper = document.getElementById('carouselWrapper');
+    if (!wrapper) return;
+
+    wrapper.innerHTML = ''; // 清空旧内容
+    currentSlideIndex = 0;
+    slideImages = [];
+
+    // --- 逻辑核心：决定使用哪些图片 ---
+    // 优先查找 galleryFolder (轮播图专用)
+    if (product.galleryFolder && product.galleryImages && product.galleryImages.length > 0) {
+        // 拼接路径：文件夹 + 文件名
+        slideImages = product.galleryImages.map(file => `${product.galleryFolder}/${file}`);
+    } 
+    // 后备方案：如果没有配置 gallery，则使用原来的 mainImage
+    else {
+        const defaultImg = product.mainImage || `/images/merch/${product.id}.jpg`;
+        slideImages = [defaultImg];
+    }
+
+    // --- 构建 HTML ---
+    const container = document.createElement('div');
+    container.className = 'carousel-container';
+
+    let slidesHtml = '';
+
+    
+    slideImages.forEach((src, index) => {
+        const isActive = index === 0 ? 'active' : '';
+        // 给第一张图加上 id="mainImage"，保证你原有的高度同步代码(syncPanelHeights)能找到它
+        const idAttr = index === 0 ? 'id="mainImage"' : '';
+        
+        slidesHtml += `
+            <div class="carousel-slide ${isActive}" data-index="${index}">
+                <img src="${src}" ${idAttr} alt="Slide ${index}">
+            </div>
+        `;
+    });
+
+    // 只有当图片大于1张时，才显示导航按钮
+    let controlsHtml = '';
+    if (slideImages.length > 1) {
+        controlsHtml = `
+            <button class="carousel-btn prev-btn">❮</button>
+            <button class="carousel-btn next-btn">❯</button>
+            <div class="carousel-indicators">
+                ${slideImages.map((_, idx) => 
+                    `<div class="indicator ${idx === 0 ? 'active' : ''}" data-index="${idx}"></div>`
+                ).join('')}
+            </div>
+        `;
+    }
+
+    container.innerHTML = slidesHtml + controlsHtml;
+    wrapper.appendChild(container);
+
+    // --- 绑定事件 ---
+    if (slideImages.length > 1) {
+        // 按钮点击
+        container.querySelector('.prev-btn').addEventListener('click', () => moveSlide(-1));
+        container.querySelector('.next-btn').addEventListener('click', () => moveSlide(1));
+        
+        // 指示点点击
+        container.querySelectorAll('.indicator').forEach(dot => {
+            dot.addEventListener('click', (e) => {
+                const idx = parseInt(e.target.dataset.index);
+                goToSlide(idx);
+            });
+        });
+    }
+
+    // --- 关键：触发图片加载后的高度同步 ---
+    const mainImgEl = document.getElementById('mainImage');
+    if (mainImgEl) {
+        mainImgEl.onload = function() {
+            // 调用你原有的同步高度函数
+            if (typeof syncPanelHeights === 'function') {
+                syncPanelHeights();
+            }
+        };
+    }
+}
+
+// 切换逻辑
+function moveSlide(step) {
+    let newIndex = currentSlideIndex + step;
+    if (newIndex >= slideImages.length) newIndex = 0;
+    if (newIndex < 0) newIndex = slideImages.length - 1;
+    goToSlide(newIndex);
+}
+
+function goToSlide(index) {
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dots = document.querySelectorAll('.indicator');
+    
+    if (!slides.length) return;
+
+    // 移除旧状态
+    slides[currentSlideIndex].classList.remove('active');
+    if (dots.length) dots[currentSlideIndex].classList.remove('active');
+
+    // 更新索引
+    currentSlideIndex = index;
+
+    // 添加新状态
+    slides[currentSlideIndex].classList.add('active');
+    if (dots.length) dots[currentSlideIndex].classList.add('active');
+}
+
+
+
             // 更新页面内容
  function updatePageContent(product, productId) {
-    const mainImage = document.getElementById('mainImage');
-    if (mainImage) {
-        mainImage.src = product.mainImage || `/images/merch/${productId}.jpg`;
-        mainImage.alt = product.name;
-    }
+   renderCarousel(product);
 
     // 更新产品信息
     const elements = {
