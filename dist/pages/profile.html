@@ -1,4 +1,4 @@
-<head><link href="/css/styles.61306649cf83a94f7bf6.css" rel="stylesheet"></head><style data-page="profile">* {
+<head><link href="/css/styles.ba7d4d7f4b5804505595.css" rel="stylesheet"></head><style data-page="profile">* {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
@@ -322,4 +322,47 @@
 
 
 
-      } */</style><div class="container"><div class="left-panel"><div class="menu-item active" data-target="library">LIBRARY</div><div class="menu-item" data-target="draft">DRAFT</div><div class="menu-item" data-target="order">ORDER</div><div class="menu-item" data-target="setting">SETTING</div><div class="member-code-container"><img id="member-barcode-complete" alt="Member Code and Barcode" style="display: none;"></div></div><div class="right-panel"><div class="content-section" id="library"></div><div class="content-section" id="draft"></div><div class="content-section" id="order"></div><div class="content-section" id="setting"></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.6634890415c7561c86dd.js"></script><script defer="defer" src="/js/page-profile.fac2c48c9429dee01e38.js"></script>
+      } */
+
+       .avatar-container {
+    margin-bottom: 20px;
+}
+
+#user-avatar-display img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-upload-section {
+    margin-bottom: 20px;
+}
+
+.avatar-preview {
+    width: 150px;
+    height: 150px;
+    border: 2px solid black;
+    margin: 10px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #f0f0f0;
+}
+
+.avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-preview-icon {
+    font-size: 64px;
+    color: #ccc;
+}
+
+@media(max-width:899px) {
+    .avatar-container {
+        display: none;
+    }
+}</style><div class="container"><div class="left-panel"><div class="menu-item active" data-target="library">LIBRARY</div><div class="menu-item" data-target="draft">DRAFT</div><div class="menu-item" data-target="order">ORDER</div><div class="menu-item" data-target="setting">SETTING</div><div class="avatar-container"><div id="user-avatar-display" style="width: 100%; aspect-ratio: 1/1; border: 2px solid black; background: #f0f0f0; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer;" onclick="if(document.querySelector('.menu-item[data-target=setting]')) document.querySelector('.menu-item[data-target=setting]').click();"><span style="font-size: 48px; color: #ccc;">👤</span></div></div><div class="member-code-container"><img id="member-barcode-complete" alt="Member Code and Barcode" style="display: none;"></div></div><div class="right-panel"><div class="content-section" id="library"></div><div class="content-section" id="draft"></div><div class="content-section" id="order"></div><div class="content-section" id="setting"></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.6634890415c7561c86dd.js"></script><script defer="defer" src="/js/page-profile.b4a46b0adcfdb9fd9753.js"></script>

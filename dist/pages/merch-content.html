@@ -318,7 +318,7 @@
             margin-top: 5px;
             padding: 5px;
         }
-    }</style><link href="/css/styles.61306649cf83a94f7bf6.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>DETAILS</h1><a data-page="merch" class="back-btn">← BACK TO SHOP</a></div><div class="panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-year" id="productYear">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info">✓ In Stock - Ready to Ship</div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button><div class="product-category"><div class="category-label">CATEGORY</div><span class="category-value" id="productCategory">Console</span></div></div><div class="product-details"><div class="details-content" id="productDetails"></div></div></div><script>(function () {
+    }</style><link href="/css/styles.ba7d4d7f4b5804505595.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>DETAILS</h1><a data-page="merch" class="back-btn">← BACK TO SHOP</a></div><div class="panel-left"><img id="mainImage" src="" alt="Product Image"></div><div class="panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-year" id="productYear">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info">✓ In Stock - Ready to Ship</div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button><div class="product-category"><div class="category-label">CATEGORY</div><span class="category-value" id="productCategory">Console</span></div></div><div class="product-details"><div class="details-content" id="productDetails"></div></div></div><script>(function () {
 
             async function getCurrentUser() {
                 // 优先使用 authManager
@@ -630,7 +630,7 @@
             // 加载产品信息
             function loadProduct() {
                 console.log('Content page: Loading product information...');
-
+  window._groundContentAborted = false;
                 let productId = null;
 
                 // 优先从URL参数获取
@@ -670,6 +670,7 @@
 
                 // 缓存产品
                 PRODUCT_CACHE.set(productId, product);
+                   if (window._groundContentAborted) return;
                 updatePageContent(product, productId);
             }
 
@@ -760,7 +761,18 @@
                 const backBtn = document.querySelector('.back-btn');
                 if (backBtn) {
                     backBtn.addEventListener('click', function (e) {
-                        e.preventDefault();
+                        
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        // 立即中断所有进行中的加载
+        window._groundContentAborted = true;
+
+        // 中断图片加载
+        document.querySelectorAll('#carouselWrapper img').forEach(img => {
+            img.src = '';
+        });
                         // 使用路由导航返回商品列表页
                         if (window.router && window.router.navigate) {
                             window.router.navigate('merch');
