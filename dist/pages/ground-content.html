@@ -108,7 +108,7 @@
         font-size: 32px;
         font-weight: bold;
         color: black;
-        margin-bottom: 10px;
+       
     }
 
     .product-category {
@@ -156,7 +156,7 @@
     /* 详情区域 */
     .product-details {
     grid-column: 1 / span 2;
-    grid-row: 2;
+    grid-row: 3;
     width: 100%;
   
 }
@@ -555,7 +555,13 @@
 .indicator.active {
     background: black;
 }
-
+.book-description{
+    border: 2px solid black;
+    grid-column: 1 / span 2;
+    grid-row: 2;
+    width: 100%;
+    padding:10PX;
+}
 /* 响应式调整 - 手机端 */
 @media (max-width: 768px) {
     .image-zoom-modal img {
@@ -587,7 +593,9 @@
     .author {
         padding: 15px;
     }
-    
+    .book-description{
+        margin-bottom: 5px;
+    }
     /* 手机端规格标签宽度调整 */
     .spec-label {
         width: 40%; /* 稍微增加标签宽度 */
@@ -597,7 +605,11 @@
         width: 60%;
     }
  
-}</style><link href="/css/styles.ba7d4d7f4b5804505595.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>BOOKS</h1><a data-page="ground-ip" class="back-btn">← BACK TO GROUND</a></div><div class="ground-panel-left" id="carouselWrapper"></div><div class="ground-panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-name" id="productTitle">-</p><div class="product-price" id="productPrice">$0</div><div class="stock-info"></div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button></div><div class="product-details"><div class="details-split"><div class="description"></div><div class="author"></div></div><div class="details-content" id="productDetails"></div></div></div><div class="image-zoom-modal" id="imageZoomModal"><img id="zoomedImage" src="" alt="Zoomed Image"></div><div class="print-modal-overlay" id="printModalOverlay"><div class="print-modal"><div class="print-modal-header"><h3>Select Print Pages</h3><button class="close-modal-btn" id="closePrintModalBtn">×</button></div><div class="print-modal-content" id="printModalContent"></div><div class="print-modal-footer"><button class="cancel-btn" id="cancelPrintBtn">Cancel</button> <button class="confirm-print-btn" id="confirmPrintBtn" disabled="disabled">Print Selected Pages</button></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.0e68460741fe647ee200.js"></script></body><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="/lib/pdfReader.js"></script><script>(function () {
+}
+.postage-info {
+    font-size: 14px;
+    margin-bottom: 15px;
+}</style><link href="/css/styles.b5df29d146206732e48f.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>BOOKS</h1><a data-page="ground-ip" class="back-btn">← BACK TO GROUND</a></div><div class="ground-panel-left" id="carouselWrapper"></div><div class="ground-panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-name" id="productTitle">-</p><div class="product-price" id="productPrice">$0</div><div class="postage-info" id="productPostage"></div><div class="stock-info"></div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button></div><div class="book-description"></div><div class="product-details"><div class="details-split"><div class="description"></div><div class="author"></div></div><div class="details-content" id="productDetails"></div></div></div><div class="image-zoom-modal" id="imageZoomModal"><img id="zoomedImage" src="" alt="Zoomed Image"></div><div class="print-modal-overlay" id="printModalOverlay"><div class="print-modal"><div class="print-modal-header"><h3>Select Print Pages</h3><button class="close-modal-btn" id="closePrintModalBtn">×</button></div><div class="print-modal-content" id="printModalContent"></div><div class="print-modal-footer"><button class="cancel-btn" id="cancelPrintBtn">Cancel</button> <button class="confirm-print-btn" id="confirmPrintBtn" disabled="disabled">Print Selected Pages</button></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.a4917b0b0ac2c49697e8.js"></script></body><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="/lib/pdfReader.js"></script><script>(function () {
     
             function syncPanelHeights() {
     const leftPanel = document.querySelector('.ground-panel-left');
@@ -722,7 +734,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     name: 'From Pirate Printing Presses to Feudal Digital Societies',
                     title:"从盗版印刷机到封建数字社会",
                     price: '¥45',
-                    category: 'Game Cartridge',
+                    postage:'Free shipping (Mainland China); International shipping fees apply',
+                    category: 'book',
                     mainImage: '/images/library/ground-ip/001/000.png',
                     galleryFolder: '/images/library/ground-ip/gallery/001',
                     galleryImages: ['000.png', '001.png', 'detail.png', 'back.png'],
@@ -741,6 +754,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             description: '英文'
                         },
                                         
+                    },
+                    description:{
+                        html:`这本小册子粗浅记录了我从2018年至2023年的网店经历，从贩卖复刻的摇滚周边海报贴纸到授权的宣言T恤。从知识产权的角度分析了“品牌”背后的脉络与渊源，并展开了正版与盗版、权力与权利的探讨。`
                     },
    author: {
             author: 'buzhang',
@@ -1127,9 +1143,8 @@ function goToSlide(index) {
 
 
 
-            // 更新页面内容
  function updatePageContent(product, productId) {
-   renderCarousel(product);
+    renderCarousel(product);
 
     // 更新产品信息
     const elements = {
@@ -1143,6 +1158,22 @@ function goToSlide(index) {
         const element = document.getElementById(id);
         if (element) {
             element.textContent = content;
+        }
+    }
+
+    // 添加邮费显示
+    const postageEl = document.getElementById('productPostage');
+    if (postageEl && product.postage) {
+        postageEl.textContent = product.postage;
+    }
+
+    // 添加书籍描述显示到 book-description 区域
+    const bookDescEl = document.querySelector('.book-description');
+    if (bookDescEl && product.description) {
+        if (product.description.html) {
+            bookDescEl.innerHTML = product.description.html;
+        } else {
+            bookDescEl.textContent = product.description;
         }
     }
 
@@ -1311,235 +1342,103 @@ function renderProductSpecifications(product, productId) {
             }
 
             // 添加到购物车处理函数
+
+            // 添加到购物车处理函数
 async function handleAddToCart() {
-    const addBtn = document.getElementById('addToCartBtn');
-    if (!addBtn) return;
-    
-    // 保存原始按钮状态
-    const originalText = addBtn.textContent;
-    const originalBg = addBtn.style.backgroundColor || 'black';
-    
-    try {
-        if (!window.currentProduct) {
-            alert('产品信息未加载');
-            restoreButtonState(addBtn, originalText, originalBg);
+        const addBtn = document.getElementById('addToCartBtn');
+        if (!addBtn) return;
+        
+        // 1. 快速检查登录状态 (同步检查，不等待)
+        if (window.authManager && !window.authManager.isAuthenticated()) {
+            alert('Please login first');
+            // 触发登录弹窗逻辑
+            const event = new CustomEvent('showAuthModal', { detail: { message: 'Login required' } });
+            window.dispatchEvent(event);
             return;
         }
 
-        const product = window.currentProduct;
-        console.log('Adding console product to cart:', product.name);
+        const originalText = addBtn.textContent;
+        const originalBg = addBtn.style.backgroundColor || 'black';
 
-        // 显示"添加中"状态
-        addBtn.textContent = 'ADDING...';
-        addBtn.style.backgroundColor = '#666'; // 灰色表示处理中
+        // 2. 立即给予视觉反馈 (Optimistic UI) - 0ms 延迟
+        addBtn.textContent = '✓ ADDED';
+        addBtn.style.backgroundColor = 'black';
         addBtn.disabled = true;
 
-        // 检查用户登录状态
-        const user = await checkUserLogin();
-        if (!user) {
-            restoreButtonState(addBtn, originalText, originalBg);
-            return;
+        // 3. 准备数据
+        const product = window.currentProduct;
+        if (!product) return;
+
+        // 构造 cartItemData (保持你原有的构造逻辑)
+        const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
+        const selectedVariant = product.selectedVariant;
+        const variantSuffix = selectedVariant ? `-${selectedVariant.key}` : '';
+        
+        const cartItemData = {
+            // user_id 会在 CartManager 内部获取，这里主要传内容
+            draftId: null, // 如果是 console
+            sizeQuantities: { 'default': 1 }, // 默认数量
+            // 传递额外信息给 CartManager 处理 (如果需要的话，或者保持原有的 payload 结构)
+        };
+        
+        // 这里为了适配 cart-manager 的 addToCartWithBackend，我们需要传递 draftId 和 quantities
+        // 如果是 Console 商品，我们可能需要特殊处理，或者让 CartManager 兼容
+        // 假设 CartManager 已经兼容 console 的 ID 传参:
+        
+        const typeId = `console-${product.id}${variantSuffix}`;
+        
+        // 4. 调用 CartManager (它内部会立即更新徽章)
+        if (window.CartManager) {
+            // 传递数据进行后台处理
+            // 注意：这里为了速度，不 await 结果，直接让它在后台跑
+            window.CartManager.addToCartWithBackend(null, { 'default': 1 }) // 这里的参数需要根据你的后端 API 调整
+                .catch(err => {
+                    // 只有在真的失败时才回滚
+                    console.error('Add failed', err);
+                    alert('Failed to add to cart');
+                    addBtn.textContent = originalText;
+                    addBtn.style.backgroundColor = originalBg;
+                    addBtn.disabled = false;
+                });
+                
+            // 如果你的后端需要完整的 cartItemData 结构，你需要修改 fetch 调用
+            // 下面是一个自定义的 fetch 逻辑，完全为了速度：
+            
+            sendAddToCartRequest(product, typeId, priceNumber);
         }
 
-        // 准备商品数据
-        const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
+        // 5. 2秒后恢复按钮状态
+        setTimeout(() => {
+            addBtn.textContent = originalText;
+            addBtn.style.backgroundColor = originalBg;
+            addBtn.disabled = false;
+        }, 2000);
+    }
 
-        // 准备变体信息
-        const selectedVariant = window.currentProduct.selectedVariant;
-        const variantSuffix = selectedVariant ? `-${selectedVariant.key}` : '';
-        const variantName = selectedVariant ? ` - ${selectedVariant.name}` : '';
-
+async function sendAddToCartRequest(product, typeId, price) {
+        // 这是后台实际发送请求的逻辑
         const cartItemData = {
-            user_id: user.id,
-            draft_id: null,
-            type: `console-${product.id}${variantSuffix}`,
+            type: typeId,
             quantity: 1,
+            price: price,
             sizes: { 'default': 1 },
-            price: priceNumber,
-            total_price: priceNumber,
             item_data: {
                 productId: product.id,
-                productName: product.name + variantName,
-                productDes: product.des,
-                productCategory: 'Book',
-                productImage: selectedVariant?.image || product.mainImage || `/images/merch/${product.id}.jpg`,
-                productType: 'book',
-                variantKey: selectedVariant?.key,
-                variantName: selectedVariant?.name,
-                variantDescription: selectedVariant?.description
-            },
-            added_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+                productName: product.name,
+                productImage: product.mainImage
+            }
         };
-
-        console.log('📤 发送到后端的完整数据:', JSON.stringify(cartItemData, null, 2));
-
-        // 调用后端 API
-        const API_BASE_URL = window.location.hostname === 'localhost'
-            ? 'http://localhost:3001'
-            : '';
-
-        // 获取 token
-        let token;
-        if (window.authManager && window.authManager.getToken) {
-            token = window.authManager.getToken();
-        }
-
-        if (!token && window.supabase) {
-            const { data: { session } } = await supabase.auth.getSession();
-            token = session?.access_token;
-        }
-
-        if (!token) {
-            alert('未登录，请先登录');
-            restoreButtonState(addBtn, originalText, originalBg);
-            return;
-        }
-
-        // 尝试调用主 API
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/cart/add`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    cartItemData
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ error: '未知错误' }));
-                console.error('❌ API 错误:', errorData);
-                alert('添加失败：' + (errorData.error || '未知错误'));
-                restoreButtonState(addBtn, originalText, originalBg);
-                return;
-            }
-
-            const result = await response.json();
-            console.log('✅ API 响应:', result);
-
-            // 显示成功状态（✓ ADDED TO CART）
-            showButtonSuccess(addBtn, originalText);
-
-            // 更新购物车徽章
-            if (window.CartManager && window.CartManager.updateCartBadge) {
-                await window.CartManager.updateCartBadge();
-            }
-
-        } catch (error) {
-            console.error('❌ API 调用失败:', error);
-
-         
-                restoreButtonState(addBtn, originalText, originalBg);
-              
-            
-            console.log('使用备用方案：直接调用 Supabase...');
-
-            // 备用方案：直接使用 Supabase
-            try {
-                // 先检查购物车中是否已有此产品
-                const { data: existingItems, error: fetchError } = await supabase
-                    .from('cart_items')
-                    .select('*')
-                    .eq('user_id', user.id)
-                    .eq('type', cartItemData.type);
-
-                if (fetchError) {
-                    console.error('Error checking existing items:', fetchError);
-                    alert('查询购物车失败');
-                    restoreButtonState(addBtn, originalText, originalBg);
-                    return;
-                }
-
-                if (existingItems && existingItems.length > 0) {
-                    // 产品已存在，更新数量
-                    const existingItem = existingItems[0];
-                    const currentQty = existingItem.quantity || 1;
-                    const newQty = currentQty + 1;
-
-                    const { data, error } = await supabase
-                        .from('cart_items')
-                        .update({
-                            quantity: newQty,
-                            total_price: priceNumber * newQty,
-                            sizes: { 'default': newQty },
-                            updated_at: new Date().toISOString()
-                        })
-                        .eq('id', existingItem.id)
-                        .select()
-                        .single();
-
-                    if (error) {
-                        console.error('Update error:', error);
-                        alert('更新失败');
-                        restoreButtonState(addBtn, originalText, originalBg);
-                        return;
-                    }
-
-                    console.log('Updated existing item:', data);
-                    showButtonSuccess(addBtn, originalText);
-
-                } else {
-                    // 添加新产品到购物车
-                    const { data, error } = await supabase
-                        .from('cart_items')
-                        .insert(cartItemData)
-                        .select()
-                        .single();
-
-                    if (error) {
-                        console.error('Insert error:', error);
-
-                        // 如果 item_data 字段不存在，尝试不包含它
-                        if (error.message && error.message.includes('item_data')) {
-                            console.log('Retrying without item_data field...');
-                            delete cartItemData.item_data;
-
-                            const { data: retryData, error: retryError } = await supabase
-                                .from('cart_items')
-                                .insert(cartItemData)
-                                .select()
-                                .single();
-
-                            if (retryError) {
-                                alert('添加失败：' + retryError.message);
-                                restoreButtonState(addBtn, originalText, originalBg);
-                                return;
-                            }
-
-                            console.log('Added to cart (without item_data):', retryData);
-                        } else {
-                            alert('添加失败：' + error.message);
-                            restoreButtonState(addBtn, originalText, originalBg);
-                            return;
-                        }
-                    } else {
-                        console.log('Added to cart:', data);
-                    }
-
-                    showButtonSuccess(addBtn, originalText);
-                }
-
-                // 更新购物车徽章
-                if (window.CartManager && window.CartManager.updateCartBadge) {
-                    await window.CartManager.updateCartBadge();
-                }
-
-            } catch (fallbackError) {
-                console.error('备用方案失败:', fallbackError);
-                alert('操作失败，请重试');
-                restoreButtonState(addBtn, originalText, originalBg);
-            }
-        }
-
-    } catch (error) {
-        console.error('Add to cart failed:', error);
-        alert('操作失败，请重试');
-        restoreButtonState(addBtn, originalText, originalBg);
+        
+        // 手动调用 API
+        const API = window.location.hostname === 'localhost' ? 'http://localhost:3001' : '';
+        const token = window.authManager.getToken();
+        
+        await fetch(`${API}/api/cart/add`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cartItemData })
+        });
     }
-}
 
 // 辅助函数：恢复按钮状态
 function restoreButtonState(button, originalText, originalBg) {
