@@ -1,1 +1,335 @@
-<head><link href="/css/styles.b5df29d146206732e48f.css" rel="stylesheet"></head><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.009dfc8a5a12a82b16e6.js"></script>
+<style>* {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* 顶部导航 */
+    .nav-header {
+        border: 2px solid black;
+        padding: 5px;
+        margin-bottom: 20px;
+        background-color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: calc(100% - 40px);
+        position: fixed;
+        z-index: 1000;
+        top: 100px;
+
+    }
+
+    .nav-header h1 {
+        font-size: 24px;
+    }
+
+    .back-btn {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+.des{
+    border: 2px solid black;
+        padding: 5px;
+        background-color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+     
+        
+margin-top: 65px;
+margin-bottom: 20px;
+}
+
+
+
+
+.book-items {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 20px;
+                list-style-type: none;
+         
+               
+            }
+            .book-items li {
+    position: relative;
+    border: 2px solid black;
+    overflow: hidden;
+    cursor: pointer;
+    background: white;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.book-items .image-container {
+    width: 100%;
+    height: 0;
+    padding-bottom: 141.4%; /* A4比例：297/210=1.414，1/1.414≈0.707，但这里是基于宽度的百分比 */
+    position: relative;
+    overflow: hidden;
+}
+
+.book-items img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* 文字区域 - 自动调整 */
+.book-items .overlay {
+    flex: 0 0 auto; /* 不伸缩，固定高度 */
+    border-top: 2px black solid;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 10px;
+    background: white;
+}
+
+/* description 确保文字完全显示 */
+.book-items .description {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 16px;
+}
+
+.book-items .meta {
+    flex: 1; /* 文字填充剩余空间 */
+    font-size: 14px;
+    font-style: italic;
+}
+/* 在CSS末尾添加注解样式 */
+
+
+    @media(max-width:600px) {
+        .nav-header  {
+            margin-top: -20px;
+            width: calc(100% - 20px);
+        }
+        .des{ 
+            margin-top: 55px;
+        }
+ .books{
+    margin-top: -7px;
+ }
+        .book-items {
+                    display: grid;
+            grid-template-columns: repeat(2,  1fr);
+            gap: 10px;
+            list-style-type: none;}
+    
+          .book-items{
+            gap: 10px;
+          }
+    }
+    
+    * {
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+            }
+    
+    
+    
+      
+    
+            .library-items {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+                list-style-type: none;
+
+               
+            }
+    
+
+                 .book-items {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(500px, 2fr));
+                gap: 20px;
+                list-style-type: none;
+         
+               
+            }
+
+          .library-items li, .book-items li {
+    position: relative;
+    border: 2px solid black;
+    overflow: hidden;
+    cursor: pointer;
+    background: white;
+
+    height: auto; /* 改为 auto */
+    display: flex; /* 添加 flex 布局 */
+    flex-direction: column; /* 垂直排列 */
+}
+    
+          .library-items img{
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block;
+    aspect-ratio: 1 / 1;
+   height: calc(100% - 50px);
+}
+
+    
+         .overlay {
+    position: relative;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    border-top: 2px black solid;
+    /* 添加 flex-grow 填充剩余空间 */
+    flex-grow: 1;
+}
+
+    
+            .title {
+                font-size: 18px;
+                margin-bottom: 5px;
+            }
+    
+            .price {
+                font-size: 15px;
+                color: black;
+            }
+    
+            /* 添加更多商品项的演示样式 */
+            .placeholder-img {
+                width: 100%;
+                height: 200px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            
+                font-size: 24px;
+            }
+            .retro-console {
+                border: 2px black solid;
+                padding: 5px;
+                margin-bottom: 20px;
+            }
+            .library{
+                border: 2px black solid;
+                padding: 5px;
+                margin-bottom: 20px;
+            }
+            .taobao{
+                margin-top: 20px;
+                border: 2px black solid;
+                padding: 5px;
+            }
+          .books{
+            margin-top: 20px;
+            border: 2px black solid;
+                padding: 5px;
+                margin-bottom: 20px;
+          }
+
+    .description{
+    font-size: 15px;
+    }
+    
+
+    .book-items li {
+    height: 350px;
+     display: flex;
+    flex-direction: column;
+}
+
+.book-items img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block;
+
+    flex: 1 1 auto; /* 关键：允许图片伸缩 */
+    min-height: 35%; /* 最小占 40% */
+    max-height: 75%; /* 最大占 70% */
+}
+
+/* 文字区域 - 自动调整 */
+.book-items .overlay {
+    flex: 1 1 auto; /* 关键：允许文字区域伸缩 */
+    
+    border-top: 2px black solid;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* 文字从顶部开始 */
+  
+}
+
+/* description 确保文字完全显示 */
+.book-items .description {
+    height: auto;
+    min-height: 0; /* 重要：允许压缩 */
+    flex: 1; /* 填充可用空间 */
+    display: flex;
+    flex-direction: column;
+}
+
+.book-items .meta {
+    flex: 1; /* 文字填充剩余空间 */
+
+    font-style: italic;
+}
+.library{
+             
+            cursor: pointer;
+         }
+            @media(max-width:899px) {
+             
+                .library-items {
+     
+                    display: grid;
+            grid-template-columns: repeat(2,  1fr);
+            
+            gap: 10px;
+            list-style-type: none;}
+
+    .book-items {
+                    display: grid;
+            grid-template-columns: repeat(1,  1fr);
+            gap: 10px;
+            list-style-type: none;}
+    
+            .library{
+             
+                margin-bottom: 10px;
+            }
+            .books{
+            margin-top: 10px;
+                margin-bottom: 10px;
+          }
+          .book-items{
+            gap: 10px;
+          }
+        
+          .library-items {
+                
+                margin-top: -10px;
+               
+            }
+        }</style><link href="/css/styles.b5df29d146206732e48f.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>LIBRARY</h1><a data-page="print" class="back-btn">← BACK TO PRINT</a></div><div class="des">Home Library picks books (with ISBNs) that interest me and my friends, bringing us together to build a shared library. You can find books by their location. We don't offer digital copies, but all of books are available to read and scan in-house.</div><div class="book-search"></div><div class="section"><ul class="library-items"><li data-id="game" data-type="library"><img src="/images/library/001.png" width="250px"><div class="overlay"><span class="title">GAME</span></div></li><li data-id="comics" data-type="library"><img src="/images/library/005.png" width="250px"><div class="overlay"><span class="title">COMICS</span></div></li><li data-id="archetype" data-type="library"><img src="/images/library/006.png" width="250px"><div class="overlay"><span class="title">ARCHETYPE</span></div></li><li data-id="law" data-type="library"><img src="/images/library/003.png" width="250px"><div class="overlay"><span class="title">LAW</span></div></li><li data-id="design" data-type="library"><img src="/images/library/002.png" width="250px"><div class="overlay"><span class="title">DESIGN</span></div></li><li data-id="culture" data-type="library"><img src="/images/library/004.png" width="250px"><div class="overlay"><span class="title">CULTURE</span></div></li></ul></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.009dfc8a5a12a82b16e6.js"></script></body>
