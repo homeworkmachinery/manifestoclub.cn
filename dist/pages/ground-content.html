@@ -609,7 +609,7 @@
 .postage-info {
     font-size: 14px;
     margin-bottom: 15px;
-}</style><link href="/css/styles.b5df29d146206732e48f.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>BOOKS</h1><a data-page="ground-ip" class="back-btn">← BACK TO GROUND</a></div><div class="ground-panel-left" id="carouselWrapper"></div><div class="ground-panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-name" id="productTitle">-</p><div class="product-price" id="productPrice">$0</div><div class="postage-info" id="productPostage"></div><div class="stock-info"></div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button></div><div class="book-description"></div><div class="product-details"><div class="details-split"><div class="description"></div><div class="author"></div></div><div class="details-content" id="productDetails"></div></div></div><div class="image-zoom-modal" id="imageZoomModal"><img id="zoomedImage" src="" alt="Zoomed Image"></div><div class="print-modal-overlay" id="printModalOverlay"><div class="print-modal"><div class="print-modal-header"><h3>Select Print Pages</h3><button class="close-modal-btn" id="closePrintModalBtn">×</button></div><div class="print-modal-content" id="printModalContent"></div><div class="print-modal-footer"><button class="cancel-btn" id="cancelPrintBtn">Cancel</button> <button class="confirm-print-btn" id="confirmPrintBtn" disabled="disabled">Print Selected Pages</button></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.a4917b0b0ac2c49697e8.js"></script></body><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="/lib/pdfReader.js"></script><script>(function () {
+}</style><link href="/css/styles.b5df29d146206732e48f.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>BOOKS</h1><a data-page="ground-ip" class="back-btn">← BACK TO GROUND</a></div><div class="ground-panel-left" id="carouselWrapper"></div><div class="ground-panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-name" id="productTitle">-</p><div class="product-price" id="productPrice">$0</div><div class="postage-info" id="productPostage"></div><div class="stock-info"></div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button></div><div class="book-description"></div><div class="product-details"><div class="details-split"><div class="description"></div><div class="author"></div></div><div class="details-content" id="productDetails"></div></div></div><div class="image-zoom-modal" id="imageZoomModal"><img id="zoomedImage" src="" alt="Zoomed Image"></div><div class="print-modal-overlay" id="printModalOverlay"><div class="print-modal"><div class="print-modal-header"><h3>Select Print Pages</h3><button class="close-modal-btn" id="closePrintModalBtn">×</button></div><div class="print-modal-content" id="printModalContent"></div><div class="print-modal-footer"><button class="cancel-btn" id="cancelPrintBtn">Cancel</button> <button class="confirm-print-btn" id="confirmPrintBtn" disabled="disabled">Print Selected Pages</button></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.009dfc8a5a12a82b16e6.js"></script></body><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="/lib/pdfReader.js"></script><script>(function () {
     
             function syncPanelHeights() {
     const leftPanel = document.querySelector('.ground-panel-left');
@@ -1343,91 +1343,79 @@ function renderProductSpecifications(product, productId) {
 
             // 添加到购物车处理函数
 
-            // 添加到购物车处理函数
 async function handleAddToCart() {
-        const addBtn = document.getElementById('addToCartBtn');
-        if (!addBtn) return;
-        
-        // 1. 快速检查登录状态 (同步检查，不等待)
-        if (window.authManager && !window.authManager.isAuthenticated()) {
-            alert('Please login first');
-            // 触发登录弹窗逻辑
-            const event = new CustomEvent('showAuthModal', { detail: { message: 'Login required' } });
-            window.dispatchEvent(event);
-            return;
-        }
-
-        const originalText = addBtn.textContent;
-        const originalBg = addBtn.style.backgroundColor || 'black';
-
-        // 2. 立即给予视觉反馈 (Optimistic UI) - 0ms 延迟
-        addBtn.textContent = '✓ ADDED';
-        addBtn.style.backgroundColor = 'black';
-        addBtn.disabled = true;
-
-        // 3. 准备数据
-        const product = window.currentProduct;
-        if (!product) return;
-
-        // 构造 cartItemData (保持你原有的构造逻辑)
-        const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
-        const selectedVariant = product.selectedVariant;
-        const variantSuffix = selectedVariant ? `-${selectedVariant.key}` : '';
-        
-        const cartItemData = {
-            // user_id 会在 CartManager 内部获取，这里主要传内容
-            draftId: null, // 如果是 console
-            sizeQuantities: { 'default': 1 }, // 默认数量
-            // 传递额外信息给 CartManager 处理 (如果需要的话，或者保持原有的 payload 结构)
-        };
-        
-        // 这里为了适配 cart-manager 的 addToCartWithBackend，我们需要传递 draftId 和 quantities
-        // 如果是 Console 商品，我们可能需要特殊处理，或者让 CartManager 兼容
-        // 假设 CartManager 已经兼容 console 的 ID 传参:
-        
-        const typeId = `console-${product.id}${variantSuffix}`;
-        
-        // 4. 调用 CartManager (它内部会立即更新徽章)
-        if (window.CartManager) {
-            // 传递数据进行后台处理
-            // 注意：这里为了速度，不 await 结果，直接让它在后台跑
-            window.CartManager.addToCartWithBackend(null, { 'default': 1 }) // 这里的参数需要根据你的后端 API 调整
-                .catch(err => {
-                    // 只有在真的失败时才回滚
-                    console.error('Add failed', err);
-                    alert('Failed to add to cart');
-                    addBtn.textContent = originalText;
-                    addBtn.style.backgroundColor = originalBg;
-                    addBtn.disabled = false;
-                });
-                
-            // 如果你的后端需要完整的 cartItemData 结构，你需要修改 fetch 调用
-            // 下面是一个自定义的 fetch 逻辑，完全为了速度：
-            
-            sendAddToCartRequest(product, typeId, priceNumber);
-        }
-
-        // 5. 2秒后恢复按钮状态
-        setTimeout(() => {
-            addBtn.textContent = originalText;
-            addBtn.style.backgroundColor = originalBg;
-            addBtn.disabled = false;
-        }, 2000);
+    const addBtn = document.getElementById('addToCartBtn');
+    if (!addBtn) return;
+    
+    if (window.authManager && !window.authManager.isAuthenticated()) {
+       window.openAuthModal();
+        const event = new CustomEvent('showAuthModal', { detail: { message: 'Login required' } });
+        window.dispatchEvent(event);
+        return;
     }
+
+    const originalText = addBtn.textContent;
+    addBtn.textContent = '✓ ADDED';
+    addBtn.disabled = true;
+
+    const product = window.currentProduct;
+    if (!product) return;
+
+    const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
+    const selectedVariant = product.selectedVariant;
+    const variantSuffix = selectedVariant ? `-${selectedVariant.key}` : '';
+    const typeId = `book-${product.id}${variantSuffix}`;
+
+    // 乐观更新徽章
+    if (window.CartManager) {
+        const currentCount = window.CartManager._getLocalCount();
+        window.CartManager.updateCartBadge(currentCount + 1);
+        window.CartManager.showCartAddedEffect();
+    }
+
+    // 只发一个请求
+    try {
+        await sendAddToCartRequest(product, typeId, priceNumber);
+        if (window.CartManager) {
+            window.CartManager._fetchAndCacheItems().catch(console.error);
+        }
+    } catch (err) {
+        console.error('Add failed', err);
+        alert('Failed to add to cart');
+        if (window.CartManager) window.CartManager.updateCartBadge();
+    }
+
+    setTimeout(() => {
+        addBtn.textContent = originalText;
+        addBtn.disabled = false;
+    }, 2000);
+}
 
 async function sendAddToCartRequest(product, typeId, price) {
         // 这是后台实际发送请求的逻辑
-        const cartItemData = {
-            type: typeId,
-            quantity: 1,
-            price: price,
-            sizes: { 'default': 1 },
-            item_data: {
-                productId: product.id,
-                productName: product.name,
-                productImage: product.mainImage
-            }
-        };
+        // 如果有选中的变体，标题拼上变体名：「主商品名 - 变体名」
+         const selectedVariant = product.selectedVariant;
+   const variantName = selectedVariant ? selectedVariant.name : null;
+const displayName = variantName ? `${product.name} - ${variantName}` : product.name;
+    // 构建商品数据
+    const cartItemData = {
+        type: typeId,
+        quantity: 1,
+        price: price,
+        sizes: { 'default': 1 },
+        item_data: {
+            productId: product.id,
+            productName: displayName,
+            // 💡 优化：如果选了特定游戏，就用该游戏的图片，否则用商品主图
+            productImage: selectedVariant && selectedVariant.image ? selectedVariant.image : product.mainImage,
+            productCategory: product.category,
+            productType: 'book',
+            // 💡 关键：将选中的具体游戏名称传给购物车
+            variantName: selectedVariant ? selectedVariant.name : undefined,
+            // 同步传递商品年份信息
+            productYear: product.year
+        }
+    };
         
         // 手动调用 API
         const API = window.location.hostname === 'localhost' ? 'http://localhost:3001' : '';
