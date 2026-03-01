@@ -1,0 +1,420 @@
+<style>* {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* 顶部导航 */
+    .nav-header {
+        border: 2px solid black;
+        padding: 5px;
+        margin-bottom: 20px;
+        background-color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: calc(100% - 40px);
+        position: fixed;
+        z-index: 1000;
+        top: 100px;
+
+    }
+
+    .nav-header h1 {
+        font-size: 24px;
+    }
+
+    .back-btn {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .des {
+        border: 2px solid black;
+        padding: 5px;
+        background-color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+
+        margin-top: 65px;
+        margin-bottom: 20px;
+    }
+
+
+    .book-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(500px, 2fr));
+        gap: 20px;
+        list-style-type: none;
+
+
+    }
+
+  
+    .book-items li {
+        position: relative;
+        border: 2px solid black;
+        overflow: hidden;
+        cursor: pointer;
+        background: white;
+
+        height: auto;
+        /* 改为 auto */
+        display: flex;
+        /* 添加 flex 布局 */
+        flex-direction: column;
+        /* 垂直排列 */
+    }
+
+
+
+    .overlay {
+        position: relative;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        border-top: 2px black solid;
+        /* 添加 flex-grow 填充剩余空间 */
+        flex-grow: 1;
+    }
+
+
+   
+
+
+    .books {
+        margin-top: 20px;
+        border: 2px black solid;
+        padding: 5px;
+        margin-bottom: 20px;
+    }
+
+    .description {
+        font-size: 15px;
+    }
+
+
+    .book-items li {
+        height: 350px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .book-items img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        display: block;
+
+        flex: 1 1 auto;
+        /* 关键：允许图片伸缩 */
+        min-height: 35%;
+        /* 最小占 40% */
+        max-height: 75%;
+        /* 最大占 70% */
+    }
+
+    /* 文字区域 - 自动调整 */
+    .book-items .overlay {
+        flex: 1 1 auto;
+        /* 关键：允许文字区域伸缩 */
+
+        border-top: 2px black solid;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        /* 文字从顶部开始 */
+
+    }
+
+    /* description 确保文字完全显示 */
+    .book-items .description {
+        height: auto;
+        min-height: 0;
+        /* 重要：允许压缩 */
+        flex: 1;
+        /* 填充可用空间 */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .book-items .meta {
+        flex: 1;
+        /* 文字填充剩余空间 */
+
+        font-style: italic;
+    }
+
+    .library {
+
+        cursor: pointer;
+    }
+
+    @media(max-width:899px) {
+
+        .library-items {
+
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 10px;
+            list-style-type: none;
+        }
+
+        .book-items {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 10px;
+            list-style-type: none;
+        }
+
+        .library {
+
+            margin-bottom: 10px;
+        }
+
+        .books {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .book-items {
+            gap: 10px;
+        }
+
+        .library-items {
+
+            margin-top: -10px;
+
+        }
+    }
+   
+   
+
+    .book-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(500px, 2fr));
+        gap: 20px;
+        list-style-type: none;
+
+
+    }
+
+    .library-items li,
+    .book-items li {
+        position: relative;
+        border: 2px solid black;
+        overflow: hidden;
+        cursor: pointer;
+        background: white;
+
+        height: auto;
+        /* 改为 auto */
+        display: flex;
+        /* 添加 flex 布局 */
+        flex-direction: column;
+        /* 垂直排列 */
+    }
+
+ 
+
+    .overlay {
+        position: relative;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        border-top: 2px black solid;
+        /* 添加 flex-grow 填充剩余空间 */
+        flex-grow: 1;
+    }
+
+
+    .title {
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+
+    .price {
+        font-size: 15px;
+        color: black;
+    }
+
+
+    .library {
+        border: 2px black solid;
+        padding: 5px;
+        margin-bottom: 20px;
+    }
+
+    .books {
+        margin-top: 20px;
+        border: 2px black solid;
+        padding: 5px;
+        margin-bottom: 20px;
+    }
+
+    .description {
+        font-size: 15px;
+    }
+
+
+    .book-items li {
+        height: 350px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .book-items img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        display: block;
+
+        flex: 1 1 auto;
+        /* 关键：允许图片伸缩 */
+        min-height: 35%;
+        /* 最小占 40% */
+        max-height: 75%;
+        /* 最大占 70% */
+    }
+
+    /* 文字区域 - 自动调整 */
+    .book-items .overlay {
+        flex: 1 1 auto;
+        /* 关键：允许文字区域伸缩 */
+
+        border-top: 2px black solid;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        /* 文字从顶部开始 */
+
+    }
+
+    /* description 确保文字完全显示 */
+    .book-items .description {
+        height: auto;
+        min-height: 0;
+        /* 重要：允许压缩 */
+        flex: 1;
+        /* 填充可用空间 */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .book-items .meta {
+        flex: 1;
+        /* 文字填充剩余空间 */
+
+        font-style: italic;
+    }
+
+    .library,
+    .books {
+
+        cursor: pointer;
+    }
+
+    @media(max-width:899px) {
+
+        .library-items {
+
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 10px;
+            list-style-type: none;
+        }
+
+        .book-items {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 10px;
+            list-style-type: none;
+        }
+
+        .book-items li {
+            height: auto;
+            /* 取消固定的 350px，让高度根据内容自动调整 */
+        }
+
+        .book-items .overlay {
+            flex: none;
+            /* 防止 overlay 被拉伸去填补多余空间 */
+            /* padding-bottom: 15px; 如果你觉得底部太贴边，可以稍微加一点内边距 */
+        }
+
+        .book-items img {
+            flex: none;
+            min-height: unset;
+            /* 移除基于父元素高度的百分比限制 */
+            max-height: unset;
+            aspect-ratio: 16 / 9;
+            /* 建议给移动端图片设定一个固定比例（例如 4:3 或 16:9），防止图片过高 */
+        }
+
+      
+        .books {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .book-items {
+            gap: 10px;
+        }
+
+    }
+    
+    @media(max-width:600px) {
+        .nav-header  {
+            margin-top: -20px;
+            width: calc(100% - 20px);
+        }
+        .des{ 
+            margin-top: 55px;
+        }
+ 
+    .section{
+        margin-top: -5px;
+    }
+    }
+    @media(min-width:899px) and (max-width: 1100px) {
+        .library-items li:nth-child(n+5) {
+            display: block;
+        }
+        .book-items li {
+            height: auto;
+            /* 取消固定的 350px，让高度根据内容自动调整 */
+        }
+
+        .book-items .overlay {
+            flex: none;
+            /* 防止 overlay 被拉伸去填补多余空间 */
+            /* padding-bottom: 15px; 如果你觉得底部太贴边，可以稍微加一点内边距 */
+        }
+
+        .book-items img {
+            flex: none;
+            min-height: unset;
+            /* 移除基于父元素高度的百分比限制 */
+            max-height: unset;
+            aspect-ratio: 16 / 6;
+            /* 建议给移动端图片设定一个固定比例（例如 4:3 或 16:9），防止图片过高 */
+        }
+
+    }</style><link href="/css/styles.dbb89683c55cfeb238c6.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>SELF-PUBLISHER</h1><a data-page="print" class="back-btn">← BACK TO PRINT</a></div><div class="des">Most of us embrace Creative Commons — letting ideas float in the air. Feel free to preview and switch to A4 mode to create compact books with your home printer. Please support us by purchasing our physical books, and every author accepts tips directly.</div><div class="book-search"></div><div class="section"><ul class="book-items"><li data-id="author" data-type="book"><img src="/images/library/007.png" width="250px"><div class="overlay"><span class="title">AUTHOR</span> <span class="meta">Enter the inner world of authors: a home for expression, where you are free to read, hold and resonate.</span></div></li><li data-id="ground-ip" data-type="book"><img src="/images/library/008.png" width="250px"><div class="overlay"><span class="title">GROUND IP PROJECT</span> <span class="meta">Presenting the historical framework of intellectual property, grounded in lived experience.</span></div></li></ul></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.b432e78abd5f07aef560.js"></script></body>
