@@ -740,10 +740,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     category: 'book',
                     mainImage: '/images/library/ground-ip/001/000.png',
                     galleryFolder: '/images/library/ground-ip/gallery/001',
-                    galleryImages: ['000.png', '001.png', 'detail.png', 'back.png'],
+                    galleryCount: 8,
                     // pdfUrl: '/images/library/ground-ip/001.pdf',
                     imagesFolder:'/images/library/ground-ip/001',
-                    totalPages: 34,
+                    totalPages: 40,
                     variants: {
                         'a': {
                             name: 'Simplified Chinese',
@@ -957,6 +957,19 @@ function renderCarousel(product) {
     else {
         const defaultImg = product.mainImage || `/images/merch/${product.id}.jpg`;
         slideImages = [defaultImg];
+    }
+
+
+      if (product.galleryFolder && product.galleryCount > 0) {
+        // 自动生成 000.png, 001.png, 002.png...
+        slideImages = Array.from({ length: product.galleryCount }, (_, i) =>
+            `${product.galleryFolder}/${String(i).padStart(3, '0')}.png`
+        );
+    } else if (product.galleryFolder && product.galleryImages) {
+        // 兼容旧的手动写法
+        slideImages = product.galleryImages.map(file => `${product.galleryFolder}/${file}`);
+    } else {
+        slideImages = [product.mainImage];
     }
 
     // --- 构建 HTML ---
