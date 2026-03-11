@@ -610,8 +610,14 @@
 }
 .postage-info {
     font-size: 14px;
+    margin-bottom: 10px;
+    font-style: italic;
+}
+.product-info {
+    font-size: 15px;
     margin-bottom: 15px;
-}</style><link href="/css/styles.152bf27e34dfd1de21f6.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>BOOKS</h1><a data-page="ground-ip" class="back-btn">← BACK TO GROUND</a></div><div class="ground-panel-left" id="carouselWrapper"></div><div class="ground-panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-name" id="productTitle">-</p><div class="product-price" id="productPrice">$0</div><div class="postage-info" id="productPostage"></div><div class="stock-info"></div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button></div><div class="book-description"></div><div class="product-details"><div class="details-split"><div class="description"></div><div class="author"></div></div><div class="details-content" id="productDetails"></div></div></div><div class="image-zoom-modal" id="imageZoomModal"><img id="zoomedImage" src="" alt="Zoomed Image"></div><div class="print-modal-overlay" id="printModalOverlay"><div class="print-modal"><div class="print-modal-header"><h3>Select Print Pages</h3><button class="close-modal-btn" id="closePrintModalBtn">×</button></div><div class="print-modal-content" id="printModalContent"></div><div class="print-modal-footer"><button class="cancel-btn" id="cancelPrintBtn">Cancel</button> <button class="confirm-print-btn" id="confirmPrintBtn" disabled="disabled">Print Selected Pages</button></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.0a5c5c7ee11a117c97dc.js"></script></body><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="/lib/pdfReader.js"></script><script>(function () {
+    font-weight: bold;
+}</style><link href="/css/styles.152bf27e34dfd1de21f6.css" rel="stylesheet"><body><div class="container"><div class="nav-header"><h1>BOOKS</h1><a data-page="ground-ip" class="back-btn">← BACK TO GROUND</a></div><div class="ground-panel-left" id="carouselWrapper"></div><div class="ground-panel-right"><h2 class="product-title" id="productName">Loading...</h2><p class="product-name" id="productTitle">-</p><div class="product-price" id="productPrice">$0</div><div class="postage-info" id="productPostage"></div><div class="product-info" id="productMeta"></div><div class="stock-info"></div><button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button></div><div class="book-description"></div><div class="product-details"><div class="details-split"><div class="description"></div><div class="author"></div></div><div class="details-content" id="productDetails"></div></div></div><div class="image-zoom-modal" id="imageZoomModal"><img id="zoomedImage" src="" alt="Zoomed Image"></div><div class="print-modal-overlay" id="printModalOverlay"><div class="print-modal"><div class="print-modal-header"><h3>Select Print Pages</h3><button class="close-modal-btn" id="closePrintModalBtn">×</button></div><div class="print-modal-content" id="printModalContent"></div><div class="print-modal-footer"><button class="cancel-btn" id="cancelPrintBtn">Cancel</button> <button class="confirm-print-btn" id="confirmPrintBtn" disabled="disabled">Print Selected Pages</button></div></div></div><script defer="defer" src="/js/vendors.515c171d2c3970a6f856.js"></script><script defer="defer" src="/js/styles.42c0758976f42d12a89f.js"></script><script defer="defer" src="/js/global.0a5c5c7ee11a117c97dc.js"></script></body><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="/lib/pdfReader.js"></script><script>(function () {
     
             function syncPanelHeights() {
     const leftPanel = document.querySelector('.ground-panel-left');
@@ -735,15 +741,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 '001': {
                     name: 'From Pirate Printing Presses to Feudal Digital Societies',
                     title:"从盗版印刷机到封建数字社会",
-                    price: '¥45',
+                    price: '¥55',
                     postage:'Free shipping (Mainland China); International shipping fees apply',
+                    meta:'TF card and reader (print files included); Envelope with stamps and handwritten address',
                     category: 'book',
                     mainImage: '/images/library/ground-ip/001/000.png',
                     galleryFolder: '/images/library/ground-ip/gallery/001',
                     galleryCount: 8,
                     // pdfUrl: '/images/library/ground-ip/001.pdf',
                     imagesFolder:'/images/library/ground-ip/001',
-                    totalPages: 40,
+                    totalPages: 41,
                     variants: {
                         'a': {
                             name: 'Simplified Chinese',
@@ -781,7 +788,7 @@ document.addEventListener('DOMContentLoaded', function() {
  specifications: {
     html: `
         <div class="specs-list">
-            <div class="spec-item"><strong>Pages:</strong>  34 pages</div>
+            <div class="spec-item"><strong>Pages:</strong>  42 pages</div>
             <div class="spec-item"><strong>Dimensions:</strong>  75mm (width)</div>
             <div class="spec-item"><strong>Paper:</strong>  Single-sided thermal triple-protection paper</div>
             <div class="spec-item"><strong>Printing Method:</strong>  Thermal printing</div>
@@ -1181,6 +1188,11 @@ function goToSlide(index) {
     if (postageEl && product.postage) {
         postageEl.textContent = product.postage;
     }
+
+const metaEl = document.getElementById('productMeta');
+if (metaEl && product.meta) {
+    metaEl.textContent = product.meta;
+}
 
     // 添加书籍描述显示到 book-description 区域
     const bookDescEl = document.querySelector('.book-description');
